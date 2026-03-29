@@ -28,6 +28,7 @@
         method="post"
         enctype="multipart/form-data"
         class="max-w-4xl space-y-8 rounded-2xl border border-secondary/50 bg-white p-6 shadow-soft sm:p-8"
+        onsubmit="if (window.tinymce) tinymce.triggerSave();"
     >
         @csrf
 
@@ -43,3 +44,5 @@
         </div>
     </form>
 @endsection
+
+@include('admin.destinations._tinymce-description')

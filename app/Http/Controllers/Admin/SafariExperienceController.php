@@ -19,11 +19,24 @@ class SafariExperienceController extends Controller
         $q = $request->string('q')->trim();
         $safariExperiences = SafariExperience::query()
             ->when($q, fn ($query) => $query->where('title', 'like', '%'.$q.'%'))
+            ->orderBy('sort_order')
             ->orderByDesc('id')
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.safari.index', compact('safariExperiences', 'q'));
+        if ($safariExperiences->isEmpty() && $safariExperiences->total() > 0) {
+            return redirect()->route('admin.safari.index', array_merge(
+                $request->except('page'),
+                ['page' => 1]
+            ));
+        }
+
+        $stats = [
+            'total' => SafariExperience::query()->count(),
+            'visible' => SafariExperience::query()->where('is_active', true)->count(),
+        ];
+
+        return view('admin.safari.index', compact('safariExperiences', 'q', 'stats'));
     }
 
     public function create(): View

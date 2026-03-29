@@ -23,7 +23,19 @@ class DestinationController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.destinations.index', compact('destinations', 'q'));
+        if ($destinations->isEmpty() && $destinations->total() > 0) {
+            return redirect()->route('admin.destinations.index', array_merge(
+                $request->except('page'),
+                ['page' => 1]
+            ));
+        }
+
+        $stats = [
+            'total' => Destination::query()->count(),
+            'visible' => Destination::query()->where('is_active', true)->count(),
+        ];
+
+        return view('admin.destinations.index', compact('destinations', 'q', 'stats'));
     }
 
     public function create(): View

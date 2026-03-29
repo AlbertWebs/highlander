@@ -26,7 +26,20 @@ class GalleryItemController extends Controller
             ->paginate(24)
             ->withQueryString();
 
-        return view('admin.gallery.index', compact('items', 'q', 'categories'));
+        // Avoid empty grid when ?page is past the last page (Laravel still treats the page as "valid").
+        if ($items->isEmpty() && $items->total() > 0) {
+            return redirect()->route('admin.gallery.index', array_merge(
+                $request->except('page'),
+                ['page' => 1]
+            ));
+        }
+
+        $stats = [
+            'total' => GalleryItem::query()->count(),
+            'visible_on_site' => GalleryItem::query()->where('is_active', true)->count(),
+        ];
+
+        return view('admin.gallery.index', compact('items', 'q', 'categories', 'stats'));
     }
 
     public function create(): View
@@ -80,19 +93,28 @@ class GalleryItemController extends Controller
 
         $maxSort = (int) GalleryItem::query()->max('sort_order');
         $count = 0;
+        $createdItems = [];
 
         foreach ($images as $i => $file) {
             if (! $file) {
                 continue;
             }
             $maxSort++;
-            GalleryItem::query()->create([
+            $item = GalleryItem::query()->create([
                 'gallery_category_id' => $catIds[$i] ?? null,
                 'title' => is_array($titles) ? ($titles[$i] ?? null) : null,
                 'image_path' => $file->store('gallery', 'public'),
                 'is_active' => true,
                 'sort_order' => $maxSort,
             ]);
+            $item->load('category');
+            $createdItems[] = [
+                'id' => $item->id,
+                'url' => $item->url,
+                'title' => $item->title,
+                'category_name' => $item->category?->name,
+                'is_active' => $item->is_active,
+            ];
             $count++;
         }
 
@@ -101,6 +123,7 @@ class GalleryItemController extends Controller
 
         return response()->json([
             'message' => $count === 1 ? __('1 image uploaded.') : __(':count images uploaded.', ['count' => $count]),
+            'items' => $createdItems,
         ]);
     }
 

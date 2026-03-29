@@ -20,6 +20,10 @@ use App\Models\SeoMeta;
 use App\Models\SiteSetting;
 use App\Models\Testimonial;
 use App\Models\Tour;
+use App\Support\RelatedToursForDestination;
+use App\Support\RelatedToursForMountain;
+use App\Support\RelatedToursForSafariExperience;
+use App\Support\RelatedToursForTour;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -77,7 +81,29 @@ class PageController extends Controller
     {
         $items = Mountain::query()->active()->orderBy('name')->paginate(12);
 
-        return view('pages.mountains', array_merge($this->seo('mountains'), compact('items')));
+        $featuredTours = Tour::query()
+            ->active()
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->limit(4)
+            ->get();
+
+        return view('pages.mountains', array_merge($this->seo('mountains'), compact('items', 'featuredTours')));
+    }
+
+    public function mountainShow(Mountain $mountain): View
+    {
+        if (! $mountain->is_active) {
+            abort(404);
+        }
+
+        $pageTitle = $mountain->name.' — '.config('app.name');
+        $meta_title = $mountain->name;
+        $meta_description = Str::limit(strip_tags((string) ($mountain->description ?? '')), 160) ?: __('Discover :name — trekking and alpine expeditions with Highlanders Nature Trails.', ['name' => $mountain->name]);
+
+        $relatedTours = RelatedToursForMountain::get($mountain, 5);
+
+        return view('pages.mountain-show', compact('mountain', 'pageTitle', 'meta_title', 'meta_description', 'relatedTours'));
     }
 
     public function exploreAfrica(Request $request): View
@@ -87,11 +113,43 @@ class PageController extends Controller
         return view('pages.explore-africa', array_merge($this->seo('explore-africa'), compact('items')));
     }
 
+    public function destinationShow(Destination $destination): View
+    {
+        if (! $destination->is_active) {
+            abort(404);
+        }
+
+        $pageTitle = $destination->name.' — '.config('app.name');
+        $meta_title = $destination->name;
+        $meta_description = Str::limit(strip_tags((string) ($destination->description ?? '')), 160)
+            ?: __('Discover :name — safaris and expeditions with Highlanders Nature Trails.', ['name' => $destination->name]);
+
+        $relatedTours = RelatedToursForDestination::get($destination, 5);
+
+        return view('pages.destination-show', compact('destination', 'pageTitle', 'meta_title', 'meta_description', 'relatedTours'));
+    }
+
     public function safari(Request $request): View
     {
         $items = SafariExperience::query()->active()->orderBy('sort_order')->paginate(12);
 
         return view('pages.safari', array_merge($this->seo('safari'), compact('items')));
+    }
+
+    public function safariExperienceShow(SafariExperience $safariExperience): View
+    {
+        if (! $safariExperience->is_active) {
+            abort(404);
+        }
+
+        $pageTitle = $safariExperience->title.' — '.config('app.name');
+        $meta_title = $safariExperience->title;
+        $meta_description = Str::limit(strip_tags((string) ($safariExperience->description ?? '')), 160)
+            ?: __('Discover :name — safari styles with Highlanders Nature Trails.', ['name' => $safariExperience->title]);
+
+        $relatedTours = RelatedToursForSafariExperience::get($safariExperience, 5);
+
+        return view('pages.safari-experience-show', compact('safariExperience', 'pageTitle', 'meta_title', 'meta_description', 'relatedTours'));
     }
 
     public function gallery(Request $request): View
@@ -152,7 +210,9 @@ class PageController extends Controller
             ? $tour->meta_description
             : Str::limit(strip_tags((string) ($tour->description ?? '')), 160);
 
-        return view('pages.experience-show', compact('tour', 'pageTitle', 'meta_title', 'meta_description'));
+        $relatedTours = RelatedToursForTour::get($tour, 5);
+
+        return view('pages.experience-show', compact('tour', 'pageTitle', 'meta_title', 'meta_description', 'relatedTours'));
     }
 
     public function contact(Request $request): View

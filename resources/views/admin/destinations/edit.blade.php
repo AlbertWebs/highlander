@@ -30,6 +30,7 @@
         method="post"
         enctype="multipart/form-data"
         class="max-w-4xl space-y-8 rounded-2xl border border-secondary/50 bg-white p-6 shadow-soft sm:p-8"
+        onsubmit="if (window.tinymce) tinymce.triggerSave();"
     >
         @csrf
         @method('PUT')
@@ -40,9 +41,22 @@
             <button type="submit" class="inline-flex min-h-[2.75rem] items-center justify-center rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
                 {{ __('Update destination') }}
             </button>
+            @if($destination->is_active)
+                <a
+                    href="{{ route('explore-africa.show', $destination) }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex min-h-[2.75rem] items-center justify-center gap-1.5 rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-ink shadow-sm ring-1 ring-black/[0.04] transition hover:bg-accent/90"
+                >
+                    {{ __('View on site') }}
+                    <svg class="h-3.5 w-3.5 shrink-0 opacity-80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                </a>
+            @endif
             <a href="{{ route('admin.destinations.index') }}" class="inline-flex min-h-[2.75rem] items-center justify-center rounded-xl border border-secondary/50 px-6 py-2.5 text-sm font-medium text-ink transition hover:bg-secondary/20">
                 {{ __('Cancel') }}
             </a>
         </div>
     </form>
 @endsection
+
+@include('admin.destinations._tinymce-description')

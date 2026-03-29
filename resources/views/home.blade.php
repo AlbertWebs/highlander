@@ -33,6 +33,7 @@
                         muted
                         loop
                         playsinline
+                        preload="auto"
                         poster="https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1920&q=80"
                         :class="current === {{ $i }} ? 'z-10 opacity-100' : 'pointer-events-none z-0 opacity-0'"
                     ></video>
@@ -69,15 +70,25 @@
             muted
             loop
             playsinline
+            preload="auto"
             poster="https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1920&q=80"
         >
             <source src="{{ $hero_videos[0] ?? $hero_video_url }}" type="video/mp4">
         </video>
     @endif
+
+    {{-- Centered loading GIF until hero MP4 / Vimeo is ready (does not cover carousel dots) --}}
+    <div
+        class="pointer-events-none absolute inset-0 z-[8] flex items-center justify-center"
+        x-data="heroVideoLoading()"
+    >
+        @include('partials.hero-video-loading-overlay')
+    </div>
+
     {{-- Leave the centre visually open; darken edges like a stage --}}
-    <div class="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-black/55"></div>
-    <div class="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/80"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(ellipse_85%_65%_at_50%_38%,transparent_0%,rgba(0,0,0,0.35)_55%,rgba(0,0,0,0.72)_100%)]"></div>
+    <div class="absolute inset-0 z-[6] bg-gradient-to-r from-black/75 via-black/35 to-black/55"></div>
+    <div class="absolute inset-0 z-[6] bg-gradient-to-b from-black/45 via-transparent to-black/80"></div>
+    <div class="absolute inset-0 z-[6] bg-[radial-gradient(ellipse_85%_65%_at_50%_38%,transparent_0%,rgba(0,0,0,0.35)_55%,rgba(0,0,0,0.72)_100%)]"></div>
 
     <div class="relative z-10 flex min-h-[100svh] flex-col pt-[7.25rem] sm:pt-[8.5rem]">
         <div class="site-gutter-x flex flex-1 flex-col justify-center pb-10">
@@ -306,39 +317,31 @@
     </div>
 </section>
 
-<section class="relative overflow-hidden bg-white section-divider" aria-labelledby="why-choose-heading">
-    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-20%,rgba(76,175,80,0.08),transparent_55%)]" aria-hidden="true"></div>
-    <div class="pointer-events-none absolute bottom-0 right-0 h-64 w-64 translate-x-1/4 translate-y-1/4 rounded-full bg-accent/10 blur-3xl" aria-hidden="true"></div>
-    <div class="relative site-gutter-x mx-auto max-w-7xl section-y">
-        <header class="mx-auto max-w-3xl text-center" data-aos="fade-up" data-aos-duration="800">
-            <p class="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-primary">{{ filled(trim((string) ($why_choose_eyebrow ?? ''))) ? $why_choose_eyebrow : __('Why us') }}</p>
-            <h2 id="why-choose-heading" class="mt-3 mb-8 font-serif text-[1.875rem] font-semibold leading-tight tracking-tight text-ink sm:text-[2.25rem] lg:text-[2.5rem]">
+<section class="relative overflow-hidden bg-gradient-to-b from-white via-surface/50 to-tint-green/40 section-divider" aria-labelledby="why-choose-heading">
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_85%_55%_at_50%_0%,rgba(76,175,80,0.09),transparent_58%)]" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute -left-24 top-1/4 h-80 w-80 rounded-full bg-primary/[0.06] blur-3xl" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute -right-20 bottom-0 h-72 w-72 translate-y-1/4 rounded-full bg-accent/[0.12] blur-3xl" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute left-1/2 top-[32%] h-px w-full max-w-[min(100%,56rem)] -translate-x-1/2 bg-gradient-to-r from-transparent via-secondary/30 to-transparent opacity-50" aria-hidden="true"></div>
+
+    <div class="relative site-gutter-x w-full section-y">
+        <header class="mx-auto max-w-3xl text-center" data-aos="fade-up" data-aos-duration="780">
+            <div class="flex items-center justify-center gap-4 sm:gap-5">
+                <span class="h-px w-10 bg-gradient-to-r from-transparent to-primary/45 sm:w-14" aria-hidden="true"></span>
+                <p class="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-primary">{{ filled(trim((string) ($why_choose_eyebrow ?? ''))) ? $why_choose_eyebrow : __('Why us') }}</p>
+                <span class="h-px w-10 bg-gradient-to-l from-transparent to-primary/45 sm:w-14" aria-hidden="true"></span>
+            </div>
+            <h2 id="why-choose-heading" class="mt-5 font-serif text-[1.875rem] font-semibold leading-[1.12] tracking-tight text-ink sm:text-[2.35rem] lg:text-[2.65rem]">
                 {{ filled(trim((string) ($why_choose_title ?? ''))) ? $why_choose_title : __('Why Choose Us') }}
             </h2>
             @if(filled(trim((string) ($why_choose_subtitle ?? ''))))
-                <p class="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-ink/75 sm:text-lg">{{ $why_choose_subtitle }}</p>
+                <p class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ink/70 sm:text-lg">{{ $why_choose_subtitle }}</p>
             @endif
         </header>
-        <div class="mx-auto mt-12 grid max-w-6xl gap-6 sm:grid-cols-2 lg:mt-14 lg:grid-cols-3 lg:gap-8">
+
+        <div class="mx-auto mt-14 grid w-full max-w-none gap-6 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3 lg:gap-7 xl:gap-8">
             @foreach($why_choose_items as $box)
-                <article
-                    class="group flex min-h-[12rem] flex-col card-depth p-8 sm:min-h-[13rem] sm:p-9"
-                    data-aos="fade-up"
-                    data-aos-duration="800"
-                    data-aos-delay="{{ min(400, 100 * $loop->index) }}"
-                >
-                    <div class="flex items-start gap-4 sm:gap-6">
-                        <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/15 via-primary/10 to-accent/20 text-3xl shadow-inner ring-1 ring-primary/10" aria-hidden="true">
-                            <span class="leading-none">{{ $box['icon'] !== '' ? $box['icon'] : '·' }}</span>
-                        </div>
-                        <div class="min-w-0 flex-1 text-left">
-                            <h3 class="font-serif text-xl font-semibold leading-snug text-ink transition group-hover:text-primary">{{ $box['title'] }}</h3>
-                            @if(filled($box['body'] ?? ''))
-                                <p class="mt-2 text-sm leading-relaxed text-ink/75 sm:text-[0.9375rem]">{{ $box['body'] }}</p>
-                            @endif
-                        </div>
-                    </div>
-                </article>
+                @include('partials.home-why-choose-item', ['box' => $box, 'index' => $loop->index])
             @endforeach
         </div>
     </div>
@@ -388,7 +391,7 @@
 </section>
 
 @php
-    $testimonialSlides = $testimonials->isEmpty() ? collect() : $testimonials->chunk(3);
+    $testimonialSlides = $testimonials->isEmpty() ? collect() : $testimonials->chunk(2);
 @endphp
 <section class="bg-white section-divider section-y">
     <div class="site-gutter-x mx-auto max-w-7xl">
@@ -426,13 +429,17 @@
                         >
                             @foreach($testimonialSlides as $slide)
                                 <div class="min-w-full shrink-0 px-0.5 sm:px-1">
-                                    <div class="grid gap-6 md:grid-cols-3 md:gap-8">
+                                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-6 lg:gap-8">
                                         @foreach($slide as $t)
                                             @php
                                                 $rating = min(5, max(1, (int) ($t->rating ?? 5)));
                                                 $initials = \Illuminate\Support\Str::of($t->name)->explode(' ')->filter()->take(2)->map(fn ($w) => mb_substr($w, 0, 1))->implode('');
+                                                $soloInSlide = $slide->count() === 1;
                                             @endphp
-                                            <blockquote class="card-depth flex min-h-[280px] flex-col p-6 sm:min-h-[300px] sm:p-8">
+                                            <blockquote @class([
+                                                'card-depth flex min-h-[260px] flex-col p-6 sm:min-h-[280px] sm:p-8',
+                                                'sm:col-span-2 sm:max-w-xl sm:justify-self-center md:max-w-2xl' => $soloInSlide,
+                                            ])>
                                                 <div class="flex flex-col gap-5 sm:flex-row sm:gap-6">
                                                     @if($t->image)
                                                         <img src="{{ $t->imageUrl() }}" alt="" class="mx-auto h-16 w-16 shrink-0 rounded-full object-cover shadow-depth ring-2 ring-primary/15 sm:mx-0 sm:h-[4.5rem] sm:w-[4.5rem]" loading="lazy">

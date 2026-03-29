@@ -51,7 +51,7 @@
                                 #{{ session('safari_request_id') }}
                             </p>
                         @endif
-                        <a href="{{ route('plan-my-safari', request()->only('tour')) }}" class="inline-flex items-center justify-center rounded-xl border border-primary/40 bg-white px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">{{ __('Plan another safari') }}</a>
+                        <a href="{{ route('plan-my-safari', array_filter(request()->only(['tour', 'mountain', 'destination', 'safari']))) }}" class="inline-flex items-center justify-center rounded-xl border border-primary/40 bg-white px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">{{ __('Plan another safari') }}</a>
                     </div>
                 </div>
             </div>
@@ -63,6 +63,36 @@
                     {{ __('We have pre-filled this form from your selected experience:') }}
                     <span class="font-semibold text-primary">{{ $prefillTour->title }}</span>.
                     {{ __('Adjust any details before submitting.') }}
+                </p>
+            </div>
+        @endif
+
+        @if(! empty($prefillMountain))
+            <div class="mb-8 rounded-2xl border border-primary/25 bg-tint-green/50 px-5 py-4 text-ink shadow-sm" role="status">
+                <p class="text-sm leading-relaxed text-ink/90">
+                    {{ __('You are planning around') }}
+                    <span class="font-semibold text-primary">{{ $prefillMountain->name }}</span>.
+                    {{ __('We have noted this in your trip details—adjust anything before you submit.') }}
+                </p>
+            </div>
+        @endif
+
+        @if(! empty($prefillDestination ?? null))
+            <div class="mb-8 rounded-2xl border border-primary/25 bg-primary/5 px-5 py-4 text-ink shadow-sm" role="status">
+                <p class="text-sm leading-relaxed text-ink/90">
+                    {{ __('You opened the planner from') }}
+                    <span class="font-semibold text-primary">{{ $prefillDestination->name }}</span>.
+                    {{ __('We have added this to your trip focus—adjust anything before you submit.') }}
+                </p>
+            </div>
+        @endif
+
+        @if(! empty($prefillSafariExperience ?? null))
+            <div class="mb-8 rounded-2xl border border-primary/25 bg-tint-green/40 px-5 py-4 text-ink shadow-sm" role="status">
+                <p class="text-sm leading-relaxed text-ink/90">
+                    {{ __('You opened the planner from the safari style') }}
+                    <span class="font-semibold text-primary">{{ $prefillSafariExperience->title }}</span>.
+                    {{ __('We have noted this in your trip details—adjust anything before you submit.') }}
                 </p>
             </div>
         @endif
@@ -221,7 +251,7 @@
                 </div>
                 <div class="mt-4">
                     <label class="{{ $label }}" for="other_destination">{{ __('Other destination') }}</label>
-                    <input class="{{ $input }}" type="text" name="other_destination" id="other_destination" value="{{ old('other_destination') }}" placeholder="{{ __('Specify other place') }}">
+                    <input class="{{ $input }}" type="text" name="other_destination" id="other_destination" value="{{ old('other_destination', $pf['other_destination'] ?? '') }}" placeholder="{{ __('Specify other place') }}">
                 </div>
 
             <div class="mt-8 border-t border-secondary/20 pt-8">

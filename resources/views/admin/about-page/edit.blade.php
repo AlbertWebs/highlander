@@ -16,7 +16,7 @@
         <div class="rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('admin.about-page.update') }}" method="post" enctype="multipart/form-data" class="space-y-8">
+    <form action="{{ route('admin.about-page.update') }}" method="post" enctype="multipart/form-data" class="space-y-8" onsubmit="if (window.tinymce) { tinymce.triggerSave(); }">
         @csrf
         @method('PUT')
 
@@ -29,11 +29,12 @@
                 </div>
                 <div class="sm:col-span-2">
                     <label class="{{ $label }}">{{ __('Subtitle') }}</label>
-                    <textarea name="hero_subtitle" rows="2" class="{{ $field }}">{{ old('hero_subtitle', $setting->hero_subtitle) }}</textarea>
+                    <textarea name="hero_subtitle" rows="2" class="{{ $field }} tinymce-editor">{{ old('hero_subtitle', $setting->hero_subtitle) }}</textarea>
                 </div>
                 <div class="sm:col-span-2">
                     <label class="{{ $label }}">{{ __('Background image') }}</label>
                     <input type="file" name="hero_image" accept="image/*" class="{{ $field }}">
+                    @include('admin.about-page._image-preview', ['url' => $setting->imageUrl($setting->hero_image)])
                     @if($setting->hero_image)
                         <label class="mt-2 flex items-center gap-2 text-sm text-ink/70"><input type="checkbox" name="remove_hero_image" value="1" class="{{ $cb }}"> {{ __('Remove current image') }}</label>
                     @endif
@@ -50,11 +51,11 @@
                 </div>
                 <div>
                     <label class="{{ $label }}">{{ __('Paragraph 1') }}</label>
-                    <textarea name="intro_paragraph_1" rows="4" required class="{{ $field }}">{{ old('intro_paragraph_1', $setting->intro_paragraph_1) }}</textarea>
+                    <textarea name="intro_paragraph_1" rows="4" required class="{{ $field }} tinymce-editor">{{ old('intro_paragraph_1', $setting->intro_paragraph_1) }}</textarea>
                 </div>
                 <div>
                     <label class="{{ $label }}">{{ __('Paragraph 2') }}</label>
-                    <textarea name="intro_paragraph_2" rows="3" class="{{ $field }}">{{ old('intro_paragraph_2', $setting->intro_paragraph_2) }}</textarea>
+                    <textarea name="intro_paragraph_2" rows="3" class="{{ $field }} tinymce-editor">{{ old('intro_paragraph_2', $setting->intro_paragraph_2) }}</textarea>
                 </div>
                 <div>
                     <label class="{{ $label }}">{{ __('CTA button label') }}</label>
@@ -89,7 +90,7 @@
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="{{ $label }}">{{ __('Text') }}</label>
-                                <textarea name="vision_cards[{{ $i }}][body]" rows="3" required class="{{ $field }}">{{ old('vision_cards.'.$i.'.body', $card->body) }}</textarea>
+                                <textarea name="vision_cards[{{ $i }}][body]" rows="3" required class="{{ $field }} tinymce-editor">{{ old('vision_cards.'.$i.'.body', $card->body) }}</textarea>
                             </div>
                         </div>
                     </fieldset>
@@ -126,7 +127,7 @@
                         <div class="mt-3 grid gap-3 sm:grid-cols-2">
                             <div><label class="{{ $label }}">{{ __('Icon') }}</label><input type="text" name="core_values[{{ $i }}][icon]" value="{{ old('core_values.'.$i.'.icon', $row->icon) }}" class="{{ $field }}" maxlength="32"></div>
                             <div><label class="{{ $label }}">{{ __('Title') }}</label><input type="text" name="core_values[{{ $i }}][title]" value="{{ old('core_values.'.$i.'.title', $row->title) }}" required class="{{ $field }}"></div>
-                            <div class="sm:col-span-2"><label class="{{ $label }}">{{ __('Description') }}</label><textarea name="core_values[{{ $i }}][description]" rows="2" class="{{ $field }}">{{ old('core_values.'.$i.'.description', $row->description) }}</textarea></div>
+                            <div class="sm:col-span-2"><label class="{{ $label }}">{{ __('Description') }}</label><textarea name="core_values[{{ $i }}][description]" rows="2" class="{{ $field }} tinymce-editor">{{ old('core_values.'.$i.'.description', $row->description) }}</textarea></div>
                         </div>
                     </fieldset>
                 @endforeach
@@ -137,7 +138,7 @@
             <h2 class="text-base font-semibold text-ink">{{ __('Fleet & equipment') }}</h2>
             <div class="mt-5 space-y-4">
                 <div><label class="{{ $label }}">{{ __('Heading') }}</label><input type="text" name="fleet_heading" value="{{ old('fleet_heading', $setting->fleet_heading) }}" required class="{{ $field }}"></div>
-                <div><label class="{{ $label }}">{{ __('Introduction') }}</label><textarea name="fleet_body" rows="4" required class="{{ $field }}">{{ old('fleet_body', $setting->fleet_body) }}</textarea></div>
+                <div><label class="{{ $label }}">{{ __('Introduction') }}</label><textarea name="fleet_body" rows="4" required class="{{ $field }} tinymce-editor">{{ old('fleet_body', $setting->fleet_body) }}</textarea></div>
                 <p class="text-sm font-medium text-ink">{{ __('Image grid (3 slots)') }}</p>
                 @foreach($fleetImages as $i => $fi)
                     <fieldset class="rounded-xl border border-secondary/40 p-4">
@@ -147,6 +148,7 @@
                         <div class="mt-3 space-y-3">
                             <div><label class="{{ $label }}">{{ __('Caption / placeholder label') }}</label><input type="text" name="fleet_images[{{ $i }}][caption]" value="{{ old('fleet_images.'.$i.'.caption', $fi->caption) }}" class="{{ $field }}"></div>
                             <div><label class="{{ $label }}">{{ __('Image') }}</label><input type="file" name="fleet_images[{{ $i }}][image]" accept="image/*" class="{{ $field }}"></div>
+                            @include('admin.about-page._image-preview', ['url' => $fi->url()])
                             @if($fi->image)
                                 <label class="flex items-center gap-2 text-sm text-ink/70"><input type="checkbox" name="fleet_images[{{ $i }}][remove_image]" value="1" class="{{ $cb }}"> {{ __('Remove image') }}</label>
                             @endif
@@ -161,7 +163,7 @@
                         <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="fleet_subsections[{{ $i }}][is_active]" value="1" class="{{ $cb }}" @checked(old('fleet_subsections.'.$i.'.is_active', $fs->is_active))> {{ __('Active') }}</label>
                         <div class="mt-3 space-y-3">
                             <div><label class="{{ $label }}">{{ __('Title') }}</label><input type="text" name="fleet_subsections[{{ $i }}][title]" value="{{ old('fleet_subsections.'.$i.'.title', $fs->title) }}" required class="{{ $field }}"></div>
-                            <div><label class="{{ $label }}">{{ __('Body') }}</label><textarea name="fleet_subsections[{{ $i }}][body]" rows="2" class="{{ $field }}">{{ old('fleet_subsections.'.$i.'.body', $fs->body) }}</textarea></div>
+                            <div><label class="{{ $label }}">{{ __('Body') }}</label><textarea name="fleet_subsections[{{ $i }}][body]" rows="2" class="{{ $field }} tinymce-editor">{{ old('fleet_subsections.'.$i.'.body', $fs->body) }}</textarea></div>
                         </div>
                     </fieldset>
                 @endforeach
@@ -172,10 +174,11 @@
             <h2 class="text-base font-semibold text-ink">{{ __('Our team') }}</h2>
             <div class="mt-5 space-y-4">
                 <div><label class="{{ $label }}">{{ __('Heading') }}</label><input type="text" name="team_heading" value="{{ old('team_heading', $setting->team_heading) }}" required class="{{ $field }}"></div>
-                <div><label class="{{ $label }}">{{ __('Introduction') }}</label><textarea name="team_body" rows="4" required class="{{ $field }}">{{ old('team_body', $setting->team_body) }}</textarea></div>
+                <div><label class="{{ $label }}">{{ __('Introduction') }}</label><textarea name="team_body" rows="4" required class="{{ $field }} tinymce-editor">{{ old('team_body', $setting->team_body) }}</textarea></div>
                 <div>
                     <label class="{{ $label }}">{{ __('Team image') }}</label>
                     <input type="file" name="team_image" accept="image/*" class="{{ $field }}">
+                    @include('admin.about-page._image-preview', ['url' => $setting->imageUrl($setting->team_image)])
                     @if($setting->team_image)
                         <label class="mt-2 flex items-center gap-2 text-sm text-ink/70"><input type="checkbox" name="remove_team_image" value="1" class="{{ $cb }}"> {{ __('Remove current image') }}</label>
                     @endif
@@ -196,10 +199,11 @@
             <h2 class="text-base font-semibold text-ink">{{ __('Safety & compliance') }}</h2>
             <div class="mt-5 space-y-4">
                 <div><label class="{{ $label }}">{{ __('Heading') }}</label><input type="text" name="safety_heading" value="{{ old('safety_heading', $setting->safety_heading) }}" required class="{{ $field }}"></div>
-                <div><label class="{{ $label }}">{{ __('Introduction') }}</label><textarea name="safety_body" rows="3" required class="{{ $field }}">{{ old('safety_body', $setting->safety_body) }}</textarea></div>
+                <div><label class="{{ $label }}">{{ __('Introduction') }}</label><textarea name="safety_body" rows="3" required class="{{ $field }} tinymce-editor">{{ old('safety_body', $setting->safety_body) }}</textarea></div>
                 <div>
                     <label class="{{ $label }}">{{ __('Side image') }}</label>
                     <input type="file" name="safety_image" accept="image/*" class="{{ $field }}">
+                    @include('admin.about-page._image-preview', ['url' => $setting->imageUrl($setting->safety_image)])
                     @if($setting->safety_image)
                         <label class="mt-2 flex items-center gap-2 text-sm text-ink/70"><input type="checkbox" name="remove_safety_image" value="1" class="{{ $cb }}"> {{ __('Remove current image') }}</label>
                     @endif
@@ -227,7 +231,7 @@
                         <div class="mt-3 grid gap-3 sm:grid-cols-2">
                             <div><label class="{{ $label }}">{{ __('Icon') }}</label><input type="text" name="sustainability_items[{{ $i }}][icon]" value="{{ old('sustainability_items.'.$i.'.icon', $si->icon) }}" class="{{ $field }}" maxlength="32"></div>
                             <div><label class="{{ $label }}">{{ __('Title') }}</label><input type="text" name="sustainability_items[{{ $i }}][title]" value="{{ old('sustainability_items.'.$i.'.title', $si->title) }}" required class="{{ $field }}"></div>
-                            <div class="sm:col-span-2"><label class="{{ $label }}">{{ __('Description') }}</label><textarea name="sustainability_items[{{ $i }}][description]" rows="2" class="{{ $field }}">{{ old('sustainability_items.'.$i.'.description', $si->description) }}</textarea></div>
+                            <div class="sm:col-span-2"><label class="{{ $label }}">{{ __('Description') }}</label><textarea name="sustainability_items[{{ $i }}][description]" rows="2" class="{{ $field }} tinymce-editor">{{ old('sustainability_items.'.$i.'.description', $si->description) }}</textarea></div>
                         </div>
                     </fieldset>
                 @endforeach
@@ -238,7 +242,7 @@
             <h2 class="text-base font-semibold text-ink">{{ __('Closing call to action') }}</h2>
             <div class="mt-5 space-y-4">
                 <div><label class="{{ $label }}">{{ __('Heading') }}</label><input type="text" name="cta_heading" value="{{ old('cta_heading', $setting->cta_heading) }}" required class="{{ $field }}"></div>
-                <div><label class="{{ $label }}">{{ __('Text') }}</label><textarea name="cta_body" rows="3" required class="{{ $field }}">{{ old('cta_body', $setting->cta_body) }}</textarea></div>
+                <div><label class="{{ $label }}">{{ __('Text') }}</label><textarea name="cta_body" rows="3" required class="{{ $field }} tinymce-editor">{{ old('cta_body', $setting->cta_body) }}</textarea></div>
                 <div><label class="{{ $label }}">{{ __('Button label') }}</label><input type="text" name="cta_button_label" value="{{ old('cta_button_label', $setting->cta_button_label) }}" class="{{ $field }}"></div>
             </div>
             <p class="mt-4 text-sm text-ink/60">{{ __('Testimonials on this page are managed under Testimonials — enable “Show on About page” on each review.') }}</p>
@@ -251,4 +255,5 @@
         </div>
     </form>
 </div>
+@include('admin.about-page._tinymce')
 @endsection

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Mail\SafariRequestSubmitted;
+use App\Models\Destination;
+use App\Models\Mountain;
+use App\Models\SafariExperience;
 use App\Models\SafariRequest;
 use App\Models\SeoMeta;
 use App\Models\SiteSetting;
@@ -19,6 +22,9 @@ class SafariPlanController extends Controller
     {
         $prefill = [];
         $prefillTour = null;
+        $prefillMountain = null;
+        $prefillDestination = null;
+        $prefillSafariExperience = null;
         $tourSlug = $request->query('tour');
         if (is_string($tourSlug) && $tourSlug !== '') {
             $prefillTour = Tour::query()->active()->where('slug', $tourSlug)->first();
@@ -27,10 +33,45 @@ class SafariPlanController extends Controller
             }
         }
 
+        $mountainSlug = $request->query('mountain');
+        if (is_string($mountainSlug) && $mountainSlug !== '') {
+            $prefillMountain = Mountain::query()->active()->where('slug', $mountainSlug)->first();
+            if ($prefillMountain !== null) {
+                $prefill['other_destination'] = $prefillMountain->name;
+                $note = __('Mountain experience: :name', ['name' => $prefillMountain->name]);
+                $prefill['special_requests'] = trim(($prefill['special_requests'] ?? '')."\n\n".$note);
+            }
+        }
+
+        $destinationSlug = $request->query('destination');
+        if (is_string($destinationSlug) && $destinationSlug !== '') {
+            $prefillDestination = Destination::query()->active()->where('slug', $destinationSlug)->first();
+            if ($prefillDestination !== null) {
+                $existing = trim((string) ($prefill['other_destination'] ?? ''));
+                $prefill['other_destination'] = $existing === ''
+                    ? $prefillDestination->name
+                    : $existing.' · '.$prefillDestination->name;
+                $note = __('Destination focus: :name', ['name' => $prefillDestination->name]);
+                $prefill['special_requests'] = trim(($prefill['special_requests'] ?? '')."\n\n".$note);
+            }
+        }
+
+        $safariSlug = $request->query('safari');
+        if (is_string($safariSlug) && $safariSlug !== '') {
+            $prefillSafariExperience = SafariExperience::query()->active()->where('slug', $safariSlug)->first();
+            if ($prefillSafariExperience !== null) {
+                $note = __('Safari style: :name', ['name' => $prefillSafariExperience->title]);
+                $prefill['special_requests'] = trim(($prefill['special_requests'] ?? '')."\n\n".$note);
+            }
+        }
+
         return view('pages.plan-my-safari', array_merge(SeoMeta::metaFor('plan-my-safari'), [
             'privacyUrl' => route('privacy'),
             'prefill' => $prefill,
             'prefillTour' => $prefillTour,
+            'prefillMountain' => $prefillMountain,
+            'prefillDestination' => $prefillDestination,
+            'prefillSafariExperience' => $prefillSafariExperience,
         ]));
     }
 

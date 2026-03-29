@@ -1,12 +1,39 @@
 @php
+    $navExploreChildren = collect([['label' => __('All destinations'), 'url' => route('explore-africa')]])
+        ->merge(
+            \App\Models\Destination::query()->active()->orderByDesc('sort_order')->limit(8)->get()->map(fn ($d) => [
+                'label' => $d->name,
+                'url' => route('explore-africa.show', $d),
+            ])
+        );
+
+    $navMountainsChildren = collect([['label' => __('All mountains'), 'url' => route('mountains')]])
+        ->merge(
+            \App\Models\Mountain::query()->active()->orderBy('name')->limit(8)->get()->map(fn ($m) => [
+                'label' => $m->name,
+                'url' => route('mountains.show', $m),
+            ])
+        )
+        ->push(['label' => __('Plan your safari'), 'url' => route('plan-my-safari')]);
+
+    $navSafariChildren = collect([['label' => __('All safari experiences'), 'url' => route('safari')]])
+        ->merge(
+            \App\Models\SafariExperience::query()->active()->orderBy('sort_order')->limit(8)->get()->map(fn ($s) => [
+                'label' => $s->title,
+                'url' => route('safari.show', $s),
+            ])
+        );
+    foreach (\App\Models\Tour::query()->active()->featured()->orderBy('sort_order')->limit(6)->get() as $tour) {
+        $navSafariChildren->push(['label' => $tour->title, 'url' => route('experiences.show', $tour)]);
+    }
+    $navSafariChildren->push(['label' => __('Plan your safari'), 'url' => route('plan-my-safari')]);
+
     $nav = [
-        ['label' => __('Home'), 'route' => 'home'],
-        ['label' => __('About'), 'route' => 'about'],
-        ['label' => __('Mountains'), 'route' => 'mountains'],
-        ['label' => __('Explore Africa'), 'route' => 'explore-africa'],
-        ['label' => __('Safari'), 'route' => 'safari'],
-        ['label' => __('Gallery'), 'route' => 'gallery'],
-        ['label' => __('Articles'), 'route' => 'articles'],
+        ['type' => 'link', 'label' => __('Home'), 'route' => 'home'],
+        ['type' => 'dropdown', 'label' => __('Explore Africa'), 'route' => 'explore-africa', 'children' => $navExploreChildren],
+        ['type' => 'dropdown', 'label' => __('Mountains'), 'route' => 'mountains', 'children' => $navMountainsChildren],
+        ['type' => 'dropdown', 'label' => __('Safari'), 'route' => 'safari', 'children' => $navSafariChildren],
+        ['type' => 'link', 'label' => __('About'), 'route' => 'about'],
     ];
     $contactEmail = \App\Models\SiteSetting::getValue('contact_email', '');
     $siteHours = \App\Models\SiteSetting::getValue('site_hours', '');
@@ -115,22 +142,81 @@
 
             <nav class="site-primary-nav hidden min-w-0 flex-1 items-center justify-center gap-x-4 md:flex lg:gap-x-6 xl:gap-x-7" aria-label="{{ __('Primary') }}">
                 @foreach($nav as $item)
-                    @php
-                        $navActive = request()->routeIs($item['route']);
-                        $letter = mb_strtoupper(mb_substr($item['label'], 0, 1));
-                    @endphp
-                    <a
-                        href="{{ route($item['route']) }}"
-                        @class([
-                            'site-nav-link inline-flex items-center gap-2 whitespace-nowrap text-[0.625rem] font-semibold uppercase tracking-[0.2em] text-white/95 transition hover:opacity-85',
-                            'site-nav-link--active' => $navActive,
-                        ])
-                    >
-                        @if($navActive)
-                            <span class="site-nav-letter inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/90 text-[0.625rem] font-semibold leading-none text-white" aria-hidden="true">{{ $letter }}</span>
-                        @endif
-                        {{ $item['label'] }}
-                    </a>
+                    @if(($item['type'] ?? 'link') === 'dropdown')
+                        @php
+                            $navActive = request()->routeIs($item['route'])
+                                || ($item['route'] === 'safari' && request()->routeIs('experiences.show'))
+                                || ($item['route'] === 'mountains' && request()->routeIs('mountains.show'))
+                                || ($item['route'] === 'explore-africa' && request()->routeIs('explore-africa.show'));
+                            $letter = mb_strtoupper(mb_substr($item['label'], 0, 1));
+                        @endphp
+                        <div
+                            class="relative inline-flex items-center"
+                            x-data="{ open: false }"
+                            @mouseenter="open = true"
+                            @mouseleave="open = false"
+                        >
+                            <a
+                                href="{{ route($item['route']) }}"
+                                @class([
+                                    'site-nav-link site-nav-link--dropdown inline-flex items-center gap-1.5 whitespace-nowrap text-[0.625rem] font-semibold uppercase leading-none tracking-[0.2em] text-white/95 transition hover:opacity-85',
+                                    'site-nav-link--active' => $navActive,
+                                ])
+                                :aria-expanded="open"
+                                aria-haspopup="true"
+                            >
+                                @if($navActive)
+                                    <span class="site-nav-letter inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/90 text-[0.625rem] font-semibold leading-none text-white" aria-hidden="true">{{ $letter }}</span>
+                                @endif
+                                {{ $item['label'] }}
+                                <svg class="block h-3 w-3 shrink-0 opacity-70 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </a>
+                            <div
+                                x-show="open"
+                                x-transition:enter="transition ease-out duration-150"
+                                x-transition:enter-start="opacity-0 translate-y-1"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                x-transition:leave="transition ease-in duration-100"
+                                x-transition:leave-start="opacity-100"
+                                x-transition:leave-end="opacity-0"
+                                class="site-nav-dropdown absolute left-1/2 top-full z-[60] w-max min-w-[13rem] max-w-[min(18rem,calc(100vw-2rem))] -translate-x-1/2 pt-2"
+                                style="display: none;"
+                                role="menu"
+                            >
+                                <div
+                                    class="rounded-xl border py-1.5 shadow-xl backdrop-blur-md"
+                                    :class="scrolled ? 'border-neutral-200/90 bg-white text-ink shadow-[0_12px_40px_rgba(46,46,46,0.12)]' : 'border-white/25 bg-white/95 text-ink shadow-[0_12px_40px_rgba(0,0,0,0.35)]'"
+                                >
+                                    @foreach($item['children'] as $child)
+                                        <a
+                                            href="{{ $child['url'] }}"
+                                            role="menuitem"
+                                            class="block px-4 py-2.5 text-left text-[0.7rem] font-medium leading-snug text-ink/90 transition hover:bg-primary/10 hover:text-primary"
+                                        >
+                                            {{ $child['label'] }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        @php
+                            $navActive = request()->routeIs($item['route']);
+                            $letter = mb_strtoupper(mb_substr($item['label'], 0, 1));
+                        @endphp
+                        <a
+                            href="{{ route($item['route']) }}"
+                            @class([
+                                'site-nav-link inline-flex items-center gap-2 whitespace-nowrap text-[0.625rem] font-semibold uppercase leading-none tracking-[0.2em] text-white/95 transition hover:opacity-85',
+                                'site-nav-link--active' => $navActive,
+                            ])
+                        >
+                            @if($navActive)
+                                <span class="site-nav-letter inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/90 text-[0.625rem] font-semibold leading-none text-white" aria-hidden="true">{{ $letter }}</span>
+                            @endif
+                            {{ $item['label'] }}
+                        </a>
+                    @endif
                 @endforeach
             </nav>
 
@@ -181,24 +267,65 @@
             ></div>
             <div class="relative flex flex-col gap-1">
                 @foreach($nav as $item)
-                    @php
-                        $mActive = request()->routeIs($item['route']);
-                        $mLetter = mb_strtoupper(mb_substr($item['label'], 0, 1));
-                    @endphp
-                    <a
-                        href="{{ route($item['route']) }}"
-                        @class([
-                            'site-nav-link-mobile flex items-center justify-center gap-2 px-4 py-3 text-[0.625rem] font-semibold uppercase tracking-[0.2em] transition duration-200 ease-out',
-                            'bg-white/10 text-white' => $mActive,
-                            'text-white/95 hover:bg-white/10' => ! $mActive,
-                        ])
-                        @click="open = false"
-                    >
-                        @if($mActive)
-                            <span class="site-nav-letter inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/90 text-[0.625rem] font-semibold text-white" aria-hidden="true">{{ $mLetter }}</span>
-                        @endif
-                        {{ $item['label'] }}
-                    </a>
+                    @if(($item['type'] ?? 'link') === 'dropdown')
+                        @php
+                            $mActive = request()->routeIs($item['route'])
+                                || ($item['route'] === 'safari' && request()->routeIs('experiences.show'))
+                                || ($item['route'] === 'mountains' && request()->routeIs('mountains.show'))
+                                || ($item['route'] === 'explore-africa' && request()->routeIs('explore-africa.show'));
+                            $mLetter = mb_strtoupper(mb_substr($item['label'], 0, 1));
+                        @endphp
+                        <div x-data="{ sub: false }" class="flex flex-col border-b border-white/10 last:border-b-0">
+                            <button
+                                type="button"
+                                @click="sub = !sub"
+                                @class([
+                                    'site-nav-link-mobile flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-[0.625rem] font-semibold uppercase tracking-[0.2em] transition duration-200 ease-out',
+                                    'bg-white/10 text-white' => $mActive,
+                                    'text-white/95 hover:bg-white/10' => ! $mActive,
+                                ])
+                                :aria-expanded="sub"
+                            >
+                                <span class="inline-flex items-center gap-2">
+                                    @if($mActive)
+                                        <span class="site-nav-letter inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/90 text-[0.625rem] font-semibold text-white" aria-hidden="true">{{ $mLetter }}</span>
+                                    @endif
+                                    {{ $item['label'] }}
+                                </span>
+                                <svg class="h-4 w-4 shrink-0 opacity-80 transition-transform duration-200" :class="sub ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="sub" x-cloak class="border-t border-white/10 bg-black/25">
+                                @foreach($item['children'] as $child)
+                                    <a
+                                        href="{{ $child['url'] }}"
+                                        class="site-nav-link-mobile block border-b border-white/5 px-4 py-2.5 pl-6 text-left text-[0.65rem] font-medium uppercase tracking-[0.12em] transition hover:bg-white/10"
+                                        @click="open = false"
+                                    >
+                                        {{ $child['label'] }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @else
+                        @php
+                            $mActive = request()->routeIs($item['route']);
+                            $mLetter = mb_strtoupper(mb_substr($item['label'], 0, 1));
+                        @endphp
+                        <a
+                            href="{{ route($item['route']) }}"
+                            @class([
+                                'site-nav-link-mobile flex items-center justify-center gap-2 px-4 py-3 text-[0.625rem] font-semibold uppercase tracking-[0.2em] transition duration-200 ease-out',
+                                'bg-white/10 text-white' => $mActive,
+                                'text-white/95 hover:bg-white/10' => ! $mActive,
+                            ])
+                            @click="open = false"
+                        >
+                            @if($mActive)
+                                <span class="site-nav-letter inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/90 text-[0.625rem] font-semibold text-white" aria-hidden="true">{{ $mLetter }}</span>
+                            @endif
+                            {{ $item['label'] }}
+                        </a>
+                    @endif
                 @endforeach
                 <div class="mt-3 flex flex-col gap-2 border-t border-white/10 pt-4">
                     <a href="{{ route('safari') }}" class="site-header-ctas-btn-primary inline-flex justify-center rounded-none bg-primary px-4 py-3 text-sm font-semibold uppercase tracking-wide text-white hover:bg-primary/90" @click="open = false">{{ __('Explore safaris') }}</a>

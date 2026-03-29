@@ -48,7 +48,7 @@
         ->get();
 @endphp
 <footer
-    class="relative {{ request()->routeIs('home') ? 'mt-0' : 'mt-24' }} overflow-hidden bg-footer text-white section-divider"
+    class="relative {{ request()->routeIs('home') || request()->routeIs('about') ? 'mt-0' : 'mt-24' }} overflow-hidden bg-footer text-white section-divider"
     data-aos="fade-up"
     data-aos-duration="850"
 >

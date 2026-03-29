@@ -70,6 +70,50 @@ function initScrollAnimations() {
 }
 
 document.addEventListener('alpine:init', () => {
+    /** Hide when any hero MP4 can play, or Vimeo iframe has loaded (searches parent section). */
+    Alpine.data('heroVideoLoading', () => ({
+        loading: true,
+        init() {
+            const section = this.$el.closest('section');
+            if (!section) {
+                this.loading = false;
+                return;
+            }
+            const finish = () => {
+                this.loading = false;
+            };
+            const videos = section.querySelectorAll('video');
+            if (videos.length > 0) {
+                let settled = false;
+                const done = () => {
+                    if (settled) {
+                        return;
+                    }
+                    settled = true;
+                    finish();
+                };
+                videos.forEach((v) => {
+                    v.addEventListener('canplay', done, { once: true });
+                    v.addEventListener('error', done, { once: true });
+                    if (v.readyState >= 3) {
+                        done();
+                    }
+                });
+                window.setTimeout(done, 12000);
+                return;
+            }
+            const iframe = section.querySelector('iframe[src*="vimeo"], iframe[src*="player.vimeo"]');
+            if (iframe) {
+                iframe.addEventListener('load', () => {
+                    window.setTimeout(finish, 500);
+                });
+                window.setTimeout(finish, 10000);
+                return;
+            }
+            finish();
+        },
+    }));
+
     Alpine.data('heroCarousel', ({ videos, intervalSec }) => ({
         current: 0,
         videos,
@@ -338,14 +382,24 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 
-    Alpine.data('galleryDropzone', ({ uploadUrl, maxFiles = 30 }) => ({
+    Alpine.data('galleryDropzone', ({
+        uploadUrl,
+        maxFiles = 30,
+        adminGalleryBase = '',
+        labels = {},
+    }) => ({
         rows: [],
         defaultCategoryId: '',
         dragging: false,
         uploading: false,
+        uploadProgress: 0,
+        uploadStatus: '',
+        lastMessage: '',
         error: '',
         maxFiles,
         uploadUrl,
+        adminGalleryBase,
+        labels,
         addFiles(fileList) {
             const incoming = Array.from(fileList || []).filter((f) => f.type.startsWith('image/'));
             const room = this.maxFiles - this.rows.length;
@@ -375,12 +429,66 @@ document.addEventListener('alpine:init', () => {
             });
             this.rows = [];
         },
-        async submit() {
+        escapeHtml(s) {
+            return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+        },
+        prependUploadedCards(items) {
+            const grid = document.getElementById('admin-gallery-grid');
+            if (!grid || !items?.length || !this.adminGalleryBase) {
+                return;
+            }
+            grid.querySelectorAll('[data-gallery-empty]').forEach((el) => el.remove());
+            const base = this.adminGalleryBase.replace(/\/$/, '');
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const L = this.labels || {};
+            const confirmArg = JSON.stringify(L.deleteConfirm || 'Delete?');
+            for (const item of [...items].reverse()) {
+                const title = this.escapeHtml(item.title || `#${item.id}`);
+                const catHtml = item.category_name
+                    ? `<p class="mt-0.5 truncate text-xs text-primary">${this.escapeHtml(item.category_name)}</p>`
+                    : '';
+                const activeLabel = item.is_active ? this.escapeHtml(L.on || 'On') : this.escapeHtml(L.off || 'Off');
+                const srcAttr = String(item.url)
+                    .replace(/&/g, '&amp;')
+                    .replace(/"/g, '&quot;');
+                const card = document.createElement('div');
+                card.className = 'overflow-hidden rounded-xl border border-secondary/50 bg-white shadow-soft';
+                card.innerHTML = `
+                    <div class="aspect-[4/3] overflow-hidden bg-neutral-100">
+                        <img src="${srcAttr}" alt="" class="h-full w-full object-cover" loading="lazy" width="400" height="300">
+                    </div>
+                    <div class="flex items-start justify-between gap-2 border-t border-secondary/40 p-3 text-sm">
+                        <div class="min-w-0">
+                            <p class="truncate font-medium text-ink">${title}</p>
+                            ${catHtml}
+                        </div>
+                        <form method="POST" action="${base}/${item.id}/toggle" class="inline">
+                            <input type="hidden" name="_token" value="${this.escapeHtml(csrf)}">
+                            <input type="hidden" name="_method" value="PATCH">
+                            <button type="submit" class="shrink-0 text-xs font-medium text-primary">${activeLabel}</button>
+                        </form>
+                    </div>
+                    <div class="flex gap-2 border-t border-secondary/30 p-2">
+                        <a href="${base}/${item.id}/edit" class="text-xs font-medium text-primary">${this.escapeHtml(L.edit || 'Edit')}</a>
+                        <form action="${base}/${item.id}" method="post" class="inline" onsubmit="return confirm(${confirmArg})">
+                            <input type="hidden" name="_token" value="${this.escapeHtml(csrf)}">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="text-xs text-red-600">${this.escapeHtml(L.delete || 'Delete')}</button>
+                        </form>
+                    </div>
+                `;
+                grid.prepend(card);
+            }
+        },
+        submit() {
             if (!this.rows.length || this.uploading) {
                 return;
             }
             this.uploading = true;
             this.error = '';
+            this.uploadProgress = 0;
+            this.uploadStatus = this.labels?.uploading || 'Uploading…';
+            this.lastMessage = '';
             const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
             const fd = new FormData();
             fd.append('_token', token);
@@ -389,31 +497,69 @@ document.addEventListener('alpine:init', () => {
                 fd.append('titles[]', row.title ?? '');
                 fd.append('gallery_category_ids[]', row.categoryId === '' || row.categoryId == null ? '' : String(row.categoryId));
             });
-            try {
-                const res = await fetch(this.uploadUrl, {
-                    method: 'POST',
-                    body: fd,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        Accept: 'application/json',
-                        'X-CSRF-TOKEN': token,
-                    },
-                });
-                const data = await res.json().catch(() => ({}));
-                if (res.status === 422 && data.errors) {
-                    const first = Object.values(data.errors)[0];
-                    throw new Error(Array.isArray(first) ? first[0] : 'Validation failed');
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', this.uploadUrl);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.setRequestHeader('X-CSRF-TOKEN', token);
+
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable && e.total > 0) {
+                    this.uploadProgress = Math.min(100, Math.round((e.loaded / e.total) * 100));
                 }
-                if (!res.ok) {
-                    throw new Error(data.message || 'Upload failed');
+            });
+
+            xhr.onload = () => {
+                let data = {};
+                try {
+                    data = JSON.parse(xhr.responseText || '{}');
+                } catch {
+                    data = {};
+                }
+                if (xhr.status === 422 && data.errors) {
+                    const first = Object.values(data.errors)[0];
+                    this.error = Array.isArray(first) ? first[0] : 'Validation failed';
+                    this.uploading = false;
+                    this.uploadProgress = 0;
+                    this.uploadStatus = '';
+
+                    return;
+                }
+                if (xhr.status < 200 || xhr.status >= 300) {
+                    this.error = data.message || 'Upload failed';
+                    this.uploading = false;
+                    this.uploadProgress = 0;
+                    this.uploadStatus = '';
+
+                    return;
                 }
                 this.clearAll();
-                window.location.reload();
-            } catch (e) {
-                this.error = e.message || 'Upload failed';
-            } finally {
+                this.lastMessage = data.message || '';
+                this.uploadProgress = 100;
+                this.uploadStatus = '';
+                if (Array.isArray(data.items) && data.items.length) {
+                    this.prependUploadedCards(data.items);
+                }
+                setTimeout(() => {
+                    this.uploading = false;
+                    this.uploadProgress = 0;
+                    this.uploadStatus = '';
+                    const grid = document.getElementById('admin-gallery-grid');
+                    if (grid) {
+                        grid.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                }, 0);
+            };
+
+            xhr.onerror = () => {
+                this.error = 'Upload failed';
                 this.uploading = false;
-            }
+                this.uploadProgress = 0;
+                this.uploadStatus = '';
+            };
+
+            xhr.send(fd);
         },
     }));
 

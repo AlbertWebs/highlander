@@ -22,7 +22,19 @@ class MountainController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.mountains.index', compact('mountains', 'q'));
+        if ($mountains->isEmpty() && $mountains->total() > 0) {
+            return redirect()->route('admin.mountains.index', array_merge(
+                $request->except('page'),
+                ['page' => 1]
+            ));
+        }
+
+        $stats = [
+            'total' => Mountain::query()->count(),
+            'visible' => Mountain::query()->where('is_active', true)->count(),
+        ];
+
+        return view('admin.mountains.index', compact('mountains', 'q', 'stats'));
     }
 
     public function create(): View

@@ -16,7 +16,7 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        $data = Cache::remember('home_page_v4', 600, function () {
+        $data = Cache::remember('home_page_v5', 600, function () {
             $defaultMp4 = 'https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_30fps.mp4';
             $defaultVimeoPage = 'https://vimeo.com/1177988644';
             $heroVideoSource = SiteSetting::getValue('hero_video_source', 'vimeo');
@@ -188,9 +188,9 @@ class HomeController extends Controller
     protected static function normalizeWhyChooseItems(mixed $raw): array
     {
         $defaults = [
-            ['icon' => '🌍', 'title' => __('Local expertise'), 'body' => __('Guides who grew up on this land.')],
-            ['icon' => '🛡️', 'title' => __('Safety first'), 'body' => __('Vetted partners and clear protocols.')],
-            ['icon' => '✨', 'title' => __('Tailored luxury'), 'body' => __('No cookie-cutter packages.')],
+            ['icon' => '', 'title' => __('Local expertise'), 'body' => __('Guides who grew up on this land.')],
+            ['icon' => '', 'title' => __('Safety first'), 'body' => __('Vetted partners and clear protocols.')],
+            ['icon' => '', 'title' => __('Tailored luxury'), 'body' => __('No cookie-cutter packages.')],
         ];
 
         if (! is_array($raw) || count($raw) === 0) {

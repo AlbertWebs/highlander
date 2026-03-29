@@ -15,7 +15,7 @@
         ?? 'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=1200&q=80';
     $introCta = filled($setting->intro_cta_label) ? $setting->intro_cta_label : __('Plan My Safari');
     $ctaLabel = filled($setting->cta_button_label) ? $setting->cta_button_label : __('Plan My Safari');
-    $testimonialSlides = $aboutTestimonials->isEmpty() ? collect() : $aboutTestimonials->chunk(3);
+    $testimonialSlides = $aboutTestimonials->isEmpty() ? collect() : $aboutTestimonials->chunk(2);
 @endphp
 
 @section('content')
@@ -23,74 +23,105 @@
 
 {{-- Company introduction --}}
 <section class="section-y bg-white section-divider">
-    <div class="site-gutter-x mx-auto max-w-7xl">
+    <div class="site-gutter-x w-full">
         <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <div data-aos="fade-up" data-aos-duration="800">
                 <h2 class="mb-4 font-serif text-3xl font-semibold leading-tight text-ink sm:text-4xl">
                     {{ $setting->intro_heading }}
                 </h2>
-                <p class="mb-6 text-base leading-relaxed text-ink/85">{{ $setting->intro_paragraph_1 }}</p>
+                <div class="about-rich-text mb-6 text-base leading-relaxed text-ink/85">{!! $setting->intro_paragraph_1 !!}</div>
                 @if(filled($setting->intro_paragraph_2))
-                    <p class="mb-8 text-base leading-relaxed text-ink/80">{{ $setting->intro_paragraph_2 }}</p>
+                    <div class="about-rich-text mb-8 text-base leading-relaxed text-ink/80">{!! $setting->intro_paragraph_2 !!}</div>
                 @endif
                 <a href="{{ route('plan-my-safari') }}" class="btn-primary px-8 py-3.5">{{ $introCta }}</a>
             </div>
             <div class="img-zoom-parent overflow-hidden rounded-card shadow-depth lg:justify-self-end" data-aos="fade-up" data-aos-duration="850" data-aos-delay="80">
-                <img src="{{ $introImg }}" alt="" class="img-zoom-hover aspect-[4/3] w-full max-w-xl object-cover lg:ml-auto" loading="lazy" width="1200" height="900">
+                <img src="{{ $introImg }}" alt="" class="img-zoom-hover aspect-[4/3] w-full object-cover" loading="lazy" width="1200" height="900">
             </div>
         </div>
     </div>
 </section>
 
-{{-- Vision, Mission, Promise --}}
-<section class="section-y bg-surface section-divider">
-    <div class="site-gutter-x mx-auto max-w-7xl">
-        <div class="grid gap-6 md:grid-cols-3 md:gap-8">
-            @foreach($visionCards as $card)
-                <article
-                    class="card-depth flex flex-col p-8 text-center sm:p-9"
-                    data-aos="fade-up"
-                    data-aos-duration="800"
-                    data-aos-delay="{{ min(200, 80 * $loop->index) }}"
-                >
-                    <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/15 to-accent/20 text-3xl shadow-inner ring-1 ring-primary/10" aria-hidden="true">{{ $card->icon }}</span>
-                    <h3 class="mt-5 font-serif text-xl font-semibold text-primary">{{ $card->title }}</h3>
-                    <p class="mt-3 flex-1 text-sm leading-relaxed text-ink/80">{{ $card->body }}</p>
-                </article>
-            @endforeach
-        </div>
-    </div>
-</section>
+{{-- Vision, Mission, Promise — editorial layout (no icons) --}}
+@php
+    $visionList = $visionCards->values();
+    $visionCount = $visionList->count();
+@endphp
+@if($visionCount > 0)
+    <section class="section-y relative overflow-hidden bg-gradient-to-b from-surface via-white to-surface section-divider" aria-labelledby="about-vision-mission-heading">
+        <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute -right-32 top-1/4 h-96 w-96 rounded-full bg-primary/[0.06] blur-3xl" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute -left-24 bottom-0 h-72 w-72 rounded-full bg-accent/[0.08] blur-3xl" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute left-1/2 top-[38%] h-px w-full max-w-none -translate-x-1/2 bg-gradient-to-r from-transparent via-secondary/35 to-transparent opacity-60" aria-hidden="true"></div>
 
-{{-- Core values --}}
-<section class="section-y bg-white section-divider">
-    <div class="site-gutter-x mx-auto max-w-7xl">
-        <h2 class="mb-10 text-center font-serif text-3xl font-semibold text-ink sm:mb-12 sm:text-4xl" data-aos="fade-up" data-aos-duration="800">
-            {{ $setting->core_values_section_title }}
-        </h2>
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-            @foreach($coreValues as $val)
-                <article
-                    class="card-depth p-6 sm:p-7"
-                    data-aos="fade-up"
-                    data-aos-duration="800"
-                    data-aos-delay="{{ min(300, 50 * $loop->index) }}"
-                >
-                    <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-2xl" aria-hidden="true">{{ $val->icon }}</span>
-                    <h3 class="mt-4 font-serif text-lg font-semibold text-primary">{{ $val->title }}</h3>
-                    @if(filled($val->description))
-                        <p class="mt-2 text-sm leading-relaxed text-ink/75">{{ $val->description }}</p>
-                    @endif
-                </article>
-            @endforeach
+        <div class="site-gutter-x relative w-full">
+            <div class="text-center" data-aos="fade-up" data-aos-duration="750">
+                <div class="flex items-center justify-center gap-4 sm:gap-5">
+                    <span class="h-px w-10 bg-gradient-to-r from-transparent to-primary/40 sm:w-14" aria-hidden="true"></span>
+                    <p id="about-vision-mission-heading" class="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-primary">{{ __('Our compass') }}</p>
+                    <span class="h-px w-10 bg-gradient-to-l from-transparent to-primary/40 sm:w-14" aria-hidden="true"></span>
+                </div>
+                <p class="mt-4 w-full text-sm leading-relaxed text-ink/65 sm:mt-5 sm:text-base">{{ __('The principles that shape how we guide, host, and care for every journey.') }}</p>
+            </div>
+
+            @if($visionCount === 1)
+                @php $card = $visionList->first(); @endphp
+                <div class="mt-16 w-full" data-aos="fade-up" data-aos-duration="850">
+                    @include('partials.about-vision-mission-statement', ['card' => $card, 'first' => null])
+                </div>
+            @elseif($visionCount === 2)
+                <div class="mt-16 grid gap-8 md:grid-cols-2 md:gap-10 lg:gap-12">
+                    @foreach($visionList as $card)
+                        @include('partials.about-vision-mission-column', ['card' => $card, 'index' => $loop->index])
+                    @endforeach
+                </div>
+            @else
+                <div class="mt-16 grid gap-8 lg:grid-cols-2 lg:gap-x-10 xl:gap-x-12">
+                    @foreach($visionList->take(2) as $card)
+                        @include('partials.about-vision-mission-column', ['card' => $card, 'index' => $loop->index])
+                    @endforeach
+                </div>
+                @foreach($visionList->slice(2) as $card)
+                    @include('partials.about-vision-mission-statement', ['card' => $card, 'first' => $loop->first])
+                @endforeach
+            @endif
         </div>
-    </div>
-</section>
+    </section>
+@endif
+
+{{-- Core values — editorial cards, no icons --}}
+@if($coreValues->isNotEmpty())
+    <section class="section-y relative overflow-hidden bg-gradient-to-b from-white via-surface/40 to-white section-divider" aria-labelledby="about-core-values-heading">
+        <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute -left-20 top-1/3 h-64 w-64 rounded-full bg-primary/[0.05] blur-3xl" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute -right-16 bottom-1/4 h-56 w-56 rounded-full bg-accent/[0.06] blur-3xl" aria-hidden="true"></div>
+
+        <div class="site-gutter-x relative w-full">
+            <div class="text-center" data-aos="fade-up" data-aos-duration="750">
+                <div class="flex items-center justify-center gap-4 sm:gap-5">
+                    <span class="h-px w-10 bg-gradient-to-r from-transparent to-primary/40 sm:w-14" aria-hidden="true"></span>
+                    <p class="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-primary">{{ __('What we stand for') }}</p>
+                    <span class="h-px w-10 bg-gradient-to-l from-transparent to-primary/40 sm:w-14" aria-hidden="true"></span>
+                </div>
+                <h2 id="about-core-values-heading" class="mt-4 font-serif text-3xl font-semibold leading-tight text-ink sm:mt-5 sm:text-4xl">
+                    {{ $setting->core_values_section_title }}
+                </h2>
+                <p class="mt-4 w-full text-sm leading-relaxed text-ink/65 sm:mt-5 sm:text-base">{{ __('The beliefs behind every itinerary and every guest we welcome.') }}</p>
+            </div>
+
+            <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-7 xl:gap-8">
+                @foreach($coreValues as $val)
+                    @include('partials.about-core-value', ['val' => $val, 'index' => $loop->index])
+                @endforeach
+            </div>
+        </div>
+    </section>
+@endif
 
 {{-- Fleet & equipment --}}
 <section class="section-y bg-surface section-divider">
-    <div class="site-gutter-x mx-auto max-w-7xl">
-        <div class="grid items-start gap-12 lg:grid-cols-2 lg:gap-16">
+    <div class="site-gutter-x w-full">
+        <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <div class="grid grid-cols-2 gap-3 sm:gap-4" data-aos="fade-up" data-aos-duration="800">
                 @foreach($fleetImages as $fi)
                     <div @class([
@@ -109,13 +140,13 @@
             </div>
             <div data-aos="fade-up" data-aos-duration="850" data-aos-delay="60">
                 <h2 class="mb-4 font-serif text-3xl font-semibold text-ink sm:text-4xl">{{ $setting->fleet_heading }}</h2>
-                <p class="mb-8 text-base leading-relaxed text-ink/85">{{ $setting->fleet_body }}</p>
+                <div class="about-rich-text mb-8 text-base leading-relaxed text-ink/85">{!! $setting->fleet_body !!}</div>
                 <ul class="space-y-6">
                     @foreach($fleetSubsections as $sub)
                         <li class="border-l-4 border-primary/50 pl-5">
                             <h3 class="font-semibold text-primary">{{ $sub->title }}</h3>
                             @if(filled($sub->body))
-                                <p class="mt-2 text-sm leading-relaxed text-ink/80">{{ $sub->body }}</p>
+                                <div class="about-rich-text about-rich-text--sm mt-2 text-sm leading-relaxed text-ink/80">{!! $sub->body !!}</div>
                             @endif
                         </li>
                     @endforeach
@@ -127,14 +158,14 @@
 
 {{-- Team --}}
 <section class="section-y bg-white section-divider">
-    <div class="site-gutter-x mx-auto max-w-7xl">
+    <div class="site-gutter-x w-full">
         <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <div class="img-zoom-parent order-2 overflow-hidden rounded-card shadow-depth lg:order-1" data-aos="fade-up" data-aos-duration="800">
                 <img src="{{ $teamImg }}" alt="" class="img-zoom-hover aspect-[4/3] w-full object-cover" loading="lazy" width="1200" height="900">
             </div>
             <div class="order-1 lg:order-2" data-aos="fade-up" data-aos-duration="850">
                 <h2 class="mb-4 font-serif text-3xl font-semibold text-ink sm:text-4xl">{{ $setting->team_heading }}</h2>
-                <p class="mb-8 text-base leading-relaxed text-ink/85">{{ $setting->team_body }}</p>
+                <div class="about-rich-text mb-8 text-base leading-relaxed text-ink/85">{!! $setting->team_body !!}</div>
                 <ul class="grid grid-cols-1 gap-3 sm:grid-cols-2" role="list">
                     @foreach($teamRoles as $role)
                         <li class="flex items-center gap-2 rounded-xl border border-secondary/40 bg-surface/80 px-4 py-3 text-sm font-medium text-ink">
@@ -150,11 +181,11 @@
 
 {{-- Safety --}}
 <section class="section-y bg-surface section-divider">
-    <div class="site-gutter-x mx-auto max-w-7xl">
+    <div class="site-gutter-x w-full">
         <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <div data-aos="fade-up" data-aos-duration="800">
                 <h2 class="mb-4 font-serif text-3xl font-semibold text-ink sm:text-4xl">{{ $setting->safety_heading }}</h2>
-                <p class="mb-8 text-base leading-relaxed text-ink/85">{{ $setting->safety_body }}</p>
+                <div class="about-rich-text mb-8 text-base leading-relaxed text-ink/85">{!! $setting->safety_body !!}</div>
                 <ul class="space-y-3" role="list">
                     @foreach($safetyPoints as $pt)
                         <li class="flex gap-3 text-sm leading-relaxed text-ink/90">
@@ -171,34 +202,39 @@
     </div>
 </section>
 
-{{-- Sustainability --}}
-<section class="section-y bg-white section-divider">
-    <div class="site-gutter-x mx-auto max-w-7xl">
-        <h2 class="mb-10 text-center font-serif text-3xl font-semibold text-ink sm:mb-12 sm:text-4xl" data-aos="fade-up" data-aos-duration="800">
-            {{ $setting->sustainability_section_title }}
-        </h2>
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            @foreach($sustainabilityItems as $item)
-                <article
-                    class="card-depth p-6 sm:p-7"
-                    data-aos="fade-up"
-                    data-aos-duration="800"
-                    data-aos-delay="{{ min(250, 60 * $loop->index) }}"
-                >
-                    <span class="text-3xl" aria-hidden="true">{{ $item->icon }}</span>
-                    <h3 class="mt-4 font-serif text-lg font-semibold text-primary">{{ $item->title }}</h3>
-                    @if(filled($item->description))
-                        <p class="mt-2 text-sm leading-relaxed text-ink/75">{{ $item->description }}</p>
-                    @endif
-                </article>
-            @endforeach
+{{-- Sustainability — editorial cards, no icons --}}
+@if($sustainabilityItems->isNotEmpty())
+    <section class="section-y relative overflow-hidden bg-gradient-to-b from-surface/80 via-white to-primary/[0.04] section-divider" aria-labelledby="about-sustainability-heading">
+        <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/25 to-transparent" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute right-0 top-1/4 h-72 w-72 translate-x-1/4 rounded-full bg-primary/[0.06] blur-3xl" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute -left-24 bottom-0 h-64 w-64 rounded-full bg-accent/[0.07] blur-3xl" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute left-1/2 top-[42%] h-px w-full max-w-none -translate-x-1/2 bg-gradient-to-r from-transparent via-secondary/30 to-transparent opacity-50" aria-hidden="true"></div>
+
+        <div class="site-gutter-x relative w-full">
+            <div class="text-center" data-aos="fade-up" data-aos-duration="750">
+                <div class="flex items-center justify-center gap-4 sm:gap-5">
+                    <span class="h-px w-10 bg-gradient-to-r from-transparent to-accent/45 sm:w-14" aria-hidden="true"></span>
+                    <p class="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-primary">{{ __('Travel that gives back') }}</p>
+                    <span class="h-px w-10 bg-gradient-to-l from-transparent to-accent/45 sm:w-14" aria-hidden="true"></span>
+                </div>
+                <h2 id="about-sustainability-heading" class="mt-4 font-serif text-3xl font-semibold leading-tight text-ink sm:mt-5 sm:text-4xl">
+                    {{ $setting->sustainability_section_title }}
+                </h2>
+                <p class="mt-4 w-full text-sm leading-relaxed text-ink/65 sm:mt-5 sm:text-base">{{ __('Conservation, communities, and culture—woven into how we plan, guide, and grow.') }}</p>
+            </div>
+
+            <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7 xl:gap-8">
+                @foreach($sustainabilityItems as $item)
+                    @include('partials.about-sustainability-item', ['item' => $item, 'index' => $loop->index])
+                @endforeach
+            </div>
         </div>
-    </div>
-</section>
+    </section>
+@endif
 
 {{-- Testimonials --}}
 <section class="section-y bg-surface section-divider">
-    <div class="site-gutter-x mx-auto max-w-7xl">
+    <div class="site-gutter-x w-full">
         <h2 class="mb-8 text-center font-serif text-3xl font-semibold text-primary sm:text-4xl" data-aos="fade-up" data-aos-duration="800">
             {{ $setting->testimonials_section_title }}
         </h2>
@@ -230,13 +266,17 @@
                         <div class="flex transition-transform duration-500 ease-out motion-reduce:transition-none motion-reduce:duration-0" :style="`transform: translateX(-${current * 100}%)`">
                             @foreach($testimonialSlides as $slide)
                                 <div class="min-w-full shrink-0 px-0.5 sm:px-1">
-                                    <div class="grid gap-6 md:grid-cols-3 md:gap-8">
+                                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-6 lg:gap-8">
                                         @foreach($slide as $t)
                                             @php
                                                 $rating = min(5, max(1, (int) ($t->rating ?? 5)));
                                                 $initials = \Illuminate\Support\Str::of($t->name)->explode(' ')->filter()->take(2)->map(fn ($w) => mb_substr($w, 0, 1))->implode('');
+                                                $soloInSlide = $slide->count() === 1;
                                             @endphp
-                                            <blockquote class="card-depth flex min-h-[260px] flex-col bg-white p-6 sm:min-h-[280px] sm:p-8">
+                                            <blockquote @class([
+                                                'card-depth flex min-h-[240px] flex-col bg-white p-6 sm:min-h-[260px] sm:p-8',
+                                                'sm:col-span-2 sm:max-w-xl sm:justify-self-center md:max-w-2xl' => $soloInSlide,
+                                            ])>
                                                 <div class="flex flex-col gap-4 sm:flex-row sm:gap-5">
                                                     @if($t->image)
                                                         <img src="{{ $t->imageUrl() }}" alt="" class="mx-auto h-14 w-14 shrink-0 rounded-full object-cover ring-2 ring-primary/15 sm:mx-0 sm:h-16 sm:w-16" loading="lazy">
@@ -297,18 +337,16 @@
     </div>
 </section>
 
-{{-- CTA --}}
-<section class="relative overflow-hidden section-y bg-gradient-to-br from-primary via-primary to-[#2E7D32] section-divider text-white">
-    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_120%,rgba(0,0,0,0.18),transparent_55%)]" aria-hidden="true"></div>
-    <div class="site-gutter-x relative mx-auto max-w-3xl text-center">
-        <h2 class="mb-4 font-serif text-3xl font-semibold sm:text-4xl" data-aos="fade-up" data-aos-duration="800">{{ $setting->cta_heading }}</h2>
-        <p class="mb-8 text-lg text-white/95" data-aos="fade-up" data-aos-duration="800" data-aos-delay="60">{{ $setting->cta_body }}</p>
+{{-- CTA — same treatment as home hero CTA; footer uses mt-0 on this route so block meets footer --}}
+<section class="relative overflow-hidden bg-gradient-to-br from-primary via-primary to-[#2E7D32] section-y text-white section-divider" aria-labelledby="about-cta-heading">
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_120%,rgba(0,0,0,0.2),transparent_55%)]" aria-hidden="true"></div>
+    <div class="absolute inset-0 opacity-25" style="background-image: url('https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center;"></div>
+    <div class="site-gutter-x relative w-full text-center" data-aos="fade-up" data-aos-duration="850" data-aos-delay="80">
+        <h2 id="about-cta-heading" class="mb-4 font-serif text-3xl font-semibold tracking-tight sm:text-4xl lg:text-[2.75rem]">{{ $setting->cta_heading }}</h2>
+        <div class="about-rich-text about-rich-text--light mx-auto mb-8 w-full max-w-none text-lg leading-relaxed">{!! $setting->cta_body !!}</div>
         <a
             href="{{ route('plan-my-safari') }}"
-            class="inline-flex min-h-[3rem] items-center justify-center rounded-btn bg-white px-10 py-3.5 text-base font-semibold text-primary shadow-lg transition duration-300 ease-out hover:-translate-y-0.5 hover:bg-white/95 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
-            data-aos="fade-up"
-            data-aos-duration="800"
-            data-aos-delay="120"
+            class="inline-flex min-h-[3rem] min-w-[12rem] items-center justify-center rounded-btn bg-white px-10 py-3.5 text-center text-base font-semibold text-primary shadow-lg transition duration-300 ease-out hover:-translate-y-0.5 hover:bg-white/95 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
         >{{ $ctaLabel }}</a>
     </div>
 </section>

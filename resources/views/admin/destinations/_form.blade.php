@@ -35,13 +35,13 @@
 
     <div class="md:col-span-2">
         <label for="dest_description" class="block text-sm font-medium text-ink">{{ __('Description') }}</label>
-        <p class="mt-0.5 text-xs text-ink/55">{{ __('Shown on destination cards (e.g. homepage marquee). Keep it concise and inviting.') }}</p>
+        <p class="mt-0.5 text-xs text-ink/55">{{ __('Rich text for cards, Explore Africa, and the destination detail page. Use the toolbar or Source code for HTML.') }}</p>
         <textarea
             id="dest_description"
             name="description"
-            rows="5"
-            class="mt-2 w-full rounded-xl border-secondary/60 px-4 py-3 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25"
-            placeholder="{{ __('Short summary for listings…') }}"
+            rows="10"
+            class="mt-2 w-full rounded-xl border-secondary/60 px-4 py-3 font-mono text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25"
+            placeholder="{{ __('Intro, highlights, best season…') }}"
         >{{ old('description', $destination->description) }}</textarea>
         @error('description')
             <p class="mt-1.5 text-sm font-medium text-red-700">{{ $message }}</p>

@@ -31,8 +31,11 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/mountains', [PageController::class, 'mountains'])->name('mountains');
+Route::get('/mountains/{mountain:slug}', [PageController::class, 'mountainShow'])->name('mountains.show');
 Route::get('/explore-africa', [PageController::class, 'exploreAfrica'])->name('explore-africa');
+Route::get('/explore-africa/{destination:slug}', [PageController::class, 'destinationShow'])->name('explore-africa.show');
 Route::get('/safari', [PageController::class, 'safari'])->name('safari');
+Route::get('/safari/{safari_experience:slug}', [PageController::class, 'safariExperienceShow'])->name('safari.show');
 Route::get('/gallery', [PageController::class, 'gallery'])->name('gallery');
 Route::get('/articles', [PageController::class, 'articles'])->name('articles');
 Route::get('/articles/{article:slug}', [PageController::class, 'articleShow'])->name('articles.show');

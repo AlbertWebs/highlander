@@ -80,6 +80,8 @@ class AboutPageSeeder extends Seeder
             ['title' => 'Vehicles for Transfers', 'body' => 'Comfortable, air-conditioned vehicles for airport and lodge connections.', 'sort_order' => 1],
             ['title' => 'Custom Safari Vehicles', 'body' => 'Open-sided or pop-top 4×4 rigs built for wildlife viewing and photography.', 'sort_order' => 2],
             ['title' => 'Mountain Equipment', 'body' => 'Quality camping and trekking kit maintained for high-altitude routes.', 'sort_order' => 3],
+            ['title' => 'Communications & Navigation', 'body' => 'GPS, radios, and satellite options where routes require dependable contact and positioning in remote areas.', 'sort_order' => 4],
+            ['title' => 'Spare Parts & Recovery', 'body' => 'Tools, spare wheels, jacks, and recovery gear carried on extended departures so we’re prepared off the beaten track.', 'sort_order' => 5],
         ] as $fs) {
             AboutFleetSubsection::query()->create($fs + ['is_active' => true]);
         }

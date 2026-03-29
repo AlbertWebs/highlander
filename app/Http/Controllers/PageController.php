@@ -111,8 +111,13 @@ class PageController extends Controller
     public function articles(Request $request): View
     {
         $items = Article::query()->published()->orderByDesc('published_at')->paginate(9);
+        $sidebarArticles = Article::query()
+            ->published()
+            ->orderByDesc('published_at')
+            ->take(5)
+            ->get();
 
-        return view('pages.articles', array_merge($this->seo('articles'), compact('items')));
+        return view('pages.articles', array_merge($this->seo('articles'), compact('items', 'sidebarArticles')));
     }
 
     public function articleShow(Article $article): View
@@ -121,7 +126,14 @@ class PageController extends Controller
             abort(404);
         }
 
-        return view('pages.article-show', array_merge($this->seo('articles'), compact('article')));
+        $sidebarArticles = Article::query()
+            ->published()
+            ->whereKeyNot($article->getKey())
+            ->orderByDesc('published_at')
+            ->take(5)
+            ->get();
+
+        return view('pages.article-show', array_merge($this->seo('articles'), compact('article', 'sidebarArticles')));
     }
 
     public function featuredExperienceShow(Tour $tour): View

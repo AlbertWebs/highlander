@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Article;
 use App\Models\Destination;
 use App\Models\Mountain;
 use App\Models\SafariExperience;
@@ -164,18 +163,7 @@ class DatabaseSeeder extends Seeder
 
         Testimonial::query()->whereIn('name', ['Elena M.', 'James K.'])->update(['show_on_about' => true]);
 
-        Article::query()->updateOrCreate(
-            ['slug' => 'first-light-on-the-mara'],
-            [
-                'title' => 'First Light on the Mara',
-                'excerpt' => 'Notes from an early morning balloon and what silence sounds like above the grasslands.',
-                'body' => '<p>The sun lifts over the horizon in bands of apricot and rose. Below, the Mara breathes.</p><p>We drift with the wind, cameras quiet, hearts full.</p>',
-                'published_at' => now()->subDays(3),
-                'is_active' => true,
-                'meta_title' => 'First Light on the Mara | Highlanders Nature Trails',
-                'meta_description' => 'Travel notes from the Masai Mara at dawn—safari field stories from Highlanders Nature Trails.',
-            ]
-        );
+        $this->call(ArticleSeeder::class);
 
         $kwBrand = 'Highlanders Nature Trails, Highlanders Nature Trails safari, nature trails Africa, African nature tours';
         $kwSafari = 'luxury African safari, East Africa safari tours, Kenya safari packages, Tanzania safari, bespoke safari itinerary, private safari guide, wildlife safari, Big Five safari, game drive safari, safari conservancy, luxury safari lodges';

@@ -74,6 +74,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('mountains/{mountain}/toggle', [AdminMountainController::class, 'toggle'])->name('mountains.toggle');
     Route::resource('safari', SafariExperienceController::class)->parameters(['safari' => 'safari_experience'])->except(['show']);
     Route::patch('safari/{safari_experience}/toggle', [SafariExperienceController::class, 'toggle'])->name('safari.toggle');
+    Route::post('gallery/bulk', [GalleryItemController::class, 'bulkStore'])->name('gallery.bulk-store');
     Route::resource('gallery', GalleryItemController::class)->parameters(['gallery' => 'gallery_item'])->except(['show']);
     Route::patch('gallery/{gallery_item}/toggle', [GalleryItemController::class, 'toggle'])->name('gallery.toggle');
     Route::resource('articles', AdminArticleController::class)->except(['show']);

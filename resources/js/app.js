@@ -338,6 +338,85 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 
+    Alpine.data('galleryDropzone', ({ uploadUrl, maxFiles = 30 }) => ({
+        rows: [],
+        defaultCategoryId: '',
+        dragging: false,
+        uploading: false,
+        error: '',
+        maxFiles,
+        uploadUrl,
+        addFiles(fileList) {
+            const incoming = Array.from(fileList || []).filter((f) => f.type.startsWith('image/'));
+            const room = this.maxFiles - this.rows.length;
+            for (let i = 0; i < Math.min(room, incoming.length); i++) {
+                const file = incoming[i];
+                this.rows.push({
+                    _id: `${Date.now()}-${i}-${Math.random().toString(36).slice(2, 9)}`,
+                    file,
+                    title: '',
+                    categoryId: this.defaultCategoryId ? String(this.defaultCategoryId) : '',
+                    preview: URL.createObjectURL(file),
+                });
+            }
+        },
+        removeRow(_id) {
+            const row = this.rows.find((r) => r._id === _id);
+            if (row?.preview) {
+                URL.revokeObjectURL(row.preview);
+            }
+            this.rows = this.rows.filter((r) => r._id !== _id);
+        },
+        clearAll() {
+            this.rows.forEach((r) => {
+                if (r.preview) {
+                    URL.revokeObjectURL(r.preview);
+                }
+            });
+            this.rows = [];
+        },
+        async submit() {
+            if (!this.rows.length || this.uploading) {
+                return;
+            }
+            this.uploading = true;
+            this.error = '';
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const fd = new FormData();
+            fd.append('_token', token);
+            this.rows.forEach((row) => {
+                fd.append('images[]', row.file);
+                fd.append('titles[]', row.title ?? '');
+                fd.append('gallery_category_ids[]', row.categoryId === '' || row.categoryId == null ? '' : String(row.categoryId));
+            });
+            try {
+                const res = await fetch(this.uploadUrl, {
+                    method: 'POST',
+                    body: fd,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        Accept: 'application/json',
+                        'X-CSRF-TOKEN': token,
+                    },
+                });
+                const data = await res.json().catch(() => ({}));
+                if (res.status === 422 && data.errors) {
+                    const first = Object.values(data.errors)[0];
+                    throw new Error(Array.isArray(first) ? first[0] : 'Validation failed');
+                }
+                if (!res.ok) {
+                    throw new Error(data.message || 'Upload failed');
+                }
+                this.clearAll();
+                window.location.reload();
+            } catch (e) {
+                this.error = e.message || 'Upload failed';
+            } finally {
+                this.uploading = false;
+            }
+        },
+    }));
+
     let tourItineraryRowId = 0;
 
     Alpine.data('tourItineraryEditor', (initialDays) => ({

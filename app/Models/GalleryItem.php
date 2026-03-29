@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
 class GalleryItem extends Model
 {
     protected $fillable = [
-        'title', 'image_path', 'alt', 'is_active', 'sort_order',
+        'gallery_category_id', 'title', 'image_path', 'alt', 'is_active', 'sort_order',
     ];
 
     protected function casts(): array
@@ -22,6 +23,11 @@ class GalleryItem extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(GalleryCategory::class, 'gallery_category_id');
     }
 
     public function getUrlAttribute(): string

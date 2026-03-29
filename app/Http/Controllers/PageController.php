@@ -12,6 +12,7 @@ use App\Models\AboutTeamRole;
 use App\Models\AboutVisionMissionCard;
 use App\Models\Article;
 use App\Models\Destination;
+use App\Models\GalleryCategory;
 use App\Models\GalleryItem;
 use App\Models\Mountain;
 use App\Models\SafariExperience;
@@ -95,9 +96,16 @@ class PageController extends Controller
 
     public function gallery(Request $request): View
     {
-        $items = GalleryItem::query()->active()->orderBy('sort_order')->paginate(24);
+        $categories = GalleryCategory::query()->active()->get();
+        $items = GalleryItem::query()
+            ->with('category')
+            ->active()
+            ->orderBy('sort_order')
+            ->orderByDesc('id')
+            ->limit(500)
+            ->get();
 
-        return view('pages.gallery', array_merge($this->seo('gallery'), compact('items')));
+        return view('pages.gallery', array_merge($this->seo('gallery'), compact('items', 'categories')));
     }
 
     public function articles(Request $request): View

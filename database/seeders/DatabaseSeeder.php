@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call(GalleryCategorySeeder::class);
+
         User::query()->updateOrCreate(
             ['email' => 'admin@highlander.test'],
             [

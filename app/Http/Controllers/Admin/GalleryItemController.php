@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use App\Models\GalleryCategory;
 use App\Models\GalleryItem;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -16,18 +18,22 @@ class GalleryItemController extends Controller
     public function index(Request $request): View
     {
         $q = $request->string('q')->trim();
+        $categories = GalleryCategory::query()->orderBy('sort_order')->get();
         $items = GalleryItem::query()
+            ->with('category')
             ->when($q, fn ($query) => $query->where('title', 'like', '%'.$q.'%'))
             ->orderByDesc('id')
             ->paginate(24)
             ->withQueryString();
 
-        return view('admin.gallery.index', compact('items', 'q'));
+        return view('admin.gallery.index', compact('items', 'q', 'categories'));
     }
 
     public function create(): View
     {
-        return view('admin.gallery.create');
+        $categories = GalleryCategory::query()->active()->orderBy('sort_order')->get();
+
+        return view('admin.gallery.create', compact('categories'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -36,20 +42,73 @@ class GalleryItemController extends Controller
             'title' => ['nullable', 'string', 'max:255'],
             'alt' => ['nullable', 'string', 'max:255'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:65535'],
+            'gallery_category_id' => ['nullable', 'integer', 'exists:gallery_categories,id'],
             'image' => ['required', 'image', 'max:8192'],
         ]);
         $data['is_active'] = $request->boolean('is_active');
         $data['image_path'] = $request->file('image')->store('gallery', 'public');
         $item = GalleryItem::query()->create($data);
         ActivityLog::record('gallery.created', $item->title ?? 'Image #'.$item->id, $item);
-        Cache::forget('home_page_v3');
+        $this->forgetHomeCaches();
 
         return redirect()->route('admin.gallery.index')->with('success', __('Image added.'));
     }
 
+    public function bulkStore(Request $request): JsonResponse
+    {
+        $ids = $request->input('gallery_category_ids', []);
+        $normalized = [];
+        if (is_array($ids)) {
+            foreach ($ids as $v) {
+                $normalized[] = ($v === null || $v === '') ? null : (int) $v;
+            }
+        }
+        $request->merge(['gallery_category_ids' => $normalized]);
+
+        $request->validate([
+            'images' => ['required', 'array', 'min:1', 'max:30'],
+            'images.*' => ['file', 'image', 'max:8192'],
+            'titles' => ['nullable', 'array'],
+            'titles.*' => ['nullable', 'string', 'max:255'],
+            'gallery_category_ids' => ['nullable', 'array'],
+            'gallery_category_ids.*' => ['nullable', 'integer', 'exists:gallery_categories,id'],
+        ]);
+
+        $images = $request->file('images', []);
+        $titles = $request->input('titles', []);
+        $catIds = $request->input('gallery_category_ids', []);
+
+        $maxSort = (int) GalleryItem::query()->max('sort_order');
+        $count = 0;
+
+        foreach ($images as $i => $file) {
+            if (! $file) {
+                continue;
+            }
+            $maxSort++;
+            GalleryItem::query()->create([
+                'gallery_category_id' => $catIds[$i] ?? null,
+                'title' => is_array($titles) ? ($titles[$i] ?? null) : null,
+                'image_path' => $file->store('gallery', 'public'),
+                'is_active' => true,
+                'sort_order' => $maxSort,
+            ]);
+            $count++;
+        }
+
+        ActivityLog::record('gallery.bulk_upload', $count.' images');
+        $this->forgetHomeCaches();
+
+        return response()->json([
+            'message' => $count === 1 ? __('1 image uploaded.') : __(':count images uploaded.', ['count' => $count]),
+        ]);
+    }
+
     public function edit(GalleryItem $galleryItem): View
     {
-        return view('admin.gallery.edit', compact('galleryItem'));
+        $categories = GalleryCategory::query()->active()->orderBy('sort_order')->get();
+
+        return view('admin.gallery.edit', compact('galleryItem', 'categories'));
     }
 
     public function update(Request $request, GalleryItem $galleryItem): RedirectResponse
@@ -58,6 +117,7 @@ class GalleryItemController extends Controller
             'title' => ['nullable', 'string', 'max:255'],
             'alt' => ['nullable', 'string', 'max:255'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:65535'],
+            'gallery_category_id' => ['nullable', 'integer', 'exists:gallery_categories,id'],
             'image' => ['nullable', 'image', 'max:8192'],
         ]);
         $data['is_active'] = $request->boolean('is_active');
@@ -67,7 +127,7 @@ class GalleryItemController extends Controller
         }
         $galleryItem->update($data);
         ActivityLog::record('gallery.updated', $galleryItem->title ?? '#'.$galleryItem->id, $galleryItem);
-        Cache::forget('home_page_v3');
+        $this->forgetHomeCaches();
 
         return redirect()->route('admin.gallery.index')->with('success', __('Image updated.'));
     }
@@ -77,7 +137,7 @@ class GalleryItemController extends Controller
         Storage::disk('public')->delete($galleryItem->image_path);
         ActivityLog::record('gallery.deleted', $galleryItem->title ?? '#'.$galleryItem->id, $galleryItem);
         $galleryItem->delete();
-        Cache::forget('home_page_v3');
+        $this->forgetHomeCaches();
 
         return redirect()->route('admin.gallery.index')->with('success', __('Image removed.'));
     }
@@ -85,8 +145,14 @@ class GalleryItemController extends Controller
     public function toggle(GalleryItem $galleryItem): RedirectResponse
     {
         $galleryItem->update(['is_active' => ! $galleryItem->is_active]);
-        Cache::forget('home_page_v3');
+        $this->forgetHomeCaches();
 
         return back()->with('success', __('Status updated.'));
+    }
+
+    private function forgetHomeCaches(): void
+    {
+        Cache::forget('home_page_v3');
+        Cache::forget('home_page_v4');
     }
 }

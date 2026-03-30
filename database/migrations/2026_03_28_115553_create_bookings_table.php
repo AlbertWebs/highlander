@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('end_date')->nullable();
             $table->unsignedSmallInteger('guests')->default(1);
             $table->text('message')->nullable();
-            $table->string('status')->default('pending');
+            $table->string('status', 191)->default('pending');
             $table->timestamps();
             $table->index(['status', 'created_at']);
         });

@@ -44,7 +44,7 @@ return new class extends Migration
 
             $table->boolean('consent_privacy')->default(false);
 
-            $table->string('status')->default('new');
+            $table->string('status', 191)->default('new');
             $table->text('admin_notes')->nullable();
 
             $table->timestamps();

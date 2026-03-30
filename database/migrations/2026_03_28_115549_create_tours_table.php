@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('tours', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('slug')->unique();
+            $table->string('slug', 191)->unique();
             $table->text('description')->nullable();
             $table->string('image')->nullable();
             $table->decimal('price', 10, 2)->nullable();

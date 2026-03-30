@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('seo_metas', function (Blueprint $table) {
             $table->id();
-            $table->string('page_key')->unique();
+            $table->string('page_key', 191)->unique();
             $table->string('meta_title')->nullable();
             $table->string('meta_description', 500)->nullable();
             $table->string('og_image')->nullable();

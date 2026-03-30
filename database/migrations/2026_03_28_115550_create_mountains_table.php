@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('mountains', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('slug')->unique();
+            $table->string('slug', 191)->unique();
             $table->text('description')->nullable();
             $table->unsignedInteger('elevation_m')->nullable();
             $table->string('image')->nullable();

@@ -21,8 +21,8 @@
     >
         <source src="{{ $tour->featured_video_url }}">
     </video>
-@elseif($tour->image)
-    <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($tour->image) }}" alt="" class="h-full w-full object-cover img-zoom-hover" loading="lazy">
+@elseif($tour->imageUrl())
+    <img src="{{ $tour->imageUrl() }}" alt="" class="h-full w-full object-cover img-zoom-hover" loading="lazy">
 @else
     <div class="flex h-full items-center justify-center bg-gradient-to-br from-primary/25 to-accent/35 text-ink/40">{{ __('Media') }}</div>
 @endif

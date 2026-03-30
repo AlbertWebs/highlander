@@ -10,15 +10,15 @@
     @if(filled($meta_description))
         <meta property="og:description" content="{{ $meta_description }}">
     @endif
-    @if($tour->image)
-        <meta property="og:image" content="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($tour->image) }}">
+    @if($tour->imageUrl())
+        <meta property="og:image" content="{{ $tour->imageUrl() }}">
         <meta name="twitter:card" content="summary_large_image">
     @endif
 @endpush
 
 @php
-    $heroImage = $tour->image
-        ? \Illuminate\Support\Facades\Storage::disk('public')->url($tour->image)
+    $heroImage = $tour->imageUrl()
+        ? $tour->imageUrl()
         : 'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=2000&q=80';
     $subtitleParts = [];
     if ($tour->price) {

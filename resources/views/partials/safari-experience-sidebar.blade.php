@@ -51,7 +51,7 @@
                     <div class="relative h-[4.5rem] w-[5.5rem] shrink-0 overflow-hidden rounded-xl bg-secondary/40 ring-1 ring-secondary/50">
                         @if($tour->image)
                             <img
-                                src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($tour->image) }}"
+                                src="{{ $tour->imageUrl() }}"
                                 alt=""
                                 class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                                 loading="lazy"

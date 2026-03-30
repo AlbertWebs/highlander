@@ -6,6 +6,7 @@ use App\Support\Vimeo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class Tour extends Model
 {
@@ -45,6 +46,25 @@ class Tour extends Model
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true);
+    }
+
+    public function imageUrl(): ?string
+    {
+        $image = trim((string) ($this->image ?? ''));
+
+        if ($image === '') {
+            return null;
+        }
+
+        if (str_starts_with($image, 'http://') || str_starts_with($image, 'https://') || str_starts_with($image, '//')) {
+            return $image;
+        }
+
+        if (str_starts_with($image, '/storage/')) {
+            return asset($image);
+        }
+
+        return Storage::disk('public')->url($image);
     }
 
     /** Featured experience card on the homepage: Vimeo embed when URL parses; otherwise direct file (e.g. MP4). */

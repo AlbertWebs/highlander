@@ -51,8 +51,8 @@
         <div class="mt-4" x-show="media === 'image'" style="display: {{ $featuredMedia === 'video' ? 'none' : 'block' }}">
             <label class="block text-sm font-medium">{{ __('Image file') }}</label>
             <input type="file" name="image" accept="image/*" class="mt-1 w-full text-sm">
-            @if(!empty($tour->image ?? null))
-                <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($tour->image) }}" alt="" class="mt-2 h-24 rounded-lg object-cover">
+            @if($tour->imageUrl())
+                <img src="{{ $tour->imageUrl() }}" alt="" class="mt-2 h-24 rounded-lg object-cover">
             @endif
         </div>
         <div class="mt-4" x-show="media === 'video'" style="display: {{ $featuredMedia === 'video' ? 'block' : 'none' }}">

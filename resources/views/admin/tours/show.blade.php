@@ -11,8 +11,8 @@
     @if(($tour->featured_media_type ?? 'image') === 'video' && filled($tour->featured_video_url))
         <p class="mb-2 text-xs font-medium uppercase tracking-wide text-ink/55">{{ __('Featured card video') }}</p>
         <p class="mb-6 break-all rounded-xl bg-surface px-3 py-2 font-mono text-sm text-ink/90">{{ $tour->featured_video_url }}</p>
-    @elseif($tour->image)
-        <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($tour->image) }}" alt="" class="mb-6 max-h-64 rounded-xl object-cover">
+    @elseif($tour->imageUrl())
+        <img src="{{ $tour->imageUrl() }}" alt="" class="mb-6 max-h-64 rounded-xl object-cover">
     @endif
     <dl class="grid gap-4 sm:grid-cols-2 text-sm">
         <div><dt class="text-ink/60">{{ __('Price') }}</dt><dd>{{ $tour->price ? '$'.$tour->price : '—' }}</dd></div>

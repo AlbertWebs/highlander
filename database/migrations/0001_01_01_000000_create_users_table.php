@@ -28,7 +28,9 @@ return new class extends Migration
         });
 
         Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
+            // MySQL utf8mb4 + InnoDB has a 1000-byte index limit. Laravel's default `sessions.id` uses
+            // `varchar(255)` which can exceed that limit when it becomes the primary key.
+            $table->string('id', 191)->primary();
             $table->foreignId('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();

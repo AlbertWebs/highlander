@@ -101,7 +101,7 @@ class PageController extends Controller
         $meta_title = $mountain->name;
         $meta_description = Str::limit(strip_tags((string) ($mountain->description ?? '')), 160) ?: __('Discover :name — trekking and alpine expeditions with Highlanders Nature Trails.', ['name' => $mountain->name]);
 
-        $relatedTours = RelatedToursForMountain::get($mountain, 5);
+        $relatedTours = RelatedToursForMountain::get($mountain, 2);
 
         return view('pages.mountain-show', compact('mountain', 'pageTitle', 'meta_title', 'meta_description', 'relatedTours'));
     }
@@ -124,7 +124,7 @@ class PageController extends Controller
         $meta_description = Str::limit(strip_tags((string) ($destination->description ?? '')), 160)
             ?: __('Discover :name — safaris and expeditions with Highlanders Nature Trails.', ['name' => $destination->name]);
 
-        $relatedTours = RelatedToursForDestination::get($destination, 5);
+        $relatedTours = RelatedToursForDestination::get($destination, 2);
 
         return view('pages.destination-show', compact('destination', 'pageTitle', 'meta_title', 'meta_description', 'relatedTours'));
     }
@@ -147,7 +147,7 @@ class PageController extends Controller
         $meta_description = Str::limit(strip_tags((string) ($safariExperience->description ?? '')), 160)
             ?: __('Discover :name — safari styles with Highlanders Nature Trails.', ['name' => $safariExperience->title]);
 
-        $relatedTours = RelatedToursForSafariExperience::get($safariExperience, 5);
+        $relatedTours = RelatedToursForSafariExperience::get($safariExperience, 2);
 
         return view('pages.safari-experience-show', compact('safariExperience', 'pageTitle', 'meta_title', 'meta_description', 'relatedTours'));
     }
@@ -210,7 +210,7 @@ class PageController extends Controller
             ? $tour->meta_description
             : Str::limit(strip_tags((string) ($tour->description ?? '')), 160);
 
-        $relatedTours = RelatedToursForTour::get($tour, 5);
+        $relatedTours = RelatedToursForTour::get($tour, 2);
 
         return view('pages.experience-show', compact('tour', 'pageTitle', 'meta_title', 'meta_description', 'relatedTours'));
     }
@@ -246,16 +246,22 @@ class PageController extends Controller
 
     public function privacy(): View
     {
-        return view('pages.privacy', $this->seo('privacy'));
+        $privacyContent = trim((string) SiteSetting::getValue('privacy_policy_content', ''));
+
+        return view('pages.privacy', array_merge($this->seo('privacy'), compact('privacyContent')));
     }
 
     public function terms(): View
     {
-        return view('pages.terms', $this->seo('terms'));
+        $termsContent = trim((string) SiteSetting::getValue('terms_conditions_content', ''));
+
+        return view('pages.terms', array_merge($this->seo('terms'), compact('termsContent')));
     }
 
     public function photoCredits(): View
     {
-        return view('pages.photo-credits', $this->seo('photo-credits'));
+        $photoCreditsContent = trim((string) SiteSetting::getValue('photo_credits_content', ''));
+
+        return view('pages.photo-credits', array_merge($this->seo('photo-credits'), compact('photoCreditsContent')));
     }
 }

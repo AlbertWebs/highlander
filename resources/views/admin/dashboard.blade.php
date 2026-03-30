@@ -9,16 +9,16 @@
 @section('content')
 <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
     @foreach([
-        ['label' => __('Total Bookings'), 'value' => $totalBookings, 'class' => 'text-primary'],
-        ['label' => __('Total Visitors'), 'value' => number_format($totalVisitors), 'class' => 'text-secondary'],
-        ['label' => __('Total Tours'), 'value' => $totalTours, 'class' => 'text-accent'],
-        ['label' => __('Pending Inquiries'), 'value' => $pendingInquiries, 'class' => 'text-primary'],
-        ['label' => __('Articles'), 'value' => $articlesCount, 'class' => 'text-secondary'],
-        ['label' => __('Gallery Images'), 'value' => $galleryCount, 'class' => 'text-accent'],
+        ['key' => 'totalBookings', 'label' => __('Total Bookings'), 'value' => $totalBookings, 'class' => 'text-primary'],
+        ['key' => 'totalVisitors', 'label' => __('Total Visitors'), 'value' => number_format($totalVisitors), 'class' => 'text-secondary'],
+        ['key' => 'totalTours', 'label' => __('Total Tours'), 'value' => $totalTours, 'class' => 'text-accent'],
+        ['key' => 'pendingInquiries', 'label' => __('Pending Inquiries'), 'value' => $pendingInquiries, 'class' => 'text-primary'],
+        ['key' => 'articlesCount', 'label' => __('Articles'), 'value' => $articlesCount, 'class' => 'text-secondary'],
+        ['key' => 'galleryCount', 'label' => __('Gallery Images'), 'value' => $galleryCount, 'class' => 'text-accent'],
     ] as $card)
         <div class="rounded-2xl border border-secondary/50 bg-white p-6 shadow-soft">
             <p class="text-sm font-medium text-ink/60">{{ $card['label'] }}</p>
-            <p class="mt-2 text-3xl font-bold {{ $card['class'] }}">{{ $card['value'] }}</p>
+            <p class="mt-2 text-3xl font-bold {{ $card['class'] }}" data-kpi="{{ $card['key'] }}">{{ $card['value'] }}</p>
         </div>
     @endforeach
 </div>
@@ -70,9 +70,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const primary = '#4CAF50';
     const secondary = '#A7C7C7';
-    const accent = '#8BC34A';
     const labels = @json($bookingsChartLabels);
-    new Chart(document.getElementById('chartBookings'), {
+    const chartBookings = new Chart(document.getElementById('chartBookings'), {
         type: 'line',
         data: {
             labels,
@@ -87,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } },
     });
-    new Chart(document.getElementById('chartTraffic'), {
+    const chartTraffic = new Chart(document.getElementById('chartTraffic'), {
         type: 'bar',
         data: {
             labels,
@@ -100,6 +99,51 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } },
     });
+
+    const formatKpi = (key, value) => {
+        if (key === 'totalVisitors') {
+            return Number(value || 0).toLocaleString();
+        }
+
+        return String(value ?? 0);
+    };
+
+    const applyDashboardData = (payload) => {
+        const bookingsLabels = payload?.bookingsChartLabels ?? [];
+        const bookingsData = payload?.bookingsChartData ?? [];
+        const trafficData = payload?.trafficChartData ?? [];
+
+        chartBookings.data.labels = bookingsLabels;
+        chartBookings.data.datasets[0].data = bookingsData;
+        chartBookings.update('none');
+
+        chartTraffic.data.labels = bookingsLabels;
+        chartTraffic.data.datasets[0].data = trafficData;
+        chartTraffic.update('none');
+
+        document.querySelectorAll('[data-kpi]').forEach((el) => {
+            const key = el.getAttribute('data-kpi');
+            if (key && Object.prototype.hasOwnProperty.call(payload, key)) {
+                el.textContent = formatKpi(key, payload[key]);
+            }
+        });
+    };
+
+    const refreshDashboardData = async () => {
+        try {
+            const response = await fetch(@json(route('admin.dashboard.data')), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            if (!response.ok) return;
+            const payload = await response.json();
+            applyDashboardData(payload);
+        } catch (error) {
+            // Keep current chart state if polling fails.
+        }
+    };
+
+    refreshDashboardData();
+    setInterval(refreshDashboardData, 15000);
 });
 </script>
 @endpush

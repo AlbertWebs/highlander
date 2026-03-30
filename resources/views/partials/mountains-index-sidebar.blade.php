@@ -3,7 +3,7 @@
     $tourFallbackImg = 'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=400&q=80';
 @endphp
 
-<div class="space-y-6 lg:sticky lg:top-24 lg:z-10 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:overscroll-y-contain lg:pr-1 xl:top-28 xl:max-h-[calc(100vh-7rem)]">
+<div class="space-y-6 lg:sticky lg:top-24 lg:z-10 xl:top-28">
     <div class="rounded-2xl border border-secondary/40 bg-gradient-to-br from-surface to-white p-4 shadow-sm sm:p-5">
         <p class="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-ink/45">{{ __('Plan your trek') }}</p>
         <ul class="mt-3 space-y-2">

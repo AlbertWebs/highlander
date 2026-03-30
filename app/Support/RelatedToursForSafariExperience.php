@@ -12,7 +12,7 @@ class RelatedToursForSafariExperience
      * Active tours whose title or description match keywords from the safari style title/slug,
      * topped up with featured tours when fewer than $limit matches.
      */
-    public static function get(SafariExperience $safariExperience, int $limit = 5): Collection
+    public static function get(SafariExperience $safariExperience, int $limit = 2): Collection
     {
         $tokens = self::tokens($safariExperience);
 

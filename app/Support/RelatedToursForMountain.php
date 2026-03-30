@@ -12,7 +12,7 @@ class RelatedToursForMountain
      * Active tours whose title or description match keywords from the mountain name/slug,
      * topped up with featured tours when fewer than $limit matches.
      */
-    public static function get(Mountain $mountain, int $limit = 5): Collection
+    public static function get(Mountain $mountain, int $limit = 2): Collection
     {
         $tokens = self::tokens($mountain);
 

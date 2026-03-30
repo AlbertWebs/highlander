@@ -4,7 +4,7 @@
     $tourFallbackImg = 'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=400&q=80';
 @endphp
 
-<div class="space-y-6 lg:sticky lg:top-24 lg:z-10 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:overscroll-y-contain lg:pr-1 xl:top-28 xl:max-h-[calc(100vh-7rem)]">
+<div class="space-y-6 lg:sticky lg:top-24 lg:z-10 xl:top-28">
     @if($mountain->elevation_m)
         <div class="overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/[0.08] via-white to-tint-green/35 shadow-card ring-1 ring-primary/10" aria-labelledby="elevation-aside-heading">
             <div class="border-b border-primary/10 bg-primary/[0.06] px-5 py-4">

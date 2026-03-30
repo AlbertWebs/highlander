@@ -32,6 +32,11 @@ class SettingController extends Controller
             'site_favicon' => SiteSetting::getValue('site_favicon', ''),
             'menu_background_image' => SiteSetting::getValue('menu_background_image', ''),
             'footer_credits' => SiteSetting::getValue('footer_credits', ''),
+            'privacy_policy_content' => SiteSetting::getValue('privacy_policy_content', ''),
+            'terms_conditions_content' => SiteSetting::getValue('terms_conditions_content', ''),
+            'photo_credits_content' => SiteSetting::getValue('photo_credits_content', ''),
+            'copyright_text' => SiteSetting::getValue('copyright_text', ''),
+            'photo_credit_text' => SiteSetting::getValue('photo_credit_text', ''),
         ]);
     }
 
@@ -53,6 +58,11 @@ class SettingController extends Controller
             'favicon' => ['nullable', 'file', 'max:1024', 'mimes:ico,png,svg,gif,jpeg,jpg'],
             'menu_background' => ['nullable', 'file', 'max:5120', 'mimes:jpeg,jpg,png,gif,webp'],
             'footer_credits' => ['nullable', 'string', 'max:2000'],
+            'privacy_policy_content' => ['nullable', 'string', 'max:65000'],
+            'terms_conditions_content' => ['nullable', 'string', 'max:65000'],
+            'photo_credits_content' => ['nullable', 'string', 'max:65000'],
+            'copyright_text' => ['nullable', 'string', 'max:1000'],
+            'photo_credit_text' => ['nullable', 'string', 'max:1000'],
         ]);
 
         unset($data['logo'], $data['logo_dark'], $data['favicon'], $data['menu_background']);

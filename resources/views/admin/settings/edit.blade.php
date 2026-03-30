@@ -179,6 +179,57 @@
                                 >{{ old('footer_credits', $footer_credits ?? '') }}</textarea>
                                 <p class="mt-1.5 text-xs text-ink/50">{{ __('Leave empty to use: current year, app name from .env, and the default “All rights reserved.” line.') }}</p>
                             </div>
+                            <div class="border-t border-secondary/35 pt-6 sm:col-span-2">
+                                <h3 class="text-sm font-semibold text-ink">{{ __('Legal & credit text') }}</h3>
+                                <p class="mt-1 text-xs text-ink/50">{{ __('Manage legal page content and footer legal lines shown on the public site.') }}</p>
+                                <div class="mt-4 grid gap-5">
+                                    <div>
+                                        <label class="text-sm font-medium text-ink">{{ __('Copyright text') }}</label>
+                                        <input
+                                            name="copyright_text"
+                                            value="{{ old('copyright_text', $copyright_text ?? '') }}"
+                                            placeholder="© 2026 {{ config('app.name') }}. All rights reserved."
+                                            class="mt-1.5 w-full rounded-xl border border-secondary/60 bg-surface/50 px-4 py-3 text-sm transition placeholder:text-ink/35 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25"
+                                        >
+                                    </div>
+                                    <div>
+                                        <label class="text-sm font-medium text-ink">{{ __('Photo credit text (footer)') }}</label>
+                                        <input
+                                            name="photo_credit_text"
+                                            value="{{ old('photo_credit_text', $photo_credit_text ?? '') }}"
+                                            placeholder="Selected imagery credits: Unsplash contributors and in-house photography."
+                                            class="mt-1.5 w-full rounded-xl border border-secondary/60 bg-surface/50 px-4 py-3 text-sm transition placeholder:text-ink/35 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25"
+                                        >
+                                    </div>
+                                    <div>
+                                        <label class="text-sm font-medium text-ink">{{ __('Privacy policy content') }}</label>
+                                        <p class="mt-0.5 text-xs text-ink/50">{{ __('HTML accepted. You can paste rich text. Leave empty to use default template text.') }}</p>
+                                        <textarea
+                                            name="privacy_policy_content"
+                                            rows="8"
+                                            class="tinymce-editor mt-1.5 w-full resize-y rounded-xl border border-secondary/60 bg-surface/50 px-4 py-3 text-sm leading-relaxed transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25"
+                                        >{{ old('privacy_policy_content', $privacy_policy_content ?? '') }}</textarea>
+                                    </div>
+                                    <div>
+                                        <label class="text-sm font-medium text-ink">{{ __('Terms and conditions content') }}</label>
+                                        <p class="mt-0.5 text-xs text-ink/50">{{ __('HTML accepted. You can paste rich text. Leave empty to use default template text.') }}</p>
+                                        <textarea
+                                            name="terms_conditions_content"
+                                            rows="8"
+                                            class="tinymce-editor mt-1.5 w-full resize-y rounded-xl border border-secondary/60 bg-surface/50 px-4 py-3 text-sm leading-relaxed transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25"
+                                        >{{ old('terms_conditions_content', $terms_conditions_content ?? '') }}</textarea>
+                                    </div>
+                                    <div>
+                                        <label class="text-sm font-medium text-ink">{{ __('Photo credits page content') }}</label>
+                                        <p class="mt-0.5 text-xs text-ink/50">{{ __('HTML accepted. You can paste rich text. Leave empty to use default template text.') }}</p>
+                                        <textarea
+                                            name="photo_credits_content"
+                                            rows="8"
+                                            class="tinymce-editor mt-1.5 w-full resize-y rounded-xl border border-secondary/60 bg-surface/50 px-4 py-3 text-sm leading-relaxed transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25"
+                                        >{{ old('photo_credits_content', $photo_credits_content ?? '') }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -234,3 +285,5 @@
     </form>
 </div>
 @endsection
+
+@include('admin.about-page._tinymce')

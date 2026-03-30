@@ -11,7 +11,7 @@ class RelatedToursForTour
      * Other active tours whose title or description match keywords from this tour,
      * topped up with featured tours when fewer than $limit matches.
      */
-    public static function get(Tour $exclude, int $limit = 5): Collection
+    public static function get(Tour $exclude, int $limit = 2): Collection
     {
         $tokens = self::tokens($exclude);
 

@@ -11,11 +11,24 @@ use App\Models\Destination;
 use App\Models\GalleryItem;
 use App\Models\SiteSetting;
 use App\Models\Tour;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
     public function index(): View
+    {
+        $metrics = $this->buildDashboardMetrics();
+
+        return view('admin.dashboard', $metrics);
+    }
+
+    public function data(): JsonResponse
+    {
+        return response()->json($this->buildDashboardMetrics());
+    }
+
+    private function buildDashboardMetrics(): array
     {
         $bookingsPerMonth = Booking::query()
             ->where('created_at', '>=', now()->subMonths(12))
@@ -25,14 +38,14 @@ class DashboardController extends Controller
             ->sortKeys();
 
         $months = collect(range(11, 0))->map(fn ($i) => now()->subMonths($i)->format('Y-m'));
-        $bookingsChartData = $months->map(fn ($m) => (int) ($bookingsPerMonth[$m] ?? 0));
+        $bookingsChartData = $months->map(fn ($m) => (int) ($bookingsPerMonth[$m] ?? 0))->values();
 
         $baseVisits = max(1, (int) SiteSetting::getValue('total_visitors', 0));
         $trafficChartData = $months->map(function ($m) use ($bookingsPerMonth, $baseVisits) {
             $b = (int) ($bookingsPerMonth[$m] ?? 0);
 
             return (int) min($baseVisits, $baseVisits / 12 + $b * 18 + crc32($m) % 400);
-        });
+        })->values();
 
         $popularDestinations = Destination::query()
             ->active()
@@ -40,7 +53,7 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('admin.dashboard', [
+        return [
             'totalBookings' => Booking::query()->count(),
             'totalVisitors' => (int) SiteSetting::getValue('total_visitors', 0),
             'totalTours' => Tour::query()->count(),
@@ -54,6 +67,6 @@ class DashboardController extends Controller
             'trafficChartData' => $trafficChartData,
             'popularDestinations' => $popularDestinations,
             'recentActivity' => ActivityLog::query()->with('user')->latest()->take(12)->get(),
-        ]);
+        ];
     }
 }

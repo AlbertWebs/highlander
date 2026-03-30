@@ -12,7 +12,7 @@ class RelatedToursForDestination
      * Active tours whose title or description match keywords from the destination name/slug,
      * topped up with featured tours when fewer than $limit matches.
      */
-    public static function get(Destination $destination, int $limit = 5): Collection
+    public static function get(Destination $destination, int $limit = 2): Collection
     {
         $tokens = self::tokens($destination);
 

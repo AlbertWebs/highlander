@@ -9,6 +9,8 @@
     $address = \App\Models\SiteSetting::getValue('contact_address', '');
     $siteHours = \App\Models\SiteSetting::getValue('site_hours', '');
     $footerCredits = trim((string) \App\Models\SiteSetting::getValue('footer_credits', ''));
+    $copyrightText = trim((string) \App\Models\SiteSetting::getValue('copyright_text', ''));
+    $photoCreditText = trim((string) \App\Models\SiteSetting::getValue('photo_credit_text', ''));
     $siteLogo = \App\Models\SiteSetting::getValue('site_logo', '');
     $siteLogoDark = \App\Models\SiteSetting::getValue('site_logo_dark', '');
     $footerLogoUrl = \App\Models\SiteSetting::publicUrl($siteLogoDark)
@@ -148,6 +150,8 @@
                 <p class="footer-credits-line text-center text-xs leading-relaxed text-white/60 sm:text-left [&_a]:font-medium [&_a]:text-white/85 [&_a]:underline [&_a]:underline-offset-2 [&_a]:transition hover:[&_a]:text-accent">
                     @if(filled($footerCredits))
                         {!! $footerCredits !!}
+                    @elseif(filled($copyrightText))
+                        {{ $copyrightText }}
                     @else
                         &copy; {{ date('Y') }} {{ config('app.name') }}. {{ __('All rights reserved.') }}
                     @endif
@@ -158,6 +162,11 @@
                     @endforeach
                 </nav>
             </div>
+            @if(filled($photoCreditText))
+                <p class="mt-3 text-center text-[11px] leading-relaxed text-white/50 sm:text-left">
+                    {{ $photoCreditText }}
+                </p>
+            @endif
         </div>
     </div>
 </footer>

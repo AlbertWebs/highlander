@@ -1,4 +1,4 @@
-{{-- Expects: $val (AboutCoreValue), $index (int) — no icons; typography + structure carry the design --}}
+{{-- Expects: $val (AboutCoreValue), $index (int) - no icons; typography + structure carry the design --}}
 @php
     $delay = min(300, 50 * (int) ($index ?? 0));
 @endphp

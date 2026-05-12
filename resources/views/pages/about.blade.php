@@ -1,6 +1,6 @@
 @extends('layouts.site')
 
-@section('title', filled($meta_title ?? null) ? $meta_title : __('About Us').' — '.config('app.name'))
+@section('title', filled($meta_title ?? null) ? $meta_title : __('About Us').' - '.config('app.name'))
 
 @push('meta')
     @include('partials.seo-meta')
@@ -16,6 +16,7 @@
     $introCta = filled($setting->intro_cta_label) ? $setting->intro_cta_label : __('Plan My Safari');
     $ctaLabel = filled($setting->cta_button_label) ? $setting->cta_button_label : __('Plan My Safari');
     $testimonialSlides = $aboutTestimonials->isEmpty() ? collect() : $aboutTestimonials->chunk(2);
+    $testimonialSlideCount = max(1, $testimonialSlides->count());
 @endphp
 
 @section('content')
@@ -42,10 +43,11 @@
     </div>
 </section>
 
-{{-- Vision, Mission, Promise — editorial layout (no icons) --}}
+{{-- Vision, Mission, Promise - editorial layout (no icons) --}}
 @php
     $visionList = $visionCards->values();
     $visionCount = $visionList->count();
+    $isAdventurePurposeCard = static fn ($c) => \Illuminate\Support\Str::slug($c->title) === 'adventure-with-a-deeper-purpose';
 @endphp
 @if($visionCount > 0)
     <section class="section-y relative overflow-hidden bg-gradient-to-b from-surface via-white to-surface section-divider" aria-labelledby="about-vision-mission-heading">
@@ -61,13 +63,17 @@
                     <p id="about-vision-mission-heading" class="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-primary">{{ __('Our compass') }}</p>
                     <span class="h-px w-10 bg-gradient-to-l from-transparent to-primary/40 sm:w-14" aria-hidden="true"></span>
                 </div>
-                <p class="mt-4 w-full text-sm leading-relaxed text-ink/65 sm:mt-5 sm:text-base">{{ __('The principles that shape how we guide, host, and care for every journey.') }}</p>
+                <p class="mt-4 w-full text-sm leading-relaxed text-ink/65 sm:mt-5 sm:text-base">{{ __('From family roots to the summits and savannas we share with you.') }}</p>
             </div>
 
             @if($visionCount === 1)
                 @php $card = $visionList->first(); @endphp
                 <div class="mt-16 w-full" data-aos="fade-up" data-aos-duration="850">
-                    @include('partials.about-vision-mission-statement', ['card' => $card, 'first' => null])
+                    @if($isAdventurePurposeCard($card))
+                        @include('partials.about-vision-mission-purpose-split', ['card' => $card, 'first' => null])
+                    @else
+                        @include('partials.about-vision-mission-statement', ['card' => $card, 'first' => null])
+                    @endif
                 </div>
             @elseif($visionCount === 2)
                 <div class="mt-16 grid gap-8 md:grid-cols-2 md:gap-10 lg:gap-12">
@@ -82,14 +88,18 @@
                     @endforeach
                 </div>
                 @foreach($visionList->slice(2) as $card)
-                    @include('partials.about-vision-mission-statement', ['card' => $card, 'first' => $loop->first])
+                    @if($isAdventurePurposeCard($card))
+                        @include('partials.about-vision-mission-purpose-split', ['card' => $card, 'first' => $loop->first])
+                    @else
+                        @include('partials.about-vision-mission-statement', ['card' => $card, 'first' => $loop->first])
+                    @endif
                 @endforeach
             @endif
         </div>
     </section>
 @endif
 
-{{-- Core values — editorial cards, no icons --}}
+{{-- Core values - editorial cards, no icons --}}
 @if($coreValues->isNotEmpty())
     <section class="section-y relative overflow-hidden bg-gradient-to-b from-white via-surface/40 to-white section-divider" aria-labelledby="about-core-values-heading">
         <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" aria-hidden="true"></div>
@@ -106,7 +116,7 @@
                 <h2 id="about-core-values-heading" class="mt-4 font-serif text-3xl font-semibold leading-tight text-ink sm:mt-5 sm:text-4xl">
                     {{ $setting->core_values_section_title }}
                 </h2>
-                <p class="mt-4 w-full text-sm leading-relaxed text-ink/65 sm:mt-5 sm:text-base">{{ __('The beliefs behind every itinerary and every guest we welcome.') }}</p>
+                <p class="mt-4 w-full text-sm leading-relaxed text-ink/65 sm:mt-5 sm:text-base">{{ __('How we host, mentor, and protect the wild places that raised us.') }}</p>
             </div>
 
             <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-7 xl:gap-8">
@@ -202,7 +212,7 @@
     </div>
 </section>
 
-{{-- Sustainability — editorial cards, no icons --}}
+{{-- Sustainability - editorial cards, no icons --}}
 @if($sustainabilityItems->isNotEmpty())
     <section class="section-y relative overflow-hidden bg-gradient-to-b from-surface/80 via-white to-primary/[0.04] section-divider" aria-labelledby="about-sustainability-heading">
         <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/25 to-transparent" aria-hidden="true"></div>
@@ -220,7 +230,7 @@
                 <h2 id="about-sustainability-heading" class="mt-4 font-serif text-3xl font-semibold leading-tight text-ink sm:mt-5 sm:text-4xl">
                     {{ $setting->sustainability_section_title }}
                 </h2>
-                <p class="mt-4 w-full text-sm leading-relaxed text-ink/65 sm:mt-5 sm:text-base">{{ __('Conservation, communities, and culture—woven into how we plan, guide, and grow.') }}</p>
+                <p class="mt-4 w-full text-sm leading-relaxed text-ink/65 sm:mt-5 sm:text-base">{{ __('Trees, classrooms, and clean water, funded by the journeys you take with us.') }}</p>
             </div>
 
             <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7 xl:gap-8">
@@ -233,16 +243,16 @@
 @endif
 
 {{-- Testimonials --}}
-<section class="section-y bg-surface section-divider">
-    <div class="site-gutter-x w-full">
-        <h2 class="mb-8 text-center font-serif text-3xl font-semibold text-primary sm:text-4xl" data-aos="fade-up" data-aos-duration="800">
+<section class="section-y overflow-x-hidden bg-surface section-divider">
+    <div class="site-gutter-x mx-auto w-full max-w-full min-w-0">
+        <h2 class="mx-auto mb-6 max-w-4xl px-2 text-center font-serif text-2xl font-semibold leading-snug text-primary text-balance sm:mb-8 sm:text-4xl sm:leading-tight" data-aos="fade-up" data-aos-duration="800">
             {{ $setting->testimonials_section_title }}
         </h2>
         @if($aboutTestimonials->isEmpty())
             <p class="text-center text-ink/60">{{ __('Testimonials will appear here. Mark testimonials as “Show on About” in the admin, or add new reviews.') }}</p>
         @else
             <div
-                class="rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                class="max-w-full min-w-0 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 x-data="testimonialCarousel({ total: {{ $testimonialSlides->count() }} })"
                 role="region"
                 tabindex="0"
@@ -262,11 +272,14 @@
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
                     </button>
-                    <div class="min-w-0 flex-1 overflow-hidden">
-                        <div class="flex transition-transform duration-500 ease-out motion-reduce:transition-none motion-reduce:duration-0" :style="`transform: translateX(-${current * 100}%)`">
+                    <div class="min-w-0 max-w-full flex-1 overflow-hidden">
+                        <div
+                            class="flex transition-transform duration-500 ease-out motion-reduce:transition-none motion-reduce:duration-0"
+                            :style="`width: {{ $testimonialSlideCount * 100 }}%; transform: translateX(calc(-1 * ${current} * (100% / ${total})))`"
+                        >
                             @foreach($testimonialSlides as $slide)
-                                <div class="min-w-full shrink-0 px-0.5 sm:px-1">
-                                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-6 lg:gap-8">
+                                <div class="min-w-0 shrink-0 px-1 sm:px-2" style="flex: 0 0 calc(100% / {{ $testimonialSlideCount }})">
+                                    <div class="grid min-w-0 max-w-full grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-6 lg:gap-8">
                                         @foreach($slide as $t)
                                             @php
                                                 $rating = min(5, max(1, (int) ($t->rating ?? 5)));
@@ -274,8 +287,8 @@
                                                 $soloInSlide = $slide->count() === 1;
                                             @endphp
                                             <blockquote @class([
-                                                'card-depth flex min-h-[240px] flex-col bg-white p-6 sm:min-h-[260px] sm:p-8',
-                                                'sm:col-span-2 sm:max-w-xl sm:justify-self-center md:max-w-2xl' => $soloInSlide,
+                                                'card-depth flex min-h-[240px] min-w-0 max-w-full flex-col bg-white p-5 sm:min-h-[260px] sm:p-8',
+                                                'sm:col-span-2 sm:mx-auto sm:max-w-xl md:max-w-2xl' => $soloInSlide,
                                             ])>
                                                 <div class="flex flex-col gap-4 sm:flex-row sm:gap-5">
                                                     @if($t->image)
@@ -289,7 +302,7 @@
                                                                 <span class="text-base leading-none {{ $i <= $rating ? 'text-amber-500' : 'text-ink/15' }}" aria-hidden="true">★</span>
                                                             @endfor
                                                         </div>
-                                                        <p class="mt-3 text-sm leading-relaxed text-ink/90 sm:text-base">“{{ $t->quote }}”</p>
+                                                        <p class="mt-3 break-words text-sm leading-relaxed text-ink/90 sm:text-base">“{{ $t->quote }}”</p>
                                                         <footer class="mt-4 border-t border-secondary/30 pt-4">
                                                             <cite class="not-italic font-semibold text-primary">{{ $t->name }}</cite>
                                                             @if(filled($t->country))
@@ -337,7 +350,7 @@
     </div>
 </section>
 
-{{-- CTA — same treatment as home hero CTA; footer uses mt-0 on this route so block meets footer --}}
+{{-- CTA - same treatment as home hero CTA; footer uses mt-0 on this route so block meets footer --}}
 <section class="relative overflow-hidden bg-gradient-to-br from-primary via-primary to-[#2E7D32] section-y text-white section-divider" aria-labelledby="about-cta-heading">
     <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_120%,rgba(0,0,0,0.2),transparent_55%)]" aria-hidden="true"></div>
     <div class="absolute inset-0 opacity-25" style="background-image: url('https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center;"></div>

@@ -392,15 +392,16 @@
 
 @php
     $testimonialSlides = $testimonials->isEmpty() ? collect() : $testimonials->chunk(2);
+    $testimonialSlideCount = max(1, $testimonialSlides->count());
 @endphp
-<section class="bg-white section-divider section-y">
-    <div class="site-gutter-x mx-auto max-w-7xl">
-        <h2 class="mb-8 text-center font-serif text-3xl font-semibold text-primary sm:text-4xl" data-aos="fade-up" data-aos-duration="800">{{ __('Testimonials') }}</h2>
+<section class="overflow-x-hidden bg-white section-divider section-y">
+    <div class="site-gutter-x mx-auto max-w-7xl min-w-0">
+        <h2 class="mx-auto mb-6 max-w-4xl px-2 text-center font-serif text-2xl font-semibold leading-snug text-primary text-balance sm:mb-8 sm:text-4xl sm:leading-tight" data-aos="fade-up" data-aos-duration="800">{{ __('Testimonials') }}</h2>
         @if($testimonials->isEmpty())
             <p class="text-center text-ink/60">{{ __('Testimonials will appear here.') }}</p>
         @else
             <div
-                class="rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                class="max-w-full min-w-0 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 x-data="testimonialCarousel({ total: {{ $testimonialSlides->count() }} })"
                 role="region"
                 tabindex="0"
@@ -422,14 +423,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                         </svg>
                     </button>
-                    <div class="min-w-0 flex-1 overflow-hidden">
+                    <div class="min-w-0 max-w-full flex-1 overflow-hidden">
                         <div
                             class="flex transition-transform duration-500 ease-out motion-reduce:transition-none motion-reduce:duration-0"
-                            :style="`transform: translateX(-${current * 100}%)`"
+                            :style="`width: {{ $testimonialSlideCount * 100 }}%; transform: translateX(calc(-1 * ${current} * (100% / ${total})))`"
                         >
                             @foreach($testimonialSlides as $slide)
-                                <div class="min-w-full shrink-0 px-0.5 sm:px-1">
-                                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-6 lg:gap-8">
+                                <div class="min-w-0 shrink-0 px-1 sm:px-2" style="flex: 0 0 calc(100% / {{ $testimonialSlideCount }})">
+                                    <div class="grid min-w-0 max-w-full grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-6 lg:gap-8">
                                         @foreach($slide as $t)
                                             @php
                                                 $rating = min(5, max(1, (int) ($t->rating ?? 5)));
@@ -437,8 +438,8 @@
                                                 $soloInSlide = $slide->count() === 1;
                                             @endphp
                                             <blockquote @class([
-                                                'card-depth flex min-h-[260px] flex-col p-6 sm:min-h-[280px] sm:p-8',
-                                                'sm:col-span-2 sm:max-w-xl sm:justify-self-center md:max-w-2xl' => $soloInSlide,
+                                                'card-depth flex min-h-[260px] min-w-0 max-w-full flex-col p-5 sm:min-h-[280px] sm:p-8',
+                                                'sm:col-span-2 sm:mx-auto sm:max-w-xl md:max-w-2xl' => $soloInSlide,
                                             ])>
                                                 <div class="flex flex-col gap-5 sm:flex-row sm:gap-6">
                                                     @if($t->image)

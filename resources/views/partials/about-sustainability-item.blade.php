@@ -1,4 +1,4 @@
-{{-- Expects: $item (AboutSustainabilityItem), $index (int) — no icons --}}
+{{-- Expects: $item (AboutSustainabilityItem), $index (int) - no icons --}}
 @php
     $delay = min(280, 55 * (int) ($index ?? 0));
 @endphp

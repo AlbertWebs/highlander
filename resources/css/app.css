@@ -134,6 +134,26 @@
         font-weight: 600;
         color: rgb(46 46 46);
     }
+    .about-rich-text blockquote,
+    .about-pullquote {
+        margin: 1.25rem 0 1.5rem;
+        border-left: 4px solid rgb(76 175 80 / 0.55);
+        padding-left: 1.25rem;
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: 1.35rem;
+        font-style: italic;
+        font-weight: 500;
+        line-height: 1.45;
+        color: rgb(46 46 46 / 0.92);
+    }
+    .about-rich-text blockquote p,
+    .about-pullquote p {
+        margin-bottom: 0.5rem;
+    }
+    .about-rich-text blockquote p:last-child,
+    .about-pullquote p:last-child {
+        margin-bottom: 0;
+    }
     .about-rich-text h2 {
         margin-top: 1rem;
         margin-bottom: 0.5rem;

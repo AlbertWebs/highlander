@@ -24,7 +24,7 @@
             </h1>
             @if(filled($setting->hero_subtitle))
                 <div
-                    class="about-rich-text about-rich-text--hero mt-5 w-full max-w-none text-xl font-medium leading-relaxed text-white sm:mt-6 sm:text-2xl sm:leading-snug [text-shadow:0_1px_3px_rgba(0,0,0,0.75),0_4px_28px_rgba(0,0,0,0.55)]"
+                    class="about-rich-text about-rich-text--hero mt-5 hidden w-full max-w-none text-xl font-medium leading-relaxed text-white sm:mt-6 sm:block sm:text-2xl sm:leading-snug [text-shadow:0_1px_3px_rgba(0,0,0,0.75),0_4px_28px_rgba(0,0,0,0.55)]"
                     data-aos="fade-up"
                     data-aos-duration="800"
                     data-aos-delay="100"

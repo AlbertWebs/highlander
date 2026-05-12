@@ -453,7 +453,7 @@
                                                                 <span class="text-lg leading-none {{ $i <= $rating ? 'text-amber-500' : 'text-ink/15' }}" aria-hidden="true">★</span>
                                                             @endfor
                                                         </div>
-                                                        <p class="mt-4 text-base leading-relaxed text-ink/90 sm:text-lg">“{{ $t->quote }}”</p>
+                                                        <p class="mt-4 break-words text-base leading-relaxed text-ink/90 sm:text-lg">“{{ $t->quote }}”</p>
                                                         <footer class="mt-6 border-t border-secondary/35 pt-5">
                                                             <cite class="not-italic font-serif text-lg font-semibold text-primary">{{ $t->name }}</cite>
                                                             @if(filled($t->country))

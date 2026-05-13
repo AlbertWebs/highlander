@@ -93,6 +93,10 @@ class DatabaseSeeder extends Seeder
             );
         }
 
+        $this->call(MountKenyaItinerarySeeder::class);
+        $this->call(MountKenyaExtendedItinerarySeeder::class);
+        $this->call(MountKenyaIntroductionAndTcvItinerarySeeder::class);
+
         $dest = [
             ['name' => 'Masai Mara', 'slug' => 'masai-mara'],
             ['name' => 'Okavango', 'slug' => 'okavango'],

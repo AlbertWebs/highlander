@@ -7,6 +7,9 @@
 @endsection
 
 @section('content')
+@if($errors->any())
+    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{{ $errors->first() }}</div>
+@endif
 <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
     <form method="get" class="flex gap-2">
         <input type="search" name="q" value="{{ $q }}" placeholder="{{ __('Search') }}…" class="rounded-xl border border-secondary/50 bg-white px-4 py-2 text-sm">
@@ -38,21 +41,26 @@
                 >
                     <td class="px-4 py-3">{{ $tour->id }}</td>
                     <td class="px-4 py-3 font-medium text-primary">{{ $tour->title }}</td>
-                    <td class="px-4 py-3">
-                        <div class="flex flex-wrap gap-1">
-                            @if($tour->nav_safari)
-                                <span class="rounded-md bg-primary/15 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-primary" title="{{ __('Safari') }}">S</span>
-                            @endif
-                            @if($tour->nav_mountain_safari)
-                                <span class="rounded-md bg-accent/25 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-ink" title="{{ __('Mountains') }}">M</span>
-                            @endif
-                            @if($tour->nav_explore_africa)
-                                <span class="rounded-md bg-secondary/60 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-ink/80" title="{{ __('Explore Africa') }}">E</span>
-                            @endif
-                            @if(!$tour->nav_safari && !$tour->nav_mountain_safari && !$tour->nav_explore_africa)
-                                <span class="text-ink/40">—</span>
-                            @endif
-                        </div>
+                    <td class="min-w-[11rem] max-w-[16rem] px-4 py-3 align-top">
+                        <form method="post" action="{{ route('admin.tours.updateMenus', $tour) }}" class="space-y-2">
+                            @csrf
+                            @method('PATCH')
+                            <div class="flex flex-col gap-1.5 text-xs">
+                                <label class="inline-flex cursor-pointer items-center gap-2 font-medium text-ink/85">
+                                    <input type="checkbox" name="nav_safari" value="1" @checked($tour->nav_safari) class="rounded border-secondary text-primary focus:ring-primary">
+                                    <span>{{ __('Safari') }}</span>
+                                </label>
+                                <label class="inline-flex cursor-pointer items-center gap-2 font-medium text-ink/85">
+                                    <input type="checkbox" name="nav_mountain_safari" value="1" @checked($tour->nav_mountain_safari) class="rounded border-secondary text-primary focus:ring-primary">
+                                    <span>{{ __('Mountains') }}</span>
+                                </label>
+                                <label class="inline-flex cursor-pointer items-center gap-2 font-medium text-ink/85">
+                                    <input type="checkbox" name="nav_explore_africa" value="1" @checked($tour->nav_explore_africa) class="rounded border-secondary text-primary focus:ring-primary">
+                                    <span>{{ __('Explore Africa') }}</span>
+                                </label>
+                            </div>
+                            <button type="submit" class="w-full rounded-lg bg-primary px-2 py-1.5 text-[0.65rem] font-semibold uppercase tracking-wide text-white shadow-sm hover:bg-primary/90">{{ __('Save menus') }}</button>
+                        </form>
                     </td>
                     <td class="px-4 py-3 text-ink/70">
                         @if($tour->mountain)

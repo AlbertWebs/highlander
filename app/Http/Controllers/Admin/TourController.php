@@ -114,6 +114,32 @@ class TourController extends Controller
         return back()->with('success', __('Status updated.'));
     }
 
+    /**
+     * Quick update of main-nav menu flags from the tours index table.
+     */
+    public function updateMenus(Request $request, Tour $tour): RedirectResponse
+    {
+        $navSafari = $request->boolean('nav_safari');
+        $navMountain = $request->boolean('nav_mountain_safari');
+        $navExplore = $request->boolean('nav_explore_africa');
+
+        if (! $navSafari && ! $navMountain && ! $navExplore) {
+            throw ValidationException::withMessages([
+                'nav_safari' => [__('Choose at least one: Safari, Mountains, or Explore Africa.')],
+            ]);
+        }
+
+        $tour->update([
+            'nav_safari' => $navSafari,
+            'nav_mountain_safari' => $navMountain,
+            'nav_explore_africa' => $navExplore,
+        ]);
+        ActivityLog::record('tour.updated', $tour->title.' (menus)', $tour);
+        $this->forgetHomeCache();
+
+        return back()->with('success', __('Menus updated for :title.', ['title' => $tour->title]));
+    }
+
     protected function validated(Request $request): array
     {
         $data = $request->validate([

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class Destination extends Model
@@ -22,6 +23,11 @@ class Destination extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    public function tours(): HasMany
+    {
+        return $this->hasMany(Tour::class);
     }
 
     /**

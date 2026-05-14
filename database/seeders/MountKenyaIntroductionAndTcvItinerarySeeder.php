@@ -2,13 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\Article;
 use App\Models\Tour;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
 /**
- * Structured content: Mount Kenya introduction (article) + T.C.V Cultural and Farm Experience (tour).
+ * Structured content: T.C.V Cultural and Farm Experience (tour).
  */
 class MountKenyaIntroductionAndTcvItinerarySeeder extends Seeder
 {
@@ -19,55 +18,10 @@ class MountKenyaIntroductionAndTcvItinerarySeeder extends Seeder
         foreach ($this->payload() as $block) {
             $category = $block['category'] ?? null;
 
-            if ($category === 'Introduction') {
-                $this->seedIntroduction($block);
-
-                continue;
-            }
-
             if ($category === 'Itinerary') {
                 $this->seedItineraryTour($block);
             }
         }
-    }
-
-    /**
-     * @param  array<string, mixed>  $block
-     */
-    private function seedIntroduction(array $block): void
-    {
-        $title = (string) ($block['title'] ?? '');
-        $slug = Str::slug($title);
-        $c = $block['content'] ?? [];
-
-        if (! is_array($c)) {
-            return;
-        }
-
-        $body = '<h2>Climate</h2>'
-            .'<p>'.e((string) ($c['climate'] ?? '')).'</p>'
-            .'<h2>Flora</h2>'
-            .'<p>'.e((string) ($c['flora'] ?? '')).'</p>'
-            .'<h2>Cultural significance</h2>'
-            .'<p>'.e((string) ($c['cultural_significance'] ?? '')).'</p>'
-            .'<h2>Wildlife</h2>'
-            .'<p>'.e((string) ($c['wildlife'] ?? '')).'</p>';
-
-        $excerpt = 'Climate, vegetation, culture, and wildlife on Africa’s second-highest peak: an introduction to Mount Kenya.';
-
-        Article::query()->updateOrCreate(
-            ['slug' => $slug],
-            [
-                'title' => $title,
-                'excerpt' => $excerpt,
-                'body' => $body,
-                'featured_image' => 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80',
-                'published_at' => now()->subDay(),
-                'is_active' => true,
-                'meta_title' => $title.' | Highlanders Nature Trails',
-                'meta_description' => Str::limit($excerpt, 155),
-            ]
-        );
     }
 
     /**
@@ -161,16 +115,6 @@ class MountKenyaIntroductionAndTcvItinerarySeeder extends Seeder
     private function payload(): array
     {
         return [
-            [
-                'category' => 'Introduction',
-                'title' => 'Exploring Majestic Mount Kenya',
-                'content' => [
-                    'climate' => 'Day begins with clear blue skies and temperatures near 25°C in lower regions, cooling to 10°C during ascent. Nights above 3,000m can plummet to -10°C.',
-                    'flora' => 'Features lush bamboo groves, montane forests, giant groundsels, tussock grass, and towering lobelias. High altitude zones (above 3,800m) consist of hardy alpine herbs.',
-                    'cultural_significance' => 'Sacred to the Kikuyu (who call it Kirinyaga), Meru, and Embu communities. Traditionally viewed as the dwelling place of the deity Ngai.',
-                    'wildlife' => 'Hyrax, sunbirds, elephants, and buffalos.',
-                ],
-            ],
             [
                 'category' => 'Itinerary',
                 'route_name' => 'T.C.V Cultural and Farm Experience',

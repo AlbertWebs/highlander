@@ -29,7 +29,9 @@ class ArticleController extends Controller
 
     public function create(): View
     {
-        return view('admin.articles.create');
+        return view('admin.articles.create', [
+            'article' => new Article,
+        ]);
     }
 
     public function store(Request $request): RedirectResponse

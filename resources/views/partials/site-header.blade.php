@@ -4,35 +4,34 @@
         ? (string) (filled($routeTour->nav_bucket) ? $routeTour->nav_bucket : \App\Models\Tour::NAV_SAFARI)
         : null;
 
-    $navToursExplore = \App\Models\Tour::query()->active()->forNavBucket(\App\Models\Tour::NAV_EXPLORE_AFRICA)->orderByDesc('is_featured')->orderBy('sort_order')->orderBy('title')->limit(12)->get();
-    $navToursMountains = \App\Models\Tour::query()->active()->forNavBucket(\App\Models\Tour::NAV_MOUNTAIN_SAFARI)->orderByDesc('is_featured')->orderBy('sort_order')->orderBy('title')->limit(12)->get();
     $navToursSafari = \App\Models\Tour::query()->active()->forNavBucket(\App\Models\Tour::NAV_SAFARI)->orderByDesc('is_featured')->orderBy('sort_order')->orderBy('title')->limit(12)->get();
 
-    $navExploreChildren = collect([['label' => __('All destinations'), 'url' => route('explore-africa')]])
+    $mountKenyaDestination = \App\Models\Destination::query()->active()->where('slug', 'mount-kenya')->first();
+    $destinationsForExploreNav = \App\Models\Destination::query()->active();
+    if ($mountKenyaDestination !== null) {
+        $destinationsForExploreNav->where('slug', '!=', 'mount-kenya');
+    }
+
+    $navExploreChildren = collect([['label' => __('All destinations'), 'url' => route('explore-africa')]]);
+    if ($mountKenyaDestination !== null) {
+        $navExploreChildren->push([
+            'label' => __('Mount Kenya'),
+            'url' => route('explore-africa.show', $mountKenyaDestination),
+        ]);
+    }
+    $navExploreChildren = $navExploreChildren
         ->merge(
-            \App\Models\Destination::query()->active()->orderByDesc('sort_order')->limit(8)->get()->map(fn ($d) => [
+            $destinationsForExploreNav->orderByDesc('sort_order')->limit(8)->get()->map(fn ($d) => [
                 'label' => $d->name,
                 'url' => route('explore-africa.show', $d),
-            ])
-        )
-        ->merge(
-            $navToursExplore->map(fn (\App\Models\Tour $tour) => [
-                'label' => $tour->title,
-                'url' => route('experiences.show', $tour),
             ])
         );
 
     $navMountainsChildren = collect([['label' => __('All mountains'), 'url' => route('mountains')]])
         ->merge(
-            \App\Models\Mountain::query()->active()->orderBy('name')->limit(8)->get()->map(fn ($m) => [
+            \App\Models\Mountain::forMainMenu()->map(fn ($m) => [
                 'label' => $m->name,
                 'url' => route('mountains.show', $m),
-            ])
-        )
-        ->merge(
-            $navToursMountains->map(fn (\App\Models\Tour $tour) => [
-                'label' => $tour->title,
-                'url' => route('experiences.show', $tour),
             ])
         )
         ->push(['label' => __('Plan your safari'), 'url' => route('plan-my-safari')]);

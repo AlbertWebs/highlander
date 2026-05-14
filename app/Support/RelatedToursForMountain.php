@@ -9,44 +9,148 @@ use Illuminate\Support\Collection;
 class RelatedToursForMountain
 {
     /**
-     * Active tours whose title or description match keywords from the mountain name/slug,
-     * topped up with featured tours when fewer than $limit matches.
+     * All active tours associated with this mountain hub (mountain detail pages).
+     * Tours explicitly linked in admin (mountain_id) are listed first; the rest follow
+     * the existing slug/keyword heuristics. Mount Kenya uses the curated hub slug set;
+     * Kilimanjaro uses its hub list plus keywords; other peaks match keywords on title,
+     * description, and slug.
+     *
+     * @return Collection<int, Tour>
      */
-    public static function get(Mountain $mountain, int $limit = 2): Collection
+    public static function allForMountain(Mountain $mountain, int $max = 200): Collection
     {
-        $tokens = self::tokens($mountain);
+        $cap = max(1, $max);
 
-        if ($tokens === []) {
-            return self::fallbackTours($limit);
+        $linked = Tour::query()
+            ->active()
+            ->where('mountain_id', $mountain->id)
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->get();
+
+        $heuristic = self::heuristicAllForMountain($mountain, $cap);
+        $linkedIds = $linked->pluck('id')->all();
+        $heuristicFiltered = $heuristic->whereNotIn('id', $linkedIds)->values();
+
+        return $linked->concat($heuristicFiltered)->take($cap)->values();
+    }
+
+    /**
+     * @return Collection<int, Tour>
+     */
+    private static function heuristicAllForMountain(Mountain $mountain, int $max): Collection
+    {
+        $cap = max(1, $max);
+
+        if ($mountain->slug === 'mount-kenya') {
+            return Tour::query()
+                ->active()
+                ->whereIn('slug', Tour::mountKenyaDestinationHubSlugs())
+                ->orderByDesc('is_featured')
+                ->orderBy('sort_order')
+                ->orderBy('title')
+                ->limit($cap)
+                ->get();
         }
 
-        $matched = Tour::query()
+        if (in_array($mountain->slug, ['mount-kilimanjaro', 'kilimanjaro'], true)) {
+            return Tour::query()
+                ->active()
+                ->where(function ($q): void {
+                    $q->whereIn('slug', Tour::mountKilimanjaroMountainHubSlugs())
+                        ->orWhereRaw('LOWER(title) like ?', ['%kilimanjaro%'])
+                        ->orWhereRaw('LOWER(COALESCE(description, "")) like ?', ['%kilimanjaro%'])
+                        ->orWhereRaw('LOWER(slug) like ?', ['%kilimanjaro%']);
+                })
+                ->distinct()
+                ->orderByDesc('is_featured')
+                ->orderBy('sort_order')
+                ->orderBy('title')
+                ->limit($cap)
+                ->get();
+        }
+
+        if ($mountain->slug === 'mount-kilimambogo') {
+            return Tour::query()
+                ->active()
+                ->where(function ($q): void {
+                    $q->whereRaw('LOWER(title) like ?', ['%kilimambogo%'])
+                        ->orWhereRaw('LOWER(COALESCE(description, "")) like ?', ['%kilimambogo%'])
+                        ->orWhereRaw('LOWER(slug) like ?', ['%kilimambogo%'])
+                        ->orWhereRaw('LOWER(title) like ?', ['%ol doinyo sabuk%'])
+                        ->orWhereRaw('LOWER(COALESCE(description, "")) like ?', ['%ol doinyo sabuk%'])
+                        ->orWhereRaw('LOWER(slug) like ?', ['%ol-doinyo-sabuk%']);
+                })
+                ->distinct()
+                ->orderByDesc('is_featured')
+                ->orderBy('sort_order')
+                ->orderBy('title')
+                ->limit($cap)
+                ->get();
+        }
+
+        $patterns = self::mountainKeywordPatterns($mountain);
+        if ($patterns === []) {
+            return collect();
+        }
+
+        return Tour::query()
             ->active()
-            ->where(function ($q) use ($tokens): void {
-                foreach ($tokens as $t) {
-                    $pat = '%'.$t.'%';
-                    $q->orWhere('title', 'like', $pat)->orWhere('description', 'like', $pat);
+            ->where(function ($q) use ($patterns): void {
+                foreach ($patterns as $fragment) {
+                    $fragment = strtolower(trim($fragment));
+                    if ($fragment === '') {
+                        continue;
+                    }
+                    $pat = '%'.$fragment.'%';
+                    $q->orWhereRaw('LOWER(title) like ?', [$pat])
+                        ->orWhereRaw('LOWER(COALESCE(description, "")) like ?', [$pat])
+                        ->orWhereRaw('LOWER(slug) like ?', [$pat]);
                 }
             })
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
-            ->limit($limit)
+            ->orderBy('title')
+            ->limit($cap)
             ->get();
+    }
 
-        if ($matched->count() >= $limit) {
-            return $matched;
+    /**
+     * Active tours for this mountain, topped up with featured tours when nothing matches.
+     *
+     * @return Collection<int, Tour>
+     */
+    public static function get(Mountain $mountain, int $limit = 8): Collection
+    {
+        $all = self::allForMountain($mountain, max($limit, 200));
+        if ($all->isNotEmpty()) {
+            return $all->take(max(1, $limit))->values();
         }
 
-        $needed = $limit - $matched->count();
-        $more = Tour::query()
-            ->active()
-            ->whereNotIn('id', $matched->pluck('id'))
-            ->orderByDesc('is_featured')
-            ->orderBy('sort_order')
-            ->limit($needed)
-            ->get();
+        return self::fallbackTours($limit);
+    }
 
-        return $matched->concat($more)->values();
+    /**
+     * @return list<string>
+     */
+    private static function mountainKeywordPatterns(Mountain $mountain): array
+    {
+        $slug = strtolower(str_replace('_', '-', trim((string) $mountain->slug)));
+
+        $map = [
+            'mount-meru' => ['meru', 'mount meru'],
+            'meru' => ['meru', 'mount meru'],
+            'drakensberg' => ['drakensberg'],
+            'rwenzori' => ['rwenzori', 'ruwenzori'],
+            'atlas' => ['atlas', 'toubkal'],
+        ];
+
+        if (isset($map[$slug])) {
+            return $map[$slug];
+        }
+
+        return self::tokens($mountain);
     }
 
     /**
@@ -85,7 +189,7 @@ class RelatedToursForMountain
             ->active()
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
-            ->limit($limit)
+            ->limit(max(1, $limit))
             ->get();
     }
 }

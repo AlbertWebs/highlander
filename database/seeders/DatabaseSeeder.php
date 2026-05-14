@@ -102,6 +102,11 @@ class DatabaseSeeder extends Seeder
         }
 
         $dest = [
+            [
+                'name' => 'Mount Kenya',
+                'slug' => 'mount-kenya',
+                'description' => '<p>Africa’s second-highest peak: glacier-carved valleys, afro-alpine flora, and trekking routes including Sirimon, Naromoru, Chogoria, Burguret, and Kamweti. We also weave in highland culture and farm experiences around the massif.</p>',
+            ],
             ['name' => 'Masai Mara', 'slug' => 'masai-mara'],
             ['name' => 'Okavango', 'slug' => 'okavango'],
             ['name' => 'Drakensberg', 'slug' => 'drakensberg'],
@@ -112,9 +117,9 @@ class DatabaseSeeder extends Seeder
                 ['slug' => $d['slug']],
                 [
                     'name' => $d['name'],
-                    'description' => 'Iconic landscapes, rich culture, and world-class hospitality.',
+                    'description' => $d['description'] ?? 'Iconic landscapes, rich culture, and world-class hospitality.',
                     'is_active' => true,
-                    'sort_order' => 10 - $i,
+                    'sort_order' => 100 - $i,
                 ]
             );
         }
@@ -125,6 +130,26 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Mount Kenya',
                 'description' => 'Glacial valleys and afro-alpine flora on Africa\'s second-highest peak.',
                 'elevation_m' => 5199,
+                'is_active' => true,
+            ]
+        );
+
+        Mountain::query()->updateOrCreate(
+            ['slug' => 'mount-kilimanjaro'],
+            [
+                'name' => 'Mount Kilimanjaro',
+                'description' => '<p>Tanzania\'s iconic freestanding volcano: rainforest slopes, high alpine desert, and glacier-crowned Uhuru Peak. We publish route-based programmes and tailor pacing to your dates and acclimatisation needs.</p>',
+                'elevation_m' => 5895,
+                'is_active' => true,
+            ]
+        );
+
+        Mountain::query()->updateOrCreate(
+            ['slug' => 'mount-kilimambogo'],
+            [
+                'name' => 'Mount Kilimambogo',
+                'description' => '<p>A prominent volcanic outlier in central Kenya, rising above the Athi plains near Ol Donyo Sabuk. Shorter summit days and big-sky views make it a rewarding add-on to Nairobi or Mount Kenya itineraries.</p>',
+                'elevation_m' => 2144,
                 'is_active' => true,
             ]
         );

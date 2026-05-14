@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use App\Models\Destination;
+use App\Models\Mountain;
 use App\Models\Tour;
 use App\Support\SlugHelper;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -18,6 +21,7 @@ class TourController extends Controller
     {
         $q = $request->string('q')->trim();
         $tours = Tour::query()
+            ->with(['mountain', 'destination'])
             ->withCount('itineraryDays')
             ->when($q, fn ($query) => $query->where('title', 'like', '%'.$q.'%'))
             ->orderByDesc('id')
@@ -29,7 +33,7 @@ class TourController extends Controller
 
     public function create(): View
     {
-        return view('admin.tours.create');
+        return view('admin.tours.create', $this->hubFormData());
     }
 
     public function store(Request $request): RedirectResponse
@@ -61,7 +65,7 @@ class TourController extends Controller
 
     public function edit(Tour $tour): View
     {
-        return view('admin.tours.edit', compact('tour'));
+        return view('admin.tours.edit', array_merge($this->hubFormData($tour), compact('tour')));
     }
 
     public function update(Request $request, Tour $tour): RedirectResponse
@@ -123,7 +127,29 @@ class TourController extends Controller
             'featured_media_type' => ['nullable', 'in:image,video'],
             'featured_video_url' => ['nullable', 'string', 'max:2048', 'required_if:featured_media_type,video'],
             'image' => ['nullable', 'image', 'max:5120'],
+            'mountain_id' => ['nullable', 'integer', 'exists:mountains,id'],
+            'destination_id' => ['nullable', 'integer', 'exists:destinations,id'],
         ]);
+    }
+
+    /**
+     * @return array{mountains: Collection<int, Mountain>, destinations: Collection<int, Destination>}
+     */
+    protected function hubFormData(?Tour $tour = null): array
+    {
+        $mountains = Mountain::forMainMenu();
+
+        if ($tour !== null && $tour->mountain_id) {
+            $linked = Mountain::query()->find($tour->mountain_id);
+            if ($linked instanceof Mountain && ! $mountains->contains('id', $linked->id)) {
+                $mountains = $mountains->prepend($linked)->values();
+            }
+        }
+
+        return [
+            'mountains' => $mountains,
+            'destinations' => Destination::query()->orderBy('sort_order')->orderBy('name')->get(['id', 'name', 'slug']),
+        ];
     }
 
     protected function forgetHomeCache(): void

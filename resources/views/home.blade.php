@@ -281,22 +281,24 @@
         <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-7 lg:grid-cols-4 lg:gap-6 xl:gap-8">
             @forelse($featured_tours as $tour)
                 <article
-                    class="group flex min-w-0 flex-col overflow-hidden card-depth ring-1 ring-primary/10 backdrop-blur-sm"
+                    class="group flex min-w-0 flex-col overflow-hidden rounded-3xl border border-secondary/20 bg-white shadow-[0_6px_32px_rgba(46,46,46,0.08)] ring-1 ring-primary/[0.06] transition duration-300 ease-out hover:-translate-y-1 hover:border-primary/25 hover:shadow-[0_20px_48px_rgba(46,46,46,0.14)]"
                     data-aos="fade-up"
                     data-aos-duration="800"
                     data-aos-delay="{{ min(400, 100 * $loop->index) }}"
                 >
-                    <div class="h-1.5 w-full bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-left transition duration-500 group-hover:bg-right"></div>
-                    <div class="img-zoom-parent relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-secondary/50 to-primary/20">
+                    <div class="h-1 w-full bg-gradient-to-r from-primary via-accent to-primary opacity-90 transition duration-500 group-hover:opacity-100"></div>
+                    <div class="img-zoom-parent relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-secondary/45 to-primary/[0.12]">
                         @include('partials.tour-featured-media', ['tour' => $tour])
-                        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-primary/10 opacity-90 transition duration-300 group-hover:from-black/50 group-hover:via-transparent group-hover:to-primary/20"></div>
-                        @if($tour->price)
-                            <p class="absolute bottom-3 left-3 rounded-full border border-white/30 bg-primary px-3 py-1 text-xs font-bold tabular-nums text-white shadow-lg ring-2 ring-primary/30">{{ __('From') }} ${{ number_format($tour->price, 0) }}</p>
+                        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-primary/5 opacity-95 transition duration-300 group-hover:from-black/55" aria-hidden="true"></div>
+                        @if($tour->duration_days)
+                            <p class="absolute bottom-3 left-3 rounded-full border border-white/35 bg-black/40 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white backdrop-blur-md">
+                                {{ trans_choice(':count day|:count days', $tour->duration_days, ['count' => $tour->duration_days]) }}
+                            </p>
                         @endif
                     </div>
-                    <div class="flex flex-1 flex-col bg-gradient-to-b from-white via-white to-primary/[0.04] p-5 sm:p-6">
-                        <h3 class="font-serif text-lg font-semibold leading-snug tracking-tight text-ink transition group-hover:text-primary lg:text-[1.125rem]">{{ $tour->title }}</h3>
-                        <p class="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-ink/75">{{ $tour->description }}</p>
+                    <div class="flex flex-1 flex-col bg-gradient-to-b from-white via-white to-primary/[0.05] px-6 pb-6 pt-5 sm:px-7">
+                        <h3 class="font-serif text-lg font-semibold leading-snug tracking-tight text-ink transition group-hover:text-primary sm:text-[1.125rem]">{{ $tour->title }}</h3>
+                        <p class="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-ink/72">{{ $tour->description }}</p>
                         {{-- Narrow 4-up cards: stack CTAs from lg; smaller type + padding so labels read cleanly --}}
                         <div class="mt-5 grid grid-cols-2 gap-2 sm:gap-2.5 lg:grid-cols-1 lg:gap-2">
                             <a

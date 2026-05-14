@@ -33,16 +33,60 @@
         <select name="nav_bucket" class="mt-1 w-full rounded-xl border-secondary/60 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary">
             @foreach(\App\Models\Tour::NAV_BUCKETS as $bucket)
                 <option value="{{ $bucket }}" @selected(old('nav_bucket', $tour->nav_bucket ?? \App\Models\Tour::NAV_SAFARI) === $bucket)>
-                    @match($bucket)
-                        @case(\App\Models\Tour::NAV_SAFARI) {{ __('Safari') }} @break
-                        @case(\App\Models\Tour::NAV_MOUNTAIN_SAFARI) {{ __('Mountain safari') }} @break
-                        @case(\App\Models\Tour::NAV_EXPLORE_AFRICA) {{ __('Explore Africa') }} @break
-                    @endmatch
+                    @if($bucket === \App\Models\Tour::NAV_SAFARI)
+                        {{ __('Safari') }}
+                    @elseif($bucket === \App\Models\Tour::NAV_MOUNTAIN_SAFARI)
+                        {{ __('Mountain safari') }}
+                    @elseif($bucket === \App\Models\Tour::NAV_EXPLORE_AFRICA)
+                        {{ __('Explore Africa') }}
+                    @else
+                        {{ $bucket }}
+                    @endif
                 </option>
             @endforeach
         </select>
-        <p class="mt-1 text-xs text-ink/55">{{ __('Lists this itinerary under the matching top menu. Public URL stays /experiences/{slug}.') }}</p>
+        <p class="mt-1 text-xs text-ink/55">{{ __('Lists this itinerary under the matching top menu. Public URL stays /experiences/{slug}. Use Mountain safari only for peak treks and climbing routes; savanna trips belong under Safari or Explore Africa.') }}</p>
         @error('nav_bucket')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+    </div>
+    <div class="md:col-span-2 rounded-2xl border border-secondary/40 bg-secondary/10 p-5">
+        <p class="text-sm font-medium text-ink">{{ __('Mountain & destination hubs') }}</p>
+        <p class="mt-1 text-xs leading-relaxed text-ink/55">{{ __('Optional links for related tours on peak and destination pages. Heuristic matching still applies for unlinked tours. Mountain hub lists the same peaks as the public site header Mountains menu.') }}</p>
+        <div class="mt-4 grid gap-4 md:grid-cols-2">
+            <div>
+                <label class="block text-sm font-medium">{{ __('Mountain hub') }}</label>
+                <select name="mountain_id" class="mt-1 w-full rounded-xl border-secondary/60 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary">
+                    <option value="">{{ __('None') }}</option>
+                    @foreach(($mountains ?? collect()) as $m)
+                        <option value="{{ $m->id }}" @selected((string) old('mountain_id', $tour->mountain_id ?? '') === (string) $m->id)>{{ $m->name }}</option>
+                    @endforeach
+                </select>
+                @error('mountain_id')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                <p class="mt-2 text-xs text-ink/50">
+                    <a href="{{ route('admin.mountains.create') }}" target="_blank" rel="noopener noreferrer" class="font-semibold text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">{{ __('Add mountain') }}</a>
+                    @if(($mountains ?? collect())->isNotEmpty())
+                        <span class="text-ink/40"> · </span>
+                        <a href="{{ route('admin.mountains.index') }}" target="_blank" rel="noopener noreferrer" class="text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">{{ __('All mountains') }}</a>
+                    @endif
+                </p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium">{{ __('Destination hub') }}</label>
+                <select name="destination_id" class="mt-1 w-full rounded-xl border-secondary/60 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary">
+                    <option value="">{{ __('None') }}</option>
+                    @foreach(($destinations ?? collect()) as $d)
+                        <option value="{{ $d->id }}" @selected((string) old('destination_id', $tour->destination_id ?? '') === (string) $d->id)>{{ $d->name }}</option>
+                    @endforeach
+                </select>
+                @error('destination_id')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                <p class="mt-2 text-xs text-ink/50">
+                    <a href="{{ route('admin.destinations.create') }}" target="_blank" rel="noopener noreferrer" class="font-semibold text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">{{ __('Add destination') }}</a>
+                    @if(($destinations ?? collect())->isNotEmpty())
+                        <span class="text-ink/40"> · </span>
+                        <a href="{{ route('admin.destinations.index') }}" target="_blank" rel="noopener noreferrer" class="text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">{{ __('All destinations') }}</a>
+                    @endif
+                </p>
+            </div>
+        </div>
     </div>
     <div>
         <label class="block text-sm font-medium">{{ __('Sort order') }}</label>

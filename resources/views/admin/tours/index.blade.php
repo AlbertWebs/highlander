@@ -20,6 +20,7 @@
             <tr>
                 <th class="px-4 py-3">ID</th>
                 <th class="px-4 py-3">{{ __('Title') }}</th>
+                <th class="px-4 py-3">{{ __('Hub') }}</th>
                 <th class="px-4 py-3">{{ __('Status') }}</th>
                 <th class="px-4 py-3">{{ __('Itinerary') }}</th>
                 <th class="px-4 py-3">{{ __('Updated') }}</th>
@@ -36,6 +37,19 @@
                 >
                     <td class="px-4 py-3">{{ $tour->id }}</td>
                     <td class="px-4 py-3 font-medium text-primary">{{ $tour->title }}</td>
+                    <td class="px-4 py-3 text-ink/70">
+                        @if($tour->mountain)
+                            <span class="block text-xs uppercase tracking-wide text-ink/45">{{ __('Mountain') }}</span>
+                            <span class="text-sm">{{ $tour->mountain->name }}</span>
+                        @endif
+                        @if($tour->destination)
+                            <span class="{{ $tour->mountain ? 'mt-2 block' : '' }} text-xs uppercase tracking-wide text-ink/45">{{ __('Destination') }}</span>
+                            <span class="text-sm">{{ $tour->destination->name }}</span>
+                        @endif
+                        @if(!$tour->mountain && !$tour->destination)
+                            <span class="text-ink/40">—</span>
+                        @endif
+                    </td>
                     <td class="px-4 py-3">
                         <form method="POST" action="{{ route('admin.tours.toggle', $tour) }}">
                             @csrf

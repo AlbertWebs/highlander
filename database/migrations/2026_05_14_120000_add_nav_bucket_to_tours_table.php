@@ -44,7 +44,7 @@ return new class extends Migration
         DB::table('tours')->whereIn('slug', $mountainSafariSlugs)->update(['nav_bucket' => 'mountain_safari']);
 
         DB::table('tours')->whereIn('slug', [
-            't-c-v-cultural-and-farm-experience',
+            'tcv-cultural-and-farm-experience',
             'thingira-cultural-festival',
         ])->update(['nav_bucket' => 'explore_africa']);
     }

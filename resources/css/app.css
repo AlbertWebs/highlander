@@ -13,14 +13,116 @@
 
     /**
      * Public site: vertical rhythm for long-form copy (scoped via .prose-site when used).
+     * Used with SEO blocks and articles — does not require @tailwindcss/typography.
      */
+    .prose-site {
+        max-width: none;
+    }
+
+    .prose-site > *:first-child {
+        margin-top: 0;
+    }
+
     .prose-site p {
         margin-top: 0;
-        margin-bottom: 2rem;
+        margin-bottom: 1.35rem;
+        line-height: 1.75;
     }
 
     .prose-site p:last-child {
         margin-bottom: 0;
+    }
+
+    .prose-site h2 {
+        margin-top: 2.5rem;
+        margin-bottom: 0.85rem;
+        font-family: theme('fontFamily.serif');
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1.25;
+        color: theme('colors.primary');
+    }
+
+    .prose-site h2:first-child {
+        margin-top: 0;
+    }
+
+    .prose-site h3 {
+        margin-top: 1.75rem;
+        margin-bottom: 0.65rem;
+        font-weight: 600;
+        color: theme('colors.primary');
+    }
+
+    .prose-site ul,
+    .prose-site ol {
+        margin-top: 0.65rem;
+        margin-bottom: 1.35rem;
+        padding-left: 1.35rem;
+        list-style-position: outside;
+    }
+
+    .prose-site ul {
+        list-style-type: disc;
+    }
+
+    .prose-site ol {
+        list-style-type: decimal;
+    }
+
+    .prose-site li {
+        margin-top: 0.4rem;
+        margin-bottom: 0.4rem;
+        line-height: 1.72;
+        padding-left: 0.35rem;
+    }
+
+    .prose-site li::marker {
+        color: theme('colors.primary');
+        font-weight: 600;
+    }
+
+    .prose-site ol li::marker {
+        color: theme('colors.primary');
+    }
+
+    .prose-site ul ul,
+    .prose-site ol ol,
+    .prose-site ul ol,
+    .prose-site ol ul {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .prose-site h2 + p {
+        margin-top: 0;
+    }
+
+    .prose-site h2 + ul,
+    .prose-site h2 + ol {
+        margin-top: 0.35rem;
+    }
+
+    .prose-site ul + p,
+    .prose-site ol + p {
+        margin-top: 0.25rem;
+    }
+
+    .prose-site a {
+        font-weight: 600;
+        color: theme('colors.primary');
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+    .prose-site a:hover {
+        color: rgb(67 160 71);
+    }
+
+    .prose-site strong,
+    .prose-site b {
+        font-weight: 700;
+        color: theme('colors.ink');
     }
 
     /**

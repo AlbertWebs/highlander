@@ -69,6 +69,10 @@
                         </a>
                     </div>
 
+                    @if(filled($mountainIntro ?? ''))
+                        <p class="mt-4 max-w-none text-base leading-relaxed text-ink/85 sm:max-w-3xl">{{ $mountainIntro }}</p>
+                    @endif
+
                     @if(filled($mountain->description))
                         <div class="mt-6 rounded-card border border-secondary/30 bg-white/90 p-6 shadow-sm sm:p-8">
                             <div class="prose prose-ink prose-headings:font-serif prose-headings:tracking-tight prose-headings:text-primary prose-h2:text-2xl prose-h3:text-xl prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-site max-w-none text-[1.0625rem] leading-[1.75] text-ink/90 sm:text-lg sm:leading-[1.7]">
@@ -86,6 +90,11 @@
                     @include('partials.mountain-sidebar', ['mountain' => $mountain, 'relatedTours' => $relatedTours])
                 </aside>
             </div>
+
+            @include('partials.mountain-experiences-list', [
+                'mountain' => $mountain,
+                'mountainTours' => $mountainTours ?? collect(),
+            ])
 
             <div id="plan-this-mountain" class="mt-14 scroll-mt-28 sm:mt-16">
                 <div class="rounded-card border border-secondary/40 bg-gradient-to-br from-white via-surface/80 to-tint-green/25 px-6 py-9 shadow-card sm:px-10 sm:py-11">

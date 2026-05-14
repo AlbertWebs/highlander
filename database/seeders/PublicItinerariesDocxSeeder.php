@@ -56,9 +56,9 @@ class PublicItinerariesDocxSeeder extends Seeder
             $title = (string) $map[$key]['title'];
             $slug = Str::slug($title);
             $sortOrder = $map[$key]['sort_order'] ?? null;
-            $navBucket = (string) ($map[$key]['nav_bucket'] ?? Tour::NAV_MOUNTAIN_SAFARI);
+            $navBucket = (string) ($map[$key]['nav_bucket'] ?? Tour::NAV_SAFARI);
             if (! in_array($navBucket, Tour::NAV_BUCKETS, true)) {
-                $navBucket = Tour::NAV_MOUNTAIN_SAFARI;
+                $navBucket = Tour::NAV_SAFARI;
             }
 
             $paragraphs = DocxPlainText::paragraphs($path);

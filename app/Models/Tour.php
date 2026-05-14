@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Support\Vimeo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +17,7 @@ class Tour extends Model
     /** Shown under main nav Mountains dropdown (treks, peaks, mountain-focused itineraries). */
     public const NAV_MOUNTAIN_SAFARI = 'mountain_safari';
 
-    /** Shown under main nav Explore Africa dropdown (regions, culture-led trips). */
+    /** Shown under main nav Explore Africa dropdown (destinations, Mount Kenya hub, culture-led trips). */
     public const NAV_EXPLORE_AFRICA = 'explore_africa';
 
     /** @var list<string> */
@@ -26,10 +27,62 @@ class Tour extends Model
         self::NAV_EXPLORE_AFRICA,
     ];
 
+    /**
+     * Mount Kenya trekking itineraries (public slugs). Shown under Explore Africa and linked from the Mount Kenya destination hub.
+     *
+     * @var list<string>
+     */
+    public const MOUNT_KENYA_TREK_SLUGS = [
+        '3-days-naromoru-naromoru-route',
+        '4-days-sirimon-naromoru-route',
+        '4-days-sirimon-sirimon-route',
+        '5-days-burguret-route',
+        '5-days-chogoria-chogoria-route',
+        '5-days-sirimon-chogoria-route',
+        '5-days-kamweti-route',
+        '5-days-timau-route',
+        '7-days-mount-kenya-peaks-circuit',
+        '7-days-naromoru-route-technical-climbing-expedition',
+    ];
+
+    /**
+     * Cultural / community experiences around Mount Kenya shown on the same destination hub.
+     *
+     * @var list<string>
+     */
+    public const MOUNT_KENYA_CULTURAL_HUB_SLUGS = [
+        'tcv-cultural-and-farm-experience',
+        'thingira-cultural-festival',
+    ];
+
+    /** @return list<string> */
+    public static function mountKenyaDestinationHubSlugs(): array
+    {
+        return array_values(array_unique(array_merge(
+            self::MOUNT_KENYA_TREK_SLUGS,
+            self::MOUNT_KENYA_CULTURAL_HUB_SLUGS,
+        )));
+    }
+
+    /**
+     * Tours linked from the Mount Kilimanjaro mountain hub (/mountains/mount-kilimanjaro).
+     *
+     * @var list<string>
+     */
+    public const MOUNT_KILIMANJARO_MOUNTAIN_HUB_SLUGS = [
+        'kilimanjaro-lemosho-route',
+    ];
+
+    /** @return list<string> */
+    public static function mountKilimanjaroMountainHubSlugs(): array
+    {
+        return self::MOUNT_KILIMANJARO_MOUNTAIN_HUB_SLUGS;
+    }
+
     protected $fillable = [
         'title', 'slug', 'description', 'image', 'featured_media_type', 'featured_video_url',
         'price', 'duration_days',
-        'is_active', 'is_featured', 'sort_order', 'nav_bucket', 'meta_title', 'meta_description',
+        'is_active', 'is_featured', 'sort_order', 'nav_bucket', 'mountain_id', 'destination_id', 'meta_title', 'meta_description',
     ];
 
     protected function casts(): array
@@ -40,6 +93,8 @@ class Tour extends Model
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'sort_order' => 'integer',
+            'mountain_id' => 'integer',
+            'destination_id' => 'integer',
         ];
     }
 
@@ -52,6 +107,16 @@ class Tour extends Model
     public function itineraryDays(): HasMany
     {
         return $this->hasMany(TourItineraryDay::class)->orderBy('day_number');
+    }
+
+    public function mountain(): BelongsTo
+    {
+        return $this->belongsTo(Mountain::class);
+    }
+
+    public function destination(): BelongsTo
+    {
+        return $this->belongsTo(Destination::class);
     }
 
     public function scopeActive($query)

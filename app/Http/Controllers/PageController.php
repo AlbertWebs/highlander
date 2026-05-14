@@ -24,7 +24,10 @@ use App\Support\RelatedToursForDestination;
 use App\Support\RelatedToursForMountain;
 use App\Support\RelatedToursForSafariExperience;
 use App\Support\RelatedToursForTour;
+use App\Support\SafariSeo\SafariStyleSeoComposer;
+use App\Support\SafariSeo\TourExperienceSeoComposer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -83,8 +86,10 @@ class PageController extends Controller
 
         $featuredTours = Tour::query()
             ->active()
+            ->forNavBucket(Tour::NAV_MOUNTAIN_SAFARI)
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
+            ->orderBy('title')
             ->limit(4)
             ->get();
 
@@ -101,9 +106,19 @@ class PageController extends Controller
         $meta_title = $mountain->name;
         $meta_description = Str::limit(strip_tags((string) ($mountain->description ?? '')), 160) ?: __('Discover :name - trekking and alpine expeditions with Highlanders Nature Trails.', ['name' => $mountain->name]);
 
-        $relatedTours = RelatedToursForMountain::get($mountain, 2);
+        $mountainTours = RelatedToursForMountain::allForMountain($mountain);
+        $relatedTours = $mountainTours->take(8)->values();
+        $mountainIntro = $this->mountainLeadIntro($mountain);
 
-        return view('pages.mountain-show', compact('mountain', 'pageTitle', 'meta_title', 'meta_description', 'relatedTours'));
+        return view('pages.mountain-show', compact(
+            'mountain',
+            'pageTitle',
+            'meta_title',
+            'meta_description',
+            'relatedTours',
+            'mountainTours',
+            'mountainIntro',
+        ));
     }
 
     public function exploreAfrica(Request $request): View
@@ -124,9 +139,19 @@ class PageController extends Controller
         $meta_description = Str::limit(strip_tags((string) ($destination->description ?? '')), 160)
             ?: __('Discover :name - safaris and expeditions with Highlanders Nature Trails.', ['name' => $destination->name]);
 
-        $relatedTours = RelatedToursForDestination::get($destination, 2);
+        $destinationTours = RelatedToursForDestination::allForDestination($destination);
+        $relatedTours = $destinationTours->take(8)->values();
+        $destinationIntro = $this->destinationLeadIntro($destination);
 
-        return view('pages.destination-show', compact('destination', 'pageTitle', 'meta_title', 'meta_description', 'relatedTours'));
+        return view('pages.destination-show', compact(
+            'destination',
+            'pageTitle',
+            'meta_title',
+            'meta_description',
+            'relatedTours',
+            'destinationTours',
+            'destinationIntro',
+        ));
     }
 
     public function safari(Request $request): View
@@ -144,12 +169,56 @@ class PageController extends Controller
 
         $pageTitle = $safariExperience->title.' - '.config('app.name');
         $meta_title = $safariExperience->title;
-        $meta_description = Str::limit(strip_tags((string) ($safariExperience->description ?? '')), 160)
-            ?: __('Discover :name - safari styles with Highlanders Nature Trails.', ['name' => $safariExperience->title]);
 
-        $relatedTours = RelatedToursForSafariExperience::get($safariExperience, 2);
+        $safariSeo = Cache::remember(
+            'safari.style.seo.v1.'.$safariExperience->getKey().'.'.($safariExperience->updated_at?->getTimestamp() ?? 0),
+            7200,
+            static fn () => SafariStyleSeoComposer::compose($safariExperience)
+        );
 
-        return view('pages.safari-experience-show', compact('safariExperience', 'pageTitle', 'meta_title', 'meta_description', 'relatedTours'));
+        $rawDesc = trim(strip_tags((string) ($safariExperience->description ?? '')));
+        $meta_description = filled($rawDesc)
+            ? Str::limit($rawDesc, 160)
+            : Str::limit(
+                (string) ($safariSeo['suggested_meta_description'] ?? __('Discover :name - safari styles with Highlanders Nature Trails.', ['name' => $safariExperience->title])),
+                160
+            );
+
+        $relatedTours = RelatedToursForSafariExperience::get($safariExperience, 6);
+        $testimonials = Testimonial::query()
+            ->active()
+            ->orderByDesc('is_featured')
+            ->orderByDesc('rating')
+            ->take(3)
+            ->get();
+
+        $seoJsonLd = [
+            '@context' => 'https://schema.org',
+            '@graph' => array_values(array_filter([
+                $safariSeo['faq_json_ld'] ?? null,
+                [
+                    '@type' => 'Service',
+                    'name' => $safariExperience->title,
+                    'description' => strip_tags((string) $meta_description),
+                    'url' => route('safari.show', $safariExperience),
+                    'provider' => [
+                        '@type' => 'TravelAgency',
+                        'name' => config('app.name'),
+                    ],
+                ],
+            ])),
+        ];
+
+        return view('pages.safari-experience-show', compact(
+            'safariExperience',
+            'pageTitle',
+            'meta_title',
+            'meta_description',
+            'relatedTours',
+            'safariSeo',
+            'testimonials',
+            'seoJsonLd',
+        ));
     }
 
     public function gallery(Request $request): View
@@ -194,6 +263,27 @@ class PageController extends Controller
         return view('pages.article-show', array_merge($this->seo('articles'), compact('article', 'sidebarArticles')));
     }
 
+    protected function destinationLeadIntro(Destination $destination): string
+    {
+        return match ($destination->slug) {
+            'mount-kenya' => __('Mount Kenya is Africa’s second-highest massif: glacier-carved valleys, afro-alpine moorlands, and classic trekking routes. Below is the full set of Mount Kenya treks and linked highland cultural experiences we publish for this hub.'),
+            'masai-mara', 'maasai-mara' => __('The Maasai Mara is Kenya’s open-sky wildlife theatre: prides on golden grass, cheetah sprints, and seasonal river drama. Every active itinerary in our collection that references the Mara or paired savanna nodes is listed below.'),
+            'okavango' => __('The Okavango Delta is one of Africa’s great wetland mosaics: papyrus channels, islands, and predators drawn to water. Browse every published journey below that features the Delta or pairs it with surrounding safari legs.'),
+            'drakensberg' => __('The Drakensberg escarpment delivers cathedral peaks, sandstone ramparts, and highland trails. Any current itinerary referencing the Berg appears below so you can compare days and pricing in one place.'),
+            'zanzibar-coast' => __('Zanzibar and the Swahili coast add dhow light, spice-town culture, and reef-calm after bush days. Below are all itineraries that mention Zanzibar or the coast in their routing or title.'),
+            default => __('Explore :name with Highlanders Nature Trails. We list every active safari or expedition below whose programme copy or title references this region. Compare duration and budget, then enquire to tailor dates.', ['name' => $destination->name]),
+        };
+    }
+
+    protected function mountainLeadIntro(Mountain $mountain): string
+    {
+        return match ($mountain->slug) {
+            'mount-kenya' => __('Mount Kenya is Africa’s second-highest massif: glacier-carved valleys, afro-alpine moorlands, and classic trekking routes. Below is the full set of treks and linked highland experiences we publish for this peak.'),
+            'mount-kilimanjaro', 'kilimanjaro' => __('Kilimanjaro is Africa’s highest free-standing volcano: rainforest, alpine desert, and summit glaciers. Every active itinerary we publish for this mountain is listed below.'),
+            default => __('Trek :name with Highlanders Nature Trails. We list every active itinerary below whose programme copy or title references this peak: compare duration and budget, then enquire to tailor dates.', ['name' => $mountain->name]),
+        };
+    }
+
     public function featuredExperienceShow(Tour $tour): View
     {
         if (! $tour->is_active) {
@@ -206,13 +296,69 @@ class PageController extends Controller
             ? $tour->meta_title
             : $tour->title.' - '.config('app.name');
         $meta_title = filled($tour->meta_title) ? $tour->meta_title : $tour->title;
+
+        $tourSeo = Cache::remember(
+            'tour.experience.seo.v1.'.$tour->getKey().'.'.($tour->updated_at?->getTimestamp() ?? 0),
+            7200,
+            static fn () => TourExperienceSeoComposer::compose($tour)
+        );
+
         $meta_description = filled($tour->meta_description)
             ? $tour->meta_description
-            : Str::limit(strip_tags((string) ($tour->description ?? '')), 160);
+            : (($tourSeo['suggested_meta_description'] ?? '') ?: Str::limit(strip_tags((string) ($tour->description ?? '')), 160));
 
-        $relatedTours = RelatedToursForTour::get($tour, 2);
+        $relatedTours = RelatedToursForTour::get($tour, 6);
+        $testimonials = Testimonial::query()
+            ->active()
+            ->orderByDesc('is_featured')
+            ->orderByDesc('rating')
+            ->take(3)
+            ->get();
 
-        return view('pages.experience-show', compact('tour', 'pageTitle', 'meta_title', 'meta_description', 'relatedTours'));
+        $offer = null;
+        if ($tour->price) {
+            $offer = [
+                '@type' => 'Offer',
+                'priceCurrency' => 'USD',
+                'price' => (string) $tour->price,
+                'availability' => 'https://schema.org/InStock',
+                'url' => route('experiences.show', $tour),
+            ];
+        }
+
+        $product = [
+            '@type' => 'Product',
+            'name' => $tour->title,
+            'description' => strip_tags((string) $meta_description),
+            'sku' => $tour->slug,
+            'url' => route('experiences.show', $tour),
+            'brand' => [
+                '@type' => 'Brand',
+                'name' => config('app.name'),
+            ],
+        ];
+        if ($offer !== null) {
+            $product['offers'] = $offer;
+        }
+
+        $seoJsonLd = [
+            '@context' => 'https://schema.org',
+            '@graph' => array_values(array_filter([
+                $tourSeo['faq_json_ld'] ?? null,
+                $product,
+            ])),
+        ];
+
+        return view('pages.experience-show', compact(
+            'tour',
+            'pageTitle',
+            'meta_title',
+            'meta_description',
+            'relatedTours',
+            'tourSeo',
+            'testimonials',
+            'seoJsonLd',
+        ));
     }
 
     public function contact(Request $request): View

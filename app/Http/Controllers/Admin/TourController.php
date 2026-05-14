@@ -159,10 +159,6 @@ class TourController extends Controller
             'destination_id' => ['nullable', 'integer', 'exists:destinations,id'],
         ]);
 
-        $data['nav_safari'] = $request->boolean('nav_safari');
-        $data['nav_mountain_safari'] = $request->boolean('nav_mountain_safari');
-        $data['nav_explore_africa'] = $request->boolean('nav_explore_africa');
-
         return $data;
     }
 

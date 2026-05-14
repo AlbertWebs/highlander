@@ -28,37 +28,9 @@
             {{ __('Featured') }}
         </label>
     </div>
-    <div class="md:col-span-2 rounded-2xl border border-secondary/50 bg-surface/40 p-5">
-        <p class="text-sm font-medium text-ink">{{ __('Main menu (experiences)') }}</p>
-        <p class="mt-1 text-xs leading-relaxed text-ink/55">{{ __('Optionally tick top-nav sections where this itinerary should appear. Leave all unchecked if it should not appear under Safari, Mountains, or Explore Africa for now. The public URL stays /experiences/{slug}. You can combine categories when you need to.') }}</p>
-        <div class="mt-4 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-            <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-secondary/40 bg-white/80 px-4 py-3 shadow-sm">
-                <input type="checkbox" name="nav_safari" value="1" @checked(old('nav_safari', $tour->nav_safari ?? false)) class="mt-0.5 rounded border-secondary text-primary focus:ring-primary">
-                <span>
-                    <span class="block text-sm font-medium text-ink">{{ __('Safari') }}</span>
-                    <span class="mt-0.5 block text-xs text-ink/50">{{ __('Wildlife and savanna-style experiences in the Safari dropdown.') }}</span>
-                </span>
-            </label>
-            <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-secondary/40 bg-white/80 px-4 py-3 shadow-sm">
-                <input type="checkbox" name="nav_mountain_safari" value="1" @checked(old('nav_mountain_safari', $tour->nav_mountain_safari ?? false)) class="mt-0.5 rounded border-secondary text-primary focus:ring-primary">
-                <span>
-                    <span class="block text-sm font-medium text-ink">{{ __('Mountains') }}</span>
-                    <span class="mt-0.5 block text-xs text-ink/50">{{ __('Peak treks and climbing routes in the Mountains dropdown.') }}</span>
-                </span>
-            </label>
-            <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-secondary/40 bg-white/80 px-4 py-3 shadow-sm">
-                <input type="checkbox" name="nav_explore_africa" value="1" @checked(old('nav_explore_africa', $tour->nav_explore_africa ?? false)) class="mt-0.5 rounded border-secondary text-primary focus:ring-primary">
-                <span>
-                    <span class="block text-sm font-medium text-ink">{{ __('Explore Africa') }}</span>
-                    <span class="mt-0.5 block text-xs text-ink/50">{{ __('Destination-led and culture-forward trips in the Explore Africa dropdown.') }}</span>
-                </span>
-            </label>
-        </div>
-        @error('nav_safari')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
-    </div>
     <div class="md:col-span-2 rounded-2xl border border-secondary/40 bg-secondary/10 p-5">
         <p class="text-sm font-medium text-ink">{{ __('Mountain & destination hubs') }}</p>
-        <p class="mt-1 text-xs leading-relaxed text-ink/55">{{ __('Optional links for related tours on peak and destination pages. Heuristic matching still applies for unlinked tours. Mountain hub lists the same peaks as the public site header Mountains menu.') }}</p>
+        <p class="mt-1 text-xs leading-relaxed text-ink/55">{{ __('Link this itinerary to mountain peak pages and Explore Africa destination hubs. Heuristic matching still applies for unlinked tours. Whether it appears in the Safari, Mountains, or Explore Africa top-nav dropdowns is set on the tours list (S / M / E per row). The public URL stays /experiences/{slug}.') }}</p>
         <div class="mt-4 grid gap-4 md:grid-cols-2">
             <div>
                 <label class="block text-sm font-medium">{{ __('Mountain hub') }}</label>
@@ -78,7 +50,7 @@
                 </p>
             </div>
             <div>
-                <label class="block text-sm font-medium">{{ __('Destination hub') }}</label>
+                <label class="block text-sm font-medium">{{ __('Destination hub (Explore Africa)') }}</label>
                 <select name="destination_id" class="mt-1 w-full rounded-xl border-secondary/60 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary">
                     <option value="">{{ __('None') }}</option>
                     @foreach(($destinations ?? collect()) as $d)

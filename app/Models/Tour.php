@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\Vimeo;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -82,7 +83,9 @@ class Tour extends Model
     protected $fillable = [
         'title', 'slug', 'description', 'image', 'featured_media_type', 'featured_video_url',
         'price', 'duration_days',
-        'is_active', 'is_featured', 'sort_order', 'nav_bucket', 'mountain_id', 'destination_id', 'meta_title', 'meta_description',
+        'is_active', 'is_featured', 'sort_order', 'nav_bucket',
+        'nav_safari', 'nav_mountain_safari', 'nav_explore_africa',
+        'mountain_id', 'destination_id', 'meta_title', 'meta_description',
     ];
 
     protected function casts(): array
@@ -93,8 +96,65 @@ class Tour extends Model
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'sort_order' => 'integer',
+            'nav_safari' => 'boolean',
+            'nav_mountain_safari' => 'boolean',
+            'nav_explore_africa' => 'boolean',
             'mountain_id' => 'integer',
             'destination_id' => 'integer',
+        ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Tour $tour): void {
+            if (! $tour->nav_safari && ! $tour->nav_mountain_safari && ! $tour->nav_explore_africa) {
+                $tour->fillFlagsFromNavBucket((string) ($tour->attributes['nav_bucket'] ?? $tour->nav_bucket ?? self::NAV_SAFARI));
+            }
+            $tour->nav_bucket = $tour->canonicalNavBucketFromFlags();
+        });
+    }
+
+    /**
+     * Derive checkbox flags from a single legacy nav_bucket value (seeders / imports).
+     */
+    public function fillFlagsFromNavBucket(string $bucket): void
+    {
+        $bucket = match ($bucket) {
+            self::NAV_SAFARI, self::NAV_MOUNTAIN_SAFARI, self::NAV_EXPLORE_AFRICA => $bucket,
+            default => self::NAV_SAFARI,
+        };
+        $this->nav_safari = $bucket === self::NAV_SAFARI;
+        $this->nav_mountain_safari = $bucket === self::NAV_MOUNTAIN_SAFARI;
+        $this->nav_explore_africa = $bucket === self::NAV_EXPLORE_AFRICA;
+    }
+
+    /**
+     * Single stored nav_bucket for backwards compatibility (priority: mountain, then explore, then safari).
+     */
+    public function canonicalNavBucketFromFlags(): string
+    {
+        if ($this->nav_mountain_safari) {
+            return self::NAV_MOUNTAIN_SAFARI;
+        }
+        if ($this->nav_explore_africa) {
+            return self::NAV_EXPLORE_AFRICA;
+        }
+        if ($this->nav_safari) {
+            return self::NAV_SAFARI;
+        }
+
+        return self::NAV_SAFARI;
+    }
+
+    /**
+     * @return array{nav_safari: bool, nav_mountain_safari: bool, nav_explore_africa: bool}
+     */
+    public static function navFlagAttributesFromBucket(string $bucket): array
+    {
+        return [
+            'nav_safari' => $bucket === self::NAV_SAFARI,
+            'nav_mountain_safari' => $bucket === self::NAV_MOUNTAIN_SAFARI,
+            'nav_explore_africa' => $bucket === self::NAV_EXPLORE_AFRICA,
         ];
     }
 
@@ -124,9 +184,14 @@ class Tour extends Model
         return $query->where('is_active', true);
     }
 
-    public function scopeForNavBucket($query, string $bucket)
+    public function scopeForNavBucket(Builder $query, string $bucket): Builder
     {
-        return $query->where('nav_bucket', $bucket);
+        return match ($bucket) {
+            self::NAV_SAFARI => $query->where('nav_safari', true),
+            self::NAV_MOUNTAIN_SAFARI => $query->where('nav_mountain_safari', true),
+            self::NAV_EXPLORE_AFRICA => $query->where('nav_explore_africa', true),
+            default => $query->whereRaw('1 = 0'),
+        };
     }
 
     public function scopeFeatured($query)

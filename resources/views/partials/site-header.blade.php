@@ -1,10 +1,12 @@
 @php
     $routeTour = request()->route('tour');
-    $experienceNavBucket = $routeTour instanceof \App\Models\Tour
-        ? (string) (filled($routeTour->nav_bucket) ? $routeTour->nav_bucket : \App\Models\Tour::NAV_SAFARI)
-        : null;
+    $expNavSafari = $routeTour instanceof \App\Models\Tour && $routeTour->nav_safari;
+    $expNavMountain = $routeTour instanceof \App\Models\Tour && $routeTour->nav_mountain_safari;
+    $expNavExplore = $routeTour instanceof \App\Models\Tour && $routeTour->nav_explore_africa;
 
     $navToursSafari = \App\Models\Tour::query()->active()->forNavBucket(\App\Models\Tour::NAV_SAFARI)->orderByDesc('is_featured')->orderBy('sort_order')->orderBy('title')->limit(12)->get();
+    $navToursMountain = \App\Models\Tour::query()->active()->forNavBucket(\App\Models\Tour::NAV_MOUNTAIN_SAFARI)->orderByDesc('is_featured')->orderBy('sort_order')->orderBy('title')->limit(12)->get();
+    $navToursExplore = \App\Models\Tour::query()->active()->forNavBucket(\App\Models\Tour::NAV_EXPLORE_AFRICA)->orderByDesc('is_featured')->orderBy('sort_order')->orderBy('title')->limit(12)->get();
 
     $mountKenyaDestination = \App\Models\Destination::query()->active()->where('slug', 'mount-kenya')->first();
     $destinationsForExploreNav = \App\Models\Destination::query()->active();
@@ -25,6 +27,12 @@
                 'label' => $d->name,
                 'url' => route('explore-africa.show', $d),
             ])
+        )
+        ->merge(
+            $navToursExplore->map(fn (\App\Models\Tour $tour) => [
+                'label' => $tour->title,
+                'url' => route('experiences.show', $tour),
+            ])
         );
 
     $navMountainsChildren = collect([['label' => __('All mountains'), 'url' => route('mountains')]])
@@ -32,6 +40,12 @@
             \App\Models\Mountain::forMainMenu()->map(fn ($m) => [
                 'label' => $m->name,
                 'url' => route('mountains.show', $m),
+            ])
+        )
+        ->merge(
+            $navToursMountain->map(fn (\App\Models\Tour $tour) => [
+                'label' => $tour->title,
+                'url' => route('experiences.show', $tour),
             ])
         )
         ->push(['label' => __('Plan your safari'), 'url' => route('plan-my-safari')]);
@@ -169,11 +183,11 @@
                         @php
                             $navActive = match ($item['route'] ?? '') {
                                 'safari' => request()->routeIs('safari') || request()->routeIs('safari.show')
-                                    || (request()->routeIs('experiences.show') && $experienceNavBucket === \App\Models\Tour::NAV_SAFARI),
+                                    || (request()->routeIs('experiences.show') && $expNavSafari),
                                 'mountains' => request()->routeIs('mountains') || request()->routeIs('mountains.show')
-                                    || (request()->routeIs('experiences.show') && $experienceNavBucket === \App\Models\Tour::NAV_MOUNTAIN_SAFARI),
+                                    || (request()->routeIs('experiences.show') && $expNavMountain),
                                 'explore-africa' => request()->routeIs('explore-africa') || request()->routeIs('explore-africa.show')
-                                    || (request()->routeIs('experiences.show') && $experienceNavBucket === \App\Models\Tour::NAV_EXPLORE_AFRICA),
+                                    || (request()->routeIs('experiences.show') && $expNavExplore),
                                 default => request()->routeIs($item['route'] ?? ''),
                             };
                             $letter = mb_strtoupper(mb_substr($item['label'], 0, 1));
@@ -299,11 +313,11 @@
                         @php
                             $mActive = match ($item['route'] ?? '') {
                                 'safari' => request()->routeIs('safari') || request()->routeIs('safari.show')
-                                    || (request()->routeIs('experiences.show') && $experienceNavBucket === \App\Models\Tour::NAV_SAFARI),
+                                    || (request()->routeIs('experiences.show') && $expNavSafari),
                                 'mountains' => request()->routeIs('mountains') || request()->routeIs('mountains.show')
-                                    || (request()->routeIs('experiences.show') && $experienceNavBucket === \App\Models\Tour::NAV_MOUNTAIN_SAFARI),
+                                    || (request()->routeIs('experiences.show') && $expNavMountain),
                                 'explore-africa' => request()->routeIs('explore-africa') || request()->routeIs('explore-africa.show')
-                                    || (request()->routeIs('experiences.show') && $experienceNavBucket === \App\Models\Tour::NAV_EXPLORE_AFRICA),
+                                    || (request()->routeIs('experiences.show') && $expNavExplore),
                                 default => request()->routeIs($item['route'] ?? ''),
                             };
                             $mLetter = mb_strtoupper(mb_substr($item['label'], 0, 1));

@@ -26,18 +26,21 @@ class MountKenyaExtendedItinerarySeeder extends Seeder
 
             $tour = Tour::query()->updateOrCreate(
                 ['slug' => $slug],
-                [
-                    'title' => $title,
-                    'description' => $overview,
-                    'price' => self::suggestedPriceUsd($durationDays),
-                    'duration_days' => $durationDays,
-                    'is_active' => true,
-                    'is_featured' => false,
-                    'sort_order' => self::SORT_BASE + $sortOffset,
-                    'nav_bucket' => Tour::NAV_EXPLORE_AFRICA,
-                    'meta_title' => $title.' | Mount Kenya',
-                    'meta_description' => Str::limit(strip_tags($overview), 155),
-                ]
+                array_merge(
+                    Tour::navFlagAttributesFromBucket(Tour::NAV_EXPLORE_AFRICA),
+                    [
+                        'title' => $title,
+                        'description' => $overview,
+                        'price' => self::suggestedPriceUsd($durationDays),
+                        'duration_days' => $durationDays,
+                        'is_active' => true,
+                        'is_featured' => false,
+                        'sort_order' => self::SORT_BASE + $sortOffset,
+                        'nav_bucket' => Tour::NAV_EXPLORE_AFRICA,
+                        'meta_title' => $title.' | Mount Kenya',
+                        'meta_description' => Str::limit(strip_tags($overview), 155),
+                    ]
+                )
             );
 
             $tour->itineraryDays()->delete();

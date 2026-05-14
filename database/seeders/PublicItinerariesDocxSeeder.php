@@ -74,16 +74,19 @@ class PublicItinerariesDocxSeeder extends Seeder
 
             $existing = Tour::query()->where('slug', $slug)->first();
 
-            $payload = [
-                'title' => $title,
-                'duration_days' => $durationDays,
-                'price' => self::suggestedPriceUsd($durationDays),
-                'is_active' => true,
-                'is_featured' => false,
-                'nav_bucket' => $navBucket,
-                'meta_title' => $title.' | '.$metaSuffix,
-                'meta_description' => Str::limit(strip_tags($plainOverview), 155),
-            ];
+            $payload = array_merge(
+                Tour::navFlagAttributesFromBucket($navBucket),
+                [
+                    'title' => $title,
+                    'duration_days' => $durationDays,
+                    'price' => self::suggestedPriceUsd($durationDays),
+                    'is_active' => true,
+                    'is_featured' => false,
+                    'nav_bucket' => $navBucket,
+                    'meta_title' => $title.' | '.$metaSuffix,
+                    'meta_description' => Str::limit(strip_tags($plainOverview), 155),
+                ]
+            );
 
             if ($existing === null || trim((string) ($existing->description ?? '')) === '') {
                 $payload['description'] = Str::limit($plainOverview, 8000);

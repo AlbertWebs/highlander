@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class TourController extends Controller
@@ -115,13 +116,12 @@ class TourController extends Controller
 
     protected function validated(Request $request): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'price' => ['nullable', 'numeric', 'min:0'],
             'duration_days' => ['nullable', 'integer', 'min:1', 'max:365'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:65535'],
-            'nav_bucket' => ['required', 'in:safari,mountain_safari,explore_africa'],
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'featured_media_type' => ['nullable', 'in:image,video'],
@@ -130,6 +130,18 @@ class TourController extends Controller
             'mountain_id' => ['nullable', 'integer', 'exists:mountains,id'],
             'destination_id' => ['nullable', 'integer', 'exists:destinations,id'],
         ]);
+
+        $data['nav_safari'] = $request->boolean('nav_safari');
+        $data['nav_mountain_safari'] = $request->boolean('nav_mountain_safari');
+        $data['nav_explore_africa'] = $request->boolean('nav_explore_africa');
+
+        if (! $data['nav_safari'] && ! $data['nav_mountain_safari'] && ! $data['nav_explore_africa']) {
+            throw ValidationException::withMessages([
+                'nav_safari' => [__('Choose at least one: Safari, Mountains, or Explore Africa.')],
+            ]);
+        }
+
+        return $data;
     }
 
     /**

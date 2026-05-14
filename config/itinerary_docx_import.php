@@ -7,7 +7,7 @@
  * Slugs are always Str::slug($title) so URLs match existing brochure tours where titles match
  * Database\Seeders\MountKenyaItinerarySeeder and Database\Seeders\MountKenyaExtendedItinerarySeeder.
  *
- * nav_bucket: safari | mountain_safari | explore_africa (see App\Models\Tour::NAV_*).
+ * nav_bucket: safari | mountain_safari | explore_africa (maps to nav_* flags on Tour; see App\Models\Tour::NAV_*).
  */
 return [
     'skip_basenames_lower' => [

@@ -28,25 +28,33 @@
             {{ __('Featured') }}
         </label>
     </div>
-    <div>
-        <label class="block text-sm font-medium">{{ __('Main menu (experiences)') }}</label>
-        <select name="nav_bucket" class="mt-1 w-full rounded-xl border-secondary/60 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary">
-            @foreach(\App\Models\Tour::NAV_BUCKETS as $bucket)
-                <option value="{{ $bucket }}" @selected(old('nav_bucket', $tour->nav_bucket ?? \App\Models\Tour::NAV_SAFARI) === $bucket)>
-                    @if($bucket === \App\Models\Tour::NAV_SAFARI)
-                        {{ __('Safari') }}
-                    @elseif($bucket === \App\Models\Tour::NAV_MOUNTAIN_SAFARI)
-                        {{ __('Mountain safari') }}
-                    @elseif($bucket === \App\Models\Tour::NAV_EXPLORE_AFRICA)
-                        {{ __('Explore Africa') }}
-                    @else
-                        {{ $bucket }}
-                    @endif
-                </option>
-            @endforeach
-        </select>
-        <p class="mt-1 text-xs text-ink/55">{{ __('Lists this itinerary under the matching top menu. Public URL stays /experiences/{slug}. Use Mountain safari only for peak treks and climbing routes; savanna trips belong under Safari or Explore Africa.') }}</p>
-        @error('nav_bucket')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+    <div class="md:col-span-2 rounded-2xl border border-secondary/50 bg-surface/40 p-5">
+        <p class="text-sm font-medium text-ink">{{ __('Main menu (experiences)') }}</p>
+        <p class="mt-1 text-xs leading-relaxed text-ink/55">{{ __('Tick every top-nav section where this itinerary should appear. The public URL stays /experiences/{slug}. You can combine categories (for example Mount Kenya treks often belong under both Mountains and Explore Africa).') }}</p>
+        <div class="mt-4 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
+            <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-secondary/40 bg-white/80 px-4 py-3 shadow-sm">
+                <input type="checkbox" name="nav_safari" value="1" @checked(old('nav_safari', $tour->nav_safari ?? false)) class="mt-0.5 rounded border-secondary text-primary focus:ring-primary">
+                <span>
+                    <span class="block text-sm font-medium text-ink">{{ __('Safari') }}</span>
+                    <span class="mt-0.5 block text-xs text-ink/50">{{ __('Wildlife and savanna-style experiences in the Safari dropdown.') }}</span>
+                </span>
+            </label>
+            <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-secondary/40 bg-white/80 px-4 py-3 shadow-sm">
+                <input type="checkbox" name="nav_mountain_safari" value="1" @checked(old('nav_mountain_safari', $tour->nav_mountain_safari ?? false)) class="mt-0.5 rounded border-secondary text-primary focus:ring-primary">
+                <span>
+                    <span class="block text-sm font-medium text-ink">{{ __('Mountains') }}</span>
+                    <span class="mt-0.5 block text-xs text-ink/50">{{ __('Peak treks and climbing routes in the Mountains dropdown.') }}</span>
+                </span>
+            </label>
+            <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-secondary/40 bg-white/80 px-4 py-3 shadow-sm">
+                <input type="checkbox" name="nav_explore_africa" value="1" @checked(old('nav_explore_africa', $tour->nav_explore_africa ?? false)) class="mt-0.5 rounded border-secondary text-primary focus:ring-primary">
+                <span>
+                    <span class="block text-sm font-medium text-ink">{{ __('Explore Africa') }}</span>
+                    <span class="mt-0.5 block text-xs text-ink/50">{{ __('Destination-led and culture-forward trips in the Explore Africa dropdown.') }}</span>
+                </span>
+            </label>
+        </div>
+        @error('nav_safari')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
     </div>
     <div class="md:col-span-2 rounded-2xl border border-secondary/40 bg-secondary/10 p-5">
         <p class="text-sm font-medium text-ink">{{ __('Mountain & destination hubs') }}</p>

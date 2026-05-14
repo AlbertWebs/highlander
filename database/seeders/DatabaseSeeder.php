@@ -80,16 +80,19 @@ class DatabaseSeeder extends Seeder
         foreach ($tours as $i => $t) {
             Tour::query()->updateOrCreate(
                 ['slug' => Str::slug($t['title'])],
-                [
-                    'title' => $t['title'],
-                    'description' => 'A curated journey with expert guides, premium lodges, and flexible pacing.',
-                    'price' => $t['price'],
-                    'duration_days' => $t['days'],
-                    'is_active' => true,
-                    'is_featured' => true,
-                    'sort_order' => $i,
-                    'nav_bucket' => $t['nav_bucket'],
-                ]
+                array_merge(
+                    Tour::navFlagAttributesFromBucket($t['nav_bucket']),
+                    [
+                        'title' => $t['title'],
+                        'description' => 'A curated journey with expert guides, premium lodges, and flexible pacing.',
+                        'price' => $t['price'],
+                        'duration_days' => $t['days'],
+                        'is_active' => true,
+                        'is_featured' => true,
+                        'sort_order' => $i,
+                        'nav_bucket' => $t['nav_bucket'],
+                    ]
+                )
             );
         }
 

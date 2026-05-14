@@ -20,6 +20,7 @@
             <tr>
                 <th class="px-4 py-3">ID</th>
                 <th class="px-4 py-3">{{ __('Title') }}</th>
+                <th class="px-4 py-3">{{ __('Menus') }}</th>
                 <th class="px-4 py-3">{{ __('Hub') }}</th>
                 <th class="px-4 py-3">{{ __('Status') }}</th>
                 <th class="px-4 py-3">{{ __('Itinerary') }}</th>
@@ -37,6 +38,22 @@
                 >
                     <td class="px-4 py-3">{{ $tour->id }}</td>
                     <td class="px-4 py-3 font-medium text-primary">{{ $tour->title }}</td>
+                    <td class="px-4 py-3">
+                        <div class="flex flex-wrap gap-1">
+                            @if($tour->nav_safari)
+                                <span class="rounded-md bg-primary/15 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-primary" title="{{ __('Safari') }}">S</span>
+                            @endif
+                            @if($tour->nav_mountain_safari)
+                                <span class="rounded-md bg-accent/25 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-ink" title="{{ __('Mountains') }}">M</span>
+                            @endif
+                            @if($tour->nav_explore_africa)
+                                <span class="rounded-md bg-secondary/60 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-ink/80" title="{{ __('Explore Africa') }}">E</span>
+                            @endif
+                            @if(!$tour->nav_safari && !$tour->nav_mountain_safari && !$tour->nav_explore_africa)
+                                <span class="text-ink/40">—</span>
+                            @endif
+                        </div>
+                    </td>
                     <td class="px-4 py-3 text-ink/70">
                         @if($tour->mountain)
                             <span class="block text-xs uppercase tracking-wide text-ink/45">{{ __('Mountain') }}</span>

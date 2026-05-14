@@ -38,18 +38,21 @@ class MountKenyaIntroductionAndTcvItinerarySeeder extends Seeder
 
         $tour = Tour::query()->updateOrCreate(
             ['slug' => $slug],
-            [
-                'title' => $routeName,
-                'description' => $overview,
-                'price' => 1380.00,
-                'duration_days' => $durationDays,
-                'is_active' => true,
-                'is_featured' => false,
-                'sort_order' => self::TOUR_SORT_ORDER,
-                'nav_bucket' => Tour::NAV_EXPLORE_AFRICA,
-                'meta_title' => $routeName.' | Highlanders Nature Trails',
-                'meta_description' => Str::limit(strip_tags($overview), 155),
-            ]
+            array_merge(
+                Tour::navFlagAttributesFromBucket(Tour::NAV_EXPLORE_AFRICA),
+                [
+                    'title' => $routeName,
+                    'description' => $overview,
+                    'price' => 1380.00,
+                    'duration_days' => $durationDays,
+                    'is_active' => true,
+                    'is_featured' => false,
+                    'sort_order' => self::TOUR_SORT_ORDER,
+                    'nav_bucket' => Tour::NAV_EXPLORE_AFRICA,
+                    'meta_title' => $routeName.' | Highlanders Nature Trails',
+                    'meta_description' => Str::limit(strip_tags($overview), 155),
+                ]
+            )
         );
 
         $tour->itineraryDays()->delete();

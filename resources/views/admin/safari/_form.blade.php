@@ -33,7 +33,7 @@
                     <p class="mt-2 text-xs text-ink/55">
                         {{ __('Public URL') }}:
                         <a href="{{ route('safari.show', $safariExperience) }}" target="_blank" rel="noopener noreferrer" class="font-mono text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">{{ parse_url(route('safari.show', $safariExperience), PHP_URL_PATH) }}</a>
-                        <span class="text-ink/45"> — {{ __('updates when you change the title') }}</span>
+                        <span class="text-ink/45"> - {{ __('updates when you change the title') }}</span>
                     </p>
                 @endif
             </div>
@@ -113,7 +113,7 @@
 
     <div class="rounded-2xl border border-secondary/50 bg-white p-6 shadow-soft sm:p-8">
         <h3 class="text-base font-semibold text-ink">{{ __('Image') }}</h3>
-        <p class="mt-1 text-sm text-ink/55">{{ __('Landscape photo for the card. JPEG, PNG, WebP or GIF — max 5 MB.') }}</p>
+        <p class="mt-1 text-sm text-ink/55">{{ __('Landscape photo for the card. JPEG, PNG, WebP or GIF - max 5 MB.') }}</p>
 
         <div x-data="fileImagePreview(@js($previewUrl))" class="mt-4">
             <label class="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-8 text-center transition hover:border-primary/35 hover:bg-primary/[0.04] sm:flex-row sm:justify-center sm:gap-4 sm:py-6">

@@ -6,7 +6,7 @@
     <div><label class="text-sm font-medium">{{ __('Name') }}</label><input name="name" required class="mt-1 w-full rounded-xl border px-4 py-3" value="{{ old('name') }}"></div>
     <div>
         <label class="text-sm font-medium" for="mountain-description">{{ __('Description') }}</label>
-        <p class="mt-1 text-xs text-ink/50">{{ __('Rich text editor — bold, lists, links.') }}</p>
+        <p class="mt-1 text-xs text-ink/50">{{ __('Rich text editor - bold, lists, links.') }}</p>
         <textarea id="mountain-description" name="description" rows="10" class="mt-1 w-full rounded-xl border px-4 py-3 font-mono text-sm">{{ old('description') }}</textarea>
     </div>
     <div><label class="text-sm font-medium">{{ __('Elevation (m)') }}</label><input type="number" name="elevation_m" class="mt-1 w-full rounded-xl border px-4 py-3" value="{{ old('elevation_m') }}"></div>

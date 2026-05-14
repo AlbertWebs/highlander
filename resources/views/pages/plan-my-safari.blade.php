@@ -1,6 +1,6 @@
 @extends('layouts.site')
 
-@section('title', filled($meta_title ?? null) ? $meta_title : __('Plan Your Dream Safari').' — '.config('app.name'))
+@section('title', filled($meta_title ?? null) ? $meta_title : __('Plan Your Dream Safari').' - '.config('app.name'))
 
 @push('meta')
     @include('partials.seo-meta')
@@ -72,7 +72,7 @@
                 <p class="text-sm leading-relaxed text-ink/90">
                     {{ __('You are planning around') }}
                     <span class="font-semibold text-primary">{{ $prefillMountain->name }}</span>.
-                    {{ __('We have noted this in your trip details—adjust anything before you submit.') }}
+                    {{ __('We have noted this in your trip details; adjust anything before you submit.') }}
                 </p>
             </div>
         @endif
@@ -82,7 +82,7 @@
                 <p class="text-sm leading-relaxed text-ink/90">
                     {{ __('You opened the planner from') }}
                     <span class="font-semibold text-primary">{{ $prefillDestination->name }}</span>.
-                    {{ __('We have added this to your trip focus—adjust anything before you submit.') }}
+                    {{ __('We have added this to your trip focus; adjust anything before you submit.') }}
                 </p>
             </div>
         @endif
@@ -92,7 +92,7 @@
                 <p class="text-sm leading-relaxed text-ink/90">
                     {{ __('You opened the planner from the safari style') }}
                     <span class="font-semibold text-primary">{{ $prefillSafariExperience->title }}</span>.
-                    {{ __('We have noted this in your trip details—adjust anything before you submit.') }}
+                    {{ __('We have noted this in your trip details; adjust anything before you submit.') }}
                 </p>
             </div>
         @endif

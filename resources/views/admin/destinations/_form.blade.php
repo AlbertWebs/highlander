@@ -28,7 +28,7 @@
             <p class="mt-2 text-xs text-ink/55">
                 {{ __('URL slug') }}:
                 <code class="rounded bg-secondary/40 px-1.5 py-0.5 font-mono text-ink/80">{{ $destination->slug }}</code>
-                <span class="text-ink/45"> — {{ __('updates automatically when you change the name') }}</span>
+                <span class="text-ink/45"> - {{ __('updates automatically when you change the name') }}</span>
             </p>
         @endif
     </div>
@@ -83,7 +83,7 @@
 
     <div class="md:col-span-2">
         <label class="block text-sm font-medium text-ink">{{ __('Card image') }}</label>
-        <p class="mt-0.5 text-xs text-ink/55">{{ __('Used on destination cards. JPEG, PNG, WebP or GIF — max 5 MB.') }}</p>
+        <p class="mt-0.5 text-xs text-ink/55">{{ __('Used on destination cards. JPEG, PNG, WebP or GIF - max 5 MB.') }}</p>
         <div x-data="fileImagePreview(@js($previewUrl))" class="mt-3">
             <label class="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-8 text-center transition hover:border-primary/35 hover:bg-primary/[0.04] sm:flex-row sm:justify-center sm:gap-4 sm:py-6">
                 <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp" class="sr-only" @change="pick($event)">

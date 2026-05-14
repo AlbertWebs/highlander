@@ -1,13 +1,13 @@
 @extends('layouts.site')
 
-@section('title', filled($meta_title ?? null) ? $meta_title : __('Articles').' — '.config('app.name'))
+@section('title', filled($meta_title ?? null) ? $meta_title : __('Articles').' - '.config('app.name'))
 
 @push('meta')
     @include('partials.seo-meta')
 @endpush
 
 @section('content')
-@include('partials.articles-hero', ['subtitle' => __('Stories from the field — travel notes, wildlife, and life on safari.')])
+@include('partials.articles-hero', ['subtitle' => __('Stories from the field - travel notes, wildlife, and life on safari.')])
 
 <section class="bg-[#F8F8F8] section-divider pb-20 pt-10 sm:pb-24 sm:pt-12">
     <div class="site-gutter-x mx-auto max-w-7xl">

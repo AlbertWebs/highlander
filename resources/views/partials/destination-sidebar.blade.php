@@ -22,7 +22,7 @@
                 {{ $destination->name }}
             </p>
             <p class="mt-4 border-t border-secondary/35 pt-4 text-sm leading-relaxed text-ink/65">
-                {{ __('Where the journey begins — tell us your dates and we will shape an itinerary around this region.') }}
+                {{ __('Where the journey begins - tell us your dates and we will shape an itinerary around this region.') }}
             </p>
         </div>
     </div>

@@ -22,7 +22,7 @@ function planSafariFieldTrim(form, name) {
 function planSafariSelectText(form, name) {
     const el = form.querySelector(`select[name="${name}"]`);
     if (!el || el.value === '') {
-        return '—';
+        return '-';
     }
     const opt = el.options[el.selectedIndex];
 
@@ -40,7 +40,7 @@ function planSafariCheckboxGroupText(form, inputName) {
         texts.push((span?.textContent ?? '').replace(/\s+/g, ' ').trim() || inp.value);
     }
 
-    return texts.length ? texts.join(', ') : '—';
+    return texts.length ? texts.join(', ') : '-';
 }
 
 function planSafariRadioGroupText(form, name) {
@@ -54,7 +54,7 @@ function planSafariRadioGroupText(form, name) {
         return (span?.textContent ?? '').replace(/\s+/g, ' ').trim() || inp.value;
     }
 
-    return '—';
+    return '-';
 }
 
 function initScrollAnimations() {
@@ -226,19 +226,19 @@ document.addEventListener('alpine:init', () => {
             const childrenWord = form.dataset.childrenWord || 'Children';
             const daysWord = form.dataset.daysWord || 'days';
 
-            this.reviewName = planSafariFieldTrim(form, 'full_name') || '—';
-            this.reviewEmail = planSafariFieldTrim(form, 'email') || '—';
-            this.reviewPhone = planSafariFieldTrim(form, 'phone') || '—';
-            this.reviewCountry = planSafariFieldTrim(form, 'country') || '—';
+            this.reviewName = planSafariFieldTrim(form, 'full_name') || '-';
+            this.reviewEmail = planSafariFieldTrim(form, 'email') || '-';
+            this.reviewPhone = planSafariFieldTrim(form, 'phone') || '-';
+            this.reviewCountry = planSafariFieldTrim(form, 'country') || '-';
             this.reviewContactMethod = planSafariSelectText(form, 'contact_method');
 
             const ad = planSafariFieldTrim(form, 'arrival_date');
             const dd = planSafariFieldTrim(form, 'departure_date');
-            this.reviewDates = ad && dd ? `${ad} → ${dd}` : '—';
+            this.reviewDates = ad && dd ? `${ad} → ${dd}` : '-';
             this.reviewFlexible = form.querySelector('input[name="flexible_dates"]')?.checked ? yes : no;
 
             const td = this.tripDays;
-            this.reviewTripDuration = td !== null ? `${td} ${daysWord}` : '—';
+            this.reviewTripDuration = td !== null ? `${td} ${daysWord}` : '-';
 
             const adults = planSafariFieldTrim(form, 'adults');
             const ch = planSafariFieldTrim(form, 'children');
@@ -249,13 +249,13 @@ document.addEventListener('alpine:init', () => {
             if (Number(ch) > 0) {
                 partyParts.push(`${ch} ${childrenWord}`);
             }
-            this.reviewParty = partyParts.length ? partyParts.join(', ') : '—';
+            this.reviewParty = partyParts.length ? partyParts.join(', ') : '-';
 
-            this.reviewChildrenAges = planSafariFieldTrim(form, 'children_ages') || '—';
+            this.reviewChildrenAges = planSafariFieldTrim(form, 'children_ages') || '-';
             this.reviewGroupType = planSafariSelectText(form, 'group_type');
 
             this.reviewDestinations = planSafariCheckboxGroupText(form, 'destinations[]');
-            this.reviewOtherDestination = planSafariFieldTrim(form, 'other_destination') || '—';
+            this.reviewOtherDestination = planSafariFieldTrim(form, 'other_destination') || '-';
             this.reviewExperiences = planSafariCheckboxGroupText(form, 'experience_types[]');
 
             this.reviewAccommodation = planSafariSelectText(form, 'accommodation_type');
@@ -267,7 +267,7 @@ document.addEventListener('alpine:init', () => {
             this.reviewActivities = planSafariCheckboxGroupText(form, 'activities[]');
 
             const notes = planSafariFieldTrim(form, 'special_requests');
-            this.reviewSpecialRequests = notes || '—';
+            this.reviewSpecialRequests = notes || '-';
         },
         validateStep() {
             const pane = this.$root.querySelector(`[data-wizard-step="${this.step}"]`);

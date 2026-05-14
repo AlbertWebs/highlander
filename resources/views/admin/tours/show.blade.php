@@ -15,8 +15,8 @@
         <img src="{{ $tour->imageUrl() }}" alt="" class="mb-6 max-h-64 rounded-xl object-cover">
     @endif
     <dl class="grid gap-4 sm:grid-cols-2 text-sm">
-        <div><dt class="text-ink/60">{{ __('Price') }}</dt><dd>{{ $tour->price ? '$'.$tour->price : '—' }}</dd></div>
-        <div><dt class="text-ink/60">{{ __('Duration') }}</dt><dd>{{ $tour->duration_days ? $tour->duration_days.' '.__('days') : '—' }}</dd></div>
+        <div><dt class="text-ink/60">{{ __('Price') }}</dt><dd>{{ $tour->price ? '$'.$tour->price : '-' }}</dd></div>
+        <div><dt class="text-ink/60">{{ __('Duration') }}</dt><dd>{{ $tour->duration_days ? $tour->duration_days.' '.__('days') : '-' }}</dd></div>
         <div class="sm:col-span-2"><dt class="text-ink/60">{{ __('Description') }}</dt><dd class="mt-1 whitespace-pre-wrap">{{ $tour->description }}</dd></div>
     </dl>
 
@@ -37,7 +37,7 @@
                             </div>
                         @endif
                         <div class="p-4">
-                            <p class="font-semibold text-primary">{{ __('Day') }} {{ $day->day_number }} — {{ $day->title }}</p>
+                            <p class="font-semibold text-primary">{{ __('Day') }} {{ $day->day_number }} - {{ $day->title }}</p>
                             @if(filled($day->body))
                                 <p class="mt-2 whitespace-pre-wrap text-ink/85">{{ $day->body }}</p>
                             @endif

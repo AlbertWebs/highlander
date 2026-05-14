@@ -1,6 +1,6 @@
 @extends('layouts.site')
 
-@section('title', filled($meta_title ?? null) ? $meta_title : config('app.name').' — '.__('Discover Africa'))
+@section('title', filled($meta_title ?? null) ? $meta_title : config('app.name').' - '.__('Discover Africa'))
 
 @push('meta')
     @include('partials.seo-meta')
@@ -178,12 +178,12 @@
         $img2Raw = trim((string) ($welcome_card_2_image_url ?? ''));
         $welcomeImg2 = filled($img2Raw) ? $img2Raw : 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=900&h=1200&q=80';
     @endphp
-    {{-- Same horizontal inset as hero headline (site-gutter-x only — no max-width centering) --}}
+    {{-- Same horizontal inset as hero headline (site-gutter-x only - no max-width centering) --}}
     <div class="site-gutter-x">
         <div
             class="grid grid-cols-1 items-stretch gap-12 md:grid-cols-2 md:gap-x-8 md:gap-y-12 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0 xl:gap-x-12"
         >
-            {{-- Column 1: headline, body, primary CTA — wider on lg for readable measure --}}
+            {{-- Column 1: headline, body, primary CTA - wider on lg for readable measure --}}
             <div class="flex min-w-0 flex-col justify-center md:col-span-2 lg:col-span-5 lg:pr-3 xl:pr-6" data-aos="fade-right" data-aos-duration="800">
                 <h2 class="mb-4 font-serif text-[1.875rem] font-semibold leading-[1.18] tracking-tight text-ink sm:text-[2.125rem] lg:text-[2.375rem] lg:leading-[1.15] xl:text-[2.5rem]">
                     @foreach($welcomeLines as $line)
@@ -334,9 +334,13 @@
             <h2 id="why-choose-heading" class="mt-5 font-serif text-[1.875rem] font-semibold leading-[1.12] tracking-tight text-ink sm:text-[2.35rem] lg:text-[2.65rem]">
                 {{ filled(trim((string) ($why_choose_title ?? ''))) ? $why_choose_title : __('Why Choose Us') }}
             </h2>
-            @if(filled(trim((string) ($why_choose_subtitle ?? ''))))
-                <p class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ink/70 sm:text-lg">{{ $why_choose_subtitle }}</p>
-            @endif
+            @php
+                $whyChooseIntro = trim((string) ($why_choose_subtitle ?? ''));
+                if ($whyChooseIntro === '') {
+                    $whyChooseIntro = __('Planning an East Africa journey should feel collaborative, not confusing. We combine deep local knowledge with careful logistics so your safari or mountain trip stays smooth, safe, and true to the landscapes you came to see. Whether it is your first game drive or a return visit, we focus on honest advice, steady execution, and partners who share our respect for the wild.');
+                }
+            @endphp
+            <p class="mx-auto mt-5 max-w-3xl text-pretty text-base leading-relaxed text-ink/70 sm:text-lg">{{ $whyChooseIntro }}</p>
         </header>
 
         <div class="mx-auto mt-14 grid w-full max-w-none gap-6 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3 lg:gap-7 xl:gap-8">
@@ -356,7 +360,7 @@
                 {{ __('Destinations') }}
             </p>
             <h2 id="popular-destinations-heading" class="mt-4 mb-8 font-serif text-3xl font-semibold tracking-tight text-primary sm:text-4xl">{{ __('Popular Destinations') }}</h2>
-            <p class="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-ink/80 sm:text-base lg:mx-0">{{ __('From savanna to coast—explore places we know by heart.') }}</p>
+            <p class="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-ink/80 sm:text-base lg:mx-0">{{ __('From savanna to coast - explore places we know by heart.') }}</p>
         </header>
     </div>
 
@@ -377,13 +381,24 @@
             <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-secondary/35 to-transparent sm:w-20" aria-hidden="true"></div>
             <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-secondary/35 to-transparent sm:w-20" aria-hidden="true"></div>
             <div class="overflow-hidden pb-2 pt-1">
-                <div class="destinations-marquee-track flex w-max gap-6">
-                    @foreach($destinations as $dest)
-                        @include('partials.destination-card-home', ['dest' => $dest])
-                    @endforeach
-                    @foreach($destinations as $dest)
-                        @include('partials.destination-card-home', ['dest' => $dest])
-                    @endforeach
+                @php
+                    $destMarqueeSec = max(28, min(90, $destinations->count() * 14));
+                @endphp
+                <div
+                    class="destinations-marquee-track flex w-max flex-nowrap gap-0"
+                    style="--hl-dest-marquee-duration: {{ $destMarqueeSec }}s;"
+                >
+                    {{-- Two identical strips, no gap between strips: -50% transform = one seamless loop --}}
+                    <div class="flex shrink-0 gap-6 pe-6">
+                        @foreach($destinations as $dest)
+                            @include('partials.destination-card-home', ['dest' => $dest])
+                        @endforeach
+                    </div>
+                    <div class="flex shrink-0 gap-6 pe-6" aria-hidden="true">
+                        @foreach($destinations as $dest)
+                            @include('partials.destination-card-home', ['dest' => $dest])
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>

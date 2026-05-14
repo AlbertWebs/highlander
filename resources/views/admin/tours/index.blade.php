@@ -49,7 +49,7 @@
                         @if(($tour->itinerary_days_count ?? 0) > 0)
                             <span class="tabular-nums text-ink/80">{{ $tour->itinerary_days_count }} {{ $tour->itinerary_days_count === 1 ? __('day') : __('days') }}</span>
                         @else
-                            <span class="text-ink/45">—</span>
+                            <span class="text-ink/45">-</span>
                         @endif
                         <a href="{{ route('admin.tours.itinerary.edit', $tour) }}" class="ml-2 whitespace-nowrap text-primary hover:underline">{{ __('Manage') }}</a>
                     </td>

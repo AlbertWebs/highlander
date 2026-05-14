@@ -37,7 +37,7 @@ class Destination extends Model
     }
 
     /**
-     * Curated landscape photos when no admin upload exists (Unsplash — hotlink allowed).
+     * Curated landscape photos when no admin upload exists (Unsplash - hotlink allowed).
      *
      * @see https://unsplash.com/license
      */

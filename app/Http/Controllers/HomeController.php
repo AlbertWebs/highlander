@@ -16,7 +16,7 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        $data = Cache::remember('home_page_v5', 600, function () {
+        $data = Cache::remember('home_page_v7', 600, function () {
             $defaultMp4 = 'https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_30fps.mp4';
             $defaultVimeoPage = 'https://vimeo.com/1177988644';
             $heroVideoSource = SiteSetting::getValue('hero_video_source', 'vimeo');
@@ -61,8 +61,8 @@ class HomeController extends Controller
                 'hero_video_source' => $heroVideoSource,
                 'hero_vimeo_id' => $heroVimeoId,
                 'hero_uses_vimeo_embed' => $heroUsesVimeoEmbed,
-                'welcome_title' => SiteSetting::getValue('welcome_title', 'Discover Africa Beyond the Ordinary—|Bespoke safaris.|Unforgettable journeys.'),
-                'welcome_body' => SiteSetting::getValue('welcome_body', "We design private safaris and nature expeditions across East Africa—from open savanna to highland trails—tailored to your dates, pace, and the wildlife you hope to see.\n\nOur guides, vehicles, and partner lodges are chosen for safety, comfort, and respect for the wild, so you travel with confidence and return with memories that last."),
+                'welcome_title' => SiteSetting::getValue('welcome_title', 'Discover Africa Beyond the Ordinary|Bespoke safaris.|Unforgettable journeys.'),
+                'welcome_body' => SiteSetting::getValue('welcome_body', "We design private safaris and nature expeditions across East Africa - from open savanna to highland trails - tailored to your dates, pace, and the wildlife you hope to see.\n\nOur guides, vehicles, and partner lodges are chosen for safety, comfort, and respect for the wild, so you travel with confidence and return with memories that last."),
                 'welcome_learn_more_label' => SiteSetting::getValue('welcome_learn_more_label', __('Plan My Safari')),
                 'welcome_learn_more_url' => SiteSetting::getValue('welcome_learn_more_url', ''),
                 'welcome_card_1_media_type' => SiteSetting::getValue('welcome_card_1_media_type', 'image'),
@@ -80,7 +80,7 @@ class HomeController extends Controller
                 ),
                 'welcome_card_2_vimeo_url' => SiteSetting::getValue('welcome_card_2_vimeo_url', ''),
                 'welcome_card_2_stat' => SiteSetting::getValue('welcome_card_2_stat', '15+'),
-                'welcome_card_2_overlay' => SiteSetting::getValue('welcome_card_2_overlay', 'The best way to know Africa is on safari—with every day shaped for you.'),
+                'welcome_card_2_overlay' => SiteSetting::getValue('welcome_card_2_overlay', 'The best way to know Africa is on safari - with every day shaped for you.'),
                 'welcome_card_2_link' => SiteSetting::getValue('welcome_card_2_link', ''),
                 'cta_title' => SiteSetting::getValue('cta_title', 'Ready for your next adventure?'),
                 'cta_body' => SiteSetting::getValue('cta_body', 'Speak with our travel designers and build an itinerary tailored to you.'),
@@ -96,7 +96,7 @@ class HomeController extends Controller
                 'social_twitter' => SiteSetting::getValue('social_twitter', ''),
                 'social_tiktok' => SiteSetting::getValue('social_tiktok', ''),
                 'featured_tours' => Tour::query()->active()->featured()->orderBy('sort_order')->take(12)->get(),
-                'destinations' => Destination::query()->active()->orderByDesc('sort_order')->take(4)->get(),
+                'destinations' => Destination::query()->active()->orderByDesc('sort_order')->orderBy('name')->get(),
                 'testimonials' => Testimonial::query()->active()->orderByDesc('is_featured')->orderBy('sort_order')->take(6)->get(),
                 'articles' => Article::query()->published()->orderByDesc('published_at')->take(3)->get(),
             ];
@@ -188,9 +188,36 @@ class HomeController extends Controller
     protected static function normalizeWhyChooseItems(mixed $raw): array
     {
         $defaults = [
-            ['icon' => '', 'title' => __('Local expertise'), 'body' => __('Guides who grew up on this land.')],
-            ['icon' => '', 'title' => __('Safety first'), 'body' => __('Vetted partners and clear protocols.')],
-            ['icon' => '', 'title' => __('Tailored luxury'), 'body' => __('No cookie-cutter packages.')],
+            [
+                'icon' => '',
+                'title' => __('Local expertise'),
+                'body' => __('Our guides and ground teams work the same landscapes year-round, from savanna to highlands. That depth shows up in wildlife reads, sensible pacing, and camp choices that match how you like to travel.'),
+            ],
+            [
+                'icon' => '',
+                'title' => __('Safety first'),
+                'body' => __('We partner with operators, drivers, and lodges that meet clear safety standards, maintain vehicles properly, and brief guests honestly about terrain, weather, and wildlife behaviour. You should feel looked after from the first drive to the last.'),
+            ],
+            [
+                'icon' => '',
+                'title' => __('Tailored itineraries'),
+                'body' => __('No two travellers want the same rhythm. We shape dates, regions, activity mix, and rest days around your goals, whether you are chasing cats on the plains, mixing in culture, or adding a mountain chapter after safari.'),
+            ],
+            [
+                'icon' => '',
+                'title' => __('Responsible travel'),
+                'body' => __('We favour routes and partners that respect parks, conservancies, and communities. Tourism should fund stewardship where it matters, and leave places better understood, not more strained.'),
+            ],
+            [
+                'icon' => '',
+                'title' => __('Comfort that fits the wild'),
+                'body' => __('Expect clean, well-equipped vehicles, thoughtful lodge pairings, and crews who know how to balance adventure with recovery. Luxury here means reliability, warmth, and details done quietly well.'),
+            ],
+            [
+                'icon' => '',
+                'title' => __('Clear communication'),
+                'body' => __('From your first enquiry you get straightforward answers on timing, inclusions, and what to pack. On the road, briefings stay practical so you always know the plan and can relax into the experience.'),
+            ],
         ];
 
         if (! is_array($raw) || count($raw) === 0) {

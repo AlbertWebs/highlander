@@ -97,9 +97,9 @@ class PageController extends Controller
             abort(404);
         }
 
-        $pageTitle = $mountain->name.' — '.config('app.name');
+        $pageTitle = $mountain->name.' - '.config('app.name');
         $meta_title = $mountain->name;
-        $meta_description = Str::limit(strip_tags((string) ($mountain->description ?? '')), 160) ?: __('Discover :name — trekking and alpine expeditions with Highlanders Nature Trails.', ['name' => $mountain->name]);
+        $meta_description = Str::limit(strip_tags((string) ($mountain->description ?? '')), 160) ?: __('Discover :name - trekking and alpine expeditions with Highlanders Nature Trails.', ['name' => $mountain->name]);
 
         $relatedTours = RelatedToursForMountain::get($mountain, 2);
 
@@ -119,10 +119,10 @@ class PageController extends Controller
             abort(404);
         }
 
-        $pageTitle = $destination->name.' — '.config('app.name');
+        $pageTitle = $destination->name.' - '.config('app.name');
         $meta_title = $destination->name;
         $meta_description = Str::limit(strip_tags((string) ($destination->description ?? '')), 160)
-            ?: __('Discover :name — safaris and expeditions with Highlanders Nature Trails.', ['name' => $destination->name]);
+            ?: __('Discover :name - safaris and expeditions with Highlanders Nature Trails.', ['name' => $destination->name]);
 
         $relatedTours = RelatedToursForDestination::get($destination, 2);
 
@@ -142,10 +142,10 @@ class PageController extends Controller
             abort(404);
         }
 
-        $pageTitle = $safariExperience->title.' — '.config('app.name');
+        $pageTitle = $safariExperience->title.' - '.config('app.name');
         $meta_title = $safariExperience->title;
         $meta_description = Str::limit(strip_tags((string) ($safariExperience->description ?? '')), 160)
-            ?: __('Discover :name — safari styles with Highlanders Nature Trails.', ['name' => $safariExperience->title]);
+            ?: __('Discover :name - safari styles with Highlanders Nature Trails.', ['name' => $safariExperience->title]);
 
         $relatedTours = RelatedToursForSafariExperience::get($safariExperience, 2);
 
@@ -204,7 +204,7 @@ class PageController extends Controller
 
         $pageTitle = filled($tour->meta_title)
             ? $tour->meta_title
-            : $tour->title.' — '.config('app.name');
+            : $tour->title.' - '.config('app.name');
         $meta_title = filled($tour->meta_title) ? $tour->meta_title : $tour->title;
         $meta_description = filled($tour->meta_description)
             ? $tour->meta_description

@@ -31,7 +31,7 @@
     'wide' => true,
 ])
 
-{{-- Content panel below hero — spaced from header image (surface gap) --}}
+{{-- Content panel below hero - spaced from header image (surface gap) --}}
 <section class="relative z-10 mt-6 bg-surface pb-20 sm:mt-8 lg:mt-10" aria-labelledby="mountain-overview-heading">
     <div class="site-gutter-x w-full max-w-none">
         <div class="w-full rounded-t-[1.25rem] border border-secondary/25 bg-gradient-to-b from-white to-surface/90 px-5 py-10 shadow-[0_-8px_40px_rgba(46,46,46,0.07)] sm:rounded-t-[1.75rem] sm:px-10 sm:py-12 lg:px-14">

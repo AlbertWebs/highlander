@@ -110,7 +110,7 @@
     <div class="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/[0.07] to-tint-green/30 p-5 sm:p-6">
         <p class="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-primary">{{ __('Trekking tip') }}</p>
         <p class="mt-2 text-sm leading-relaxed text-ink/75">
-            {{ __('Open any peak for full detail, then use “Plan safari” to send dates—we will suggest acclimatisation and rest days.') }}
+            {{ __('Open any peak for full detail, then use “Plan safari” to send dates, we will suggest acclimatisation and rest days.') }}
         </p>
     </div>
 </div>

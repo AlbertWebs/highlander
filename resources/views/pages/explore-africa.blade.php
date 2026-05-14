@@ -1,6 +1,6 @@
 @extends('layouts.site')
 
-@section('title', filled($meta_title ?? null) ? $meta_title : __('Explore Africa').' — '.config('app.name'))
+@section('title', filled($meta_title ?? null) ? $meta_title : __('Explore Africa').' - '.config('app.name'))
 
 @push('meta')
     @include('partials.seo-meta')
@@ -9,14 +9,14 @@
 @section('content')
 @include('partials.page-hero', [
     'title' => __('Explore Africa'),
-    'subtitle' => __('From coastlines to savannas—discover where we travel.'),
+    'subtitle' => __('From coastlines to savannas - discover where we travel.'),
     'wide' => true,
 ])
 
 <section class="site-gutter-x w-full max-w-none section-y-compact bg-surface section-divider">
     <div class="mx-auto max-w-3xl text-center">
         <p class="text-lg leading-relaxed text-ink/80">
-            {{ __('Each region has its own rhythm—open a destination to read more, then plan a safari shaped around the places that speak to you.') }}
+            {{ __('Each region has its own rhythm - open a destination to read more, then plan a safari shaped around the places that speak to you.') }}
         </p>
     </div>
 
@@ -52,7 +52,7 @@
     <div class="mt-16 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/[0.07] to-accent/[0.06] px-6 py-10 text-center sm:px-10">
         <h2 class="font-serif text-2xl font-semibold text-ink sm:text-3xl">{{ __('Ready to shape your trip?') }}</h2>
         <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-ink/75 sm:text-base">
-            {{ __('Share your dates, group size, and must-see places—we will reply with ideas and a tailored outline.') }}
+            {{ __('Share your dates, group size, and must-see places, we will reply with ideas and a tailored outline.') }}
         </p>
         <a href="{{ route('plan-my-safari') }}" class="btn-primary mt-8 inline-flex min-w-[12rem] items-center justify-center bg-gradient-to-r from-primary via-primary to-accent px-8 py-3.5 hover:brightness-110">
             {{ __('Plan this safari') }}

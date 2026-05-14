@@ -39,7 +39,7 @@
                 <h2 id="mountains-admin-heading" class="text-lg font-semibold text-ink">{{ __('Your mountains') }}</h2>
                 <p class="mt-1 text-sm text-ink/60">
                     @if($mountains->total() === 0)
-                        {{ __('No mountains yet — add your first peak below.') }}
+                        {{ __('No mountains yet - add your first peak below.') }}
                     @else
                         {{ __(':count in this list', ['count' => $mountains->total()]) }}
                         @if(filled($q))

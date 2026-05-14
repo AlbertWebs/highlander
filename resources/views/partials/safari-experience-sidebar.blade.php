@@ -25,7 +25,7 @@
                 <p class="mt-2 text-sm font-medium text-primary/90">{{ $safariExperience->duration }}</p>
             @endif
             <p class="mt-4 border-t border-secondary/35 pt-4 text-sm leading-relaxed text-ink/65">
-                {{ __('Tell us your dates and interests—we will outline an itinerary that fits this style.') }}
+                {{ __('Tell us your dates and interests, we will outline an itinerary that fits this style.') }}
             </p>
         </div>
     </div>

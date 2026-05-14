@@ -94,7 +94,7 @@
     }
 
     /**
-     * About page (admin TinyMCE) — HTML output without @tailwindcss/typography.
+     * About page (admin TinyMCE) - HTML output without @tailwindcss/typography.
      */
     .about-rich-text {
         max-width: none;
@@ -301,7 +301,7 @@
         color: rgb(23 23 23) !important;
     }
 
-    /* Primary / forest green (#4CAF50) — matches tailwind theme primary */
+    /* Primary / forest green (#4CAF50) - matches tailwind theme primary */
     .site-header-stuck .site-header-ctas-btn-primary {
         color: rgb(255 255 255) !important;
         background-color: rgb(76 175 80) !important;
@@ -350,7 +350,7 @@
 
     /**
      * Popular destinations: hide static grid by default.
-     * Do not put Tailwind `grid` on this node — utilities layer would override display:none.
+     * Do not put Tailwind `grid` on this node - utilities layer would override display:none.
      */
     .destinations-marquee-fallback {
         display: none;
@@ -386,9 +386,9 @@
         animation: hl-fade-in 1.1s ease-out forwards;
     }
 
-    /** Popular destinations: continuous horizontal marquee (loop = two identical tracks). */
+    /** Popular destinations: continuous horizontal marquee (two equal-width strips; -50% = seamless). */
     .destinations-marquee-track {
-        animation: hl-destinations-marquee 55s linear infinite;
+        animation: hl-destinations-marquee var(--hl-dest-marquee-duration, 55s) linear infinite;
         will-change: transform;
     }
 

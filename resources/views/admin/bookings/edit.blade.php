@@ -13,7 +13,7 @@
     </div>
     <div><label class="text-sm font-medium">{{ __('Tour') }}</label>
         <select name="tour_id" class="mt-1 w-full rounded-xl border px-4 py-3">
-            <option value="">—</option>
+            <option value="">-</option>
             @foreach($tours as $t)
                 <option value="{{ $t->id }}" @selected(old('tour_id', $booking->tour_id) == $t->id)>{{ $t->title }}</option>
             @endforeach

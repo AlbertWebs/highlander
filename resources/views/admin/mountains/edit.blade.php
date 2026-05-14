@@ -152,7 +152,7 @@
                     </div>
                 @else
                     <div class="mt-4 flex aspect-[16/10] items-center justify-center rounded-xl border border-dashed border-secondary/60 bg-surface/60 text-sm text-ink/45">
-                        {{ __('No image yet — upload one below.') }}
+                        {{ __('No image yet - upload one below.') }}
                     </div>
                 @endif
 

@@ -245,7 +245,7 @@
                 <div><label class="{{ $label }}">{{ __('Text') }}</label><textarea name="cta_body" rows="3" required class="{{ $field }} tinymce-editor">{{ old('cta_body', $setting->cta_body) }}</textarea></div>
                 <div><label class="{{ $label }}">{{ __('Button label') }}</label><input type="text" name="cta_button_label" value="{{ old('cta_button_label', $setting->cta_button_label) }}" class="{{ $field }}"></div>
             </div>
-            <p class="mt-4 text-sm text-ink/60">{{ __('Testimonials on this page are managed under Testimonials — enable “Show on About page” on each review.') }}</p>
+            <p class="mt-4 text-sm text-ink/60">{{ __('Testimonials on this page are managed under Testimonials - enable “Show on About page” on each review.') }}</p>
         </section>
 
         <div class="sticky bottom-0 z-10 flex justify-end border-t border-secondary/50 bg-surface/95 py-4 backdrop-blur-sm">

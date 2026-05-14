@@ -1,4 +1,4 @@
-{{-- Expects: $box (array title/body), $index (int 0-based) — no icons; index carries the visual --}}
+{{-- Expects: $box (array title/body), $index (int 0-based) - no icons; index carries the visual --}}
 @php
     $delay = min(380, 90 * (int) ($index ?? 0));
     $num = str_pad((string) (($index ?? 0) + 1), 2, '0', STR_PAD_LEFT);

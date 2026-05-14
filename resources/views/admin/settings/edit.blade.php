@@ -54,7 +54,7 @@
                     <div class="space-y-8 px-6 py-8 sm:px-8">
                         <div class="grid gap-8 sm:grid-cols-2">
                             <div x-data="fileImagePreview(@js($previewLogoLight))" class="flex flex-col">
-                                <label class="text-sm font-medium text-ink">{{ __('Logo — light backgrounds') }}</label>
+                                <label class="text-sm font-medium text-ink">{{ __('Logo - light backgrounds') }}</label>
                                 <p class="mt-0.5 text-xs text-ink/50">{{ __('Admin sidebar, sign-in, etc.') }}</p>
                                 <label class="mt-3 flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-6 text-center transition hover:border-primary/35 hover:bg-primary/[0.04]">
                                     <input type="file" name="logo" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" class="sr-only" @change="pick($event)">
@@ -72,7 +72,7 @@
                                 </label>
                             </div>
                             <div x-data="fileImagePreview(@js($previewLogoDark))" class="flex flex-col">
-                                <label class="text-sm font-medium text-ink">{{ __('Logo — dark backgrounds') }}</label>
+                                <label class="text-sm font-medium text-ink">{{ __('Logo - dark backgrounds') }}</label>
                                 <p class="mt-0.5 text-xs text-ink/50">{{ __('Public header & footer') }}</p>
                                 <label class="mt-3 flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-slate-400/40 bg-slate-800/90 px-4 py-6 text-center transition hover:border-primary/45 hover:bg-slate-800">
                                     <input type="file" name="logo_dark" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" class="sr-only" @change="pick($event)">

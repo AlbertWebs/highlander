@@ -56,7 +56,7 @@ class SafariRequest extends Model
 
         return is_array($d) && count($d) > 0
             ? implode(', ', array_slice($d, 0, 4)).(count($d) > 4 ? '…' : '')
-            : '—';
+            : '-';
     }
 
     public function budgetLabel(): string
@@ -67,7 +67,7 @@ class SafariRequest extends Model
             '2500_5000' => __('$2,500 – $5,000'),
             '5000_plus' => __('$5,000+'),
             'not_sure' => __('Not sure'),
-            default => $this->budget_range ? (string) $this->budget_range : '—',
+            default => $this->budget_range ? (string) $this->budget_range : '-',
         };
     }
 
@@ -79,7 +79,7 @@ class SafariRequest extends Model
             'family' => __('Family'),
             'friends' => __('Friends'),
             'corporate' => __('Corporate'),
-            default => $this->group_type ?? '—',
+            default => $this->group_type ?? '-',
         };
     }
 
@@ -91,7 +91,7 @@ class SafariRequest extends Model
             'budget_camp' => __('Budget Camp'),
             'tented_camp' => __('Tented Camp'),
             'boutique_hotel' => __('Boutique Hotel'),
-            default => $this->accommodation_type ?? '—',
+            default => $this->accommodation_type ?? '-',
         };
     }
 
@@ -102,7 +102,7 @@ class SafariRequest extends Model
             'double' => __('Double'),
             'twin' => __('Twin'),
             'family' => __('Family room'),
-            default => $this->room_type ?? '—',
+            default => $this->room_type ?? '-',
         };
     }
 
@@ -114,7 +114,7 @@ class SafariRequest extends Model
             'safari_van' => __('Safari Van'),
             'flight_transfer' => __('Flight transfer'),
             'self_drive' => __('Self drive'),
-            default => $this->transport_type ?? '—',
+            default => $this->transport_type ?? '-',
         };
     }
 
@@ -124,7 +124,7 @@ class SafariRequest extends Model
             'phone' => __('Phone'),
             'email' => __('Email'),
             'whatsapp' => __('WhatsApp'),
-            default => $this->contact_method ?? '—',
+            default => $this->contact_method ?? '-',
         };
     }
 }

@@ -1,13 +1,13 @@
 @extends('layouts.site')
 
-@section('title', filled($meta_title ?? null) ? $meta_title : __('Gallery').' — '.config('app.name'))
+@section('title', filled($meta_title ?? null) ? $meta_title : __('Gallery').' - '.config('app.name'))
 
 @push('meta')
     @include('partials.seo-meta')
 @endpush
 
 @section('content')
-@include('partials.gallery-hero', ['subtitle' => __('Moments from the road — filter by adventure type.')])
+@include('partials.gallery-hero', ['subtitle' => __('Moments from the road - filter by adventure type.')])
 
 <section
     class="bg-[#F8F8F8] section-divider pb-20 pt-10 sm:pb-24 sm:pt-12"
@@ -61,7 +61,7 @@
                     @php
                         $catSlug = $g->category?->slug ?? '';
                         $imgAlt = $g->alt ?? $g->title ?? __('Gallery image');
-                        $caption = trim(collect([$g->category?->name, $g->title])->filter()->implode(' — '));
+                        $caption = trim(collect([$g->category?->name, $g->title])->filter()->implode(' - '));
                     @endphp
                     <li
                         x-show="filter === 'all' || filter === @js($catSlug)"

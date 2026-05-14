@@ -108,7 +108,7 @@
                                             </div>
                                         @endif
                                         <div class="p-5 sm:p-6">
-                                            <p class="font-semibold text-primary">{{ __('Day') }} {{ $day->day_number }} — {{ $day->title }}</p>
+                                            <p class="font-semibold text-primary">{{ __('Day') }} {{ $day->day_number }} - {{ $day->title }}</p>
                                             @if(filled($day->body))
                                                 <p class="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-ink/85">{{ $day->body }}</p>
                                             @endif

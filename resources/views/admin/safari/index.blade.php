@@ -38,7 +38,7 @@
                 <h2 id="safari-admin-heading" class="text-lg font-semibold text-ink">{{ __('Your safari experiences') }}</h2>
                 <p class="mt-1 text-sm text-ink/60">
                     @if($safariExperiences->total() === 0)
-                        {{ __('No experiences yet — add your first block below.') }}
+                        {{ __('No experiences yet - add your first block below.') }}
                     @else
                         {{ __(':count in this list', ['count' => $safariExperiences->total()]) }}
                         @if(filled($q))

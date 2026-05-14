@@ -1,6 +1,6 @@
 @extends('layouts.site')
 
-@section('title', $article->meta_title ?? $article->title.' — '.config('app.name'))
+@section('title', $article->meta_title ?? $article->title.' - '.config('app.name'))
 
 @push('meta')
     @if($article->meta_description)

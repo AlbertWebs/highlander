@@ -6,7 +6,7 @@
     <div class="card-depth rounded-card p-6">
         <h2 class="font-serif text-xl font-semibold text-primary">{{ __('From the journal') }}</h2>
         <p class="mt-2 text-sm leading-relaxed text-ink/70">
-            {{ __('Field notes, seasonal tips, and stories from our guides—written to help you plan a smarter safari.') }}
+            {{ __('Field notes, seasonal tips, and stories from our guides - written to help you plan a smarter safari.') }}
         </p>
     </div>
 
@@ -45,7 +45,7 @@
     <div class="rounded-card border border-primary/25 bg-gradient-to-br from-primary/[0.07] to-tint-green/40 p-6 shadow-sm">
         <h2 class="font-serif text-xl font-semibold text-primary">{{ __('Plan your safari') }}</h2>
         <p class="mt-2 text-sm leading-relaxed text-ink/75">
-            {{ __('Tell us your dates and style—we will shape an itinerary around the wildlife and landscapes you care about.') }}
+            {{ __('Tell us your dates and style, we will shape an itinerary around the wildlife and landscapes you care about.') }}
         </p>
         <a href="{{ route('plan-my-safari') }}" class="btn-primary mt-5 w-full sm:w-auto">{{ __('Start planning') }}</a>
     </div>

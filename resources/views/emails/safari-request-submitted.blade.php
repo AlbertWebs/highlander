@@ -20,7 +20,7 @@
         @if(is_array($safariRequest->destinations) && count($safariRequest->destinations))
             {{ implode(', ', $safariRequest->destinations) }}
         @else
-            —
+            -
         @endif
     </p>
     <p><strong>{{ __('Budget') }}:</strong> {{ $safariRequest->budgetLabel() }}</p>

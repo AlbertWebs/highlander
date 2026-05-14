@@ -14,11 +14,11 @@
             <div><dt class="text-ink/60">{{ __('Full name') }}</dt><dd class="font-medium">{{ $req->full_name }}</dd></div>
             <div><dt class="text-ink/60">{{ __('Email') }}</dt><dd><a href="mailto:{{ $req->email }}" class="text-primary hover:underline">{{ $req->email }}</a></dd></div>
             <div><dt class="text-ink/60">{{ __('Phone') }}</dt><dd>{{ $req->phone }}</dd></div>
-            <div><dt class="text-ink/60">{{ __('Country') }}</dt><dd>{{ $req->country ?? '—' }}</dd></div>
+            <div><dt class="text-ink/60">{{ __('Country') }}</dt><dd>{{ $req->country ?? '-' }}</dd></div>
             <div><dt class="text-ink/60">{{ __('Preferred contact') }}</dt><dd>{{ $req->contactMethodLabel() }}</dd></div>
             <div><dt class="text-ink/60">{{ __('Arrival') }}</dt><dd>{{ $req->arrival_date->format('M j, Y') }}</dd></div>
             <div><dt class="text-ink/60">{{ __('Departure') }}</dt><dd>{{ $req->departure_date->format('M j, Y') }}</dd></div>
-            <div><dt class="text-ink/60">{{ __('Trip duration') }}</dt><dd>{{ $req->trip_duration !== null ? $req->trip_duration.' '.__('days') : '—' }}</dd></div>
+            <div><dt class="text-ink/60">{{ __('Trip duration') }}</dt><dd>{{ $req->trip_duration !== null ? $req->trip_duration.' '.__('days') : '-' }}</dd></div>
             <div><dt class="text-ink/60">{{ __('Flexible dates') }}</dt><dd>{{ $req->flexible_dates ? __('Yes') : __('No') }}</dd></div>
             <div><dt class="text-ink/60">{{ __('Adults / Children') }}</dt><dd>{{ $req->adults }} / {{ $req->children }}</dd></div>
             @if($req->children > 0 && $req->children_ages)
@@ -26,13 +26,13 @@
             @endif
             <div><dt class="text-ink/60">{{ __('Group type') }}</dt><dd>{{ $req->groupTypeLabel() }}</dd></div>
             <div><dt class="text-ink/60">{{ __('Budget') }}</dt><dd>{{ $req->budgetLabel() }}</dd></div>
-            <div class="sm:col-span-2"><dt class="text-ink/60">{{ __('Destinations') }}</dt><dd>{{ is_array($req->destinations) && count($req->destinations) ? implode(', ', $req->destinations) : '—' }}</dd></div>
-            <div class="sm:col-span-2"><dt class="text-ink/60">{{ __('Experience types') }}</dt><dd>{{ is_array($req->experience_types) && count($req->experience_types) ? implode(', ', $req->experience_types) : '—' }}</dd></div>
+            <div class="sm:col-span-2"><dt class="text-ink/60">{{ __('Destinations') }}</dt><dd>{{ is_array($req->destinations) && count($req->destinations) ? implode(', ', $req->destinations) : '-' }}</dd></div>
+            <div class="sm:col-span-2"><dt class="text-ink/60">{{ __('Experience types') }}</dt><dd>{{ is_array($req->experience_types) && count($req->experience_types) ? implode(', ', $req->experience_types) : '-' }}</dd></div>
             <div><dt class="text-ink/60">{{ __('Accommodation') }}</dt><dd>{{ $req->accommodationLabel() }}</dd></div>
             <div><dt class="text-ink/60">{{ __('Room type') }}</dt><dd>{{ $req->roomTypeLabel() }}</dd></div>
             <div><dt class="text-ink/60">{{ __('Transport') }}</dt><dd>{{ $req->transportLabel() }}</dd></div>
             <div><dt class="text-ink/60">{{ __('Airport pickup') }}</dt><dd>{{ $req->airport_pickup ? __('Yes') : __('No') }}</dd></div>
-            <div class="sm:col-span-2"><dt class="text-ink/60">{{ __('Activities') }}</dt><dd>{{ is_array($req->activities) && count($req->activities) ? implode(', ', $req->activities) : '—' }}</dd></div>
+            <div class="sm:col-span-2"><dt class="text-ink/60">{{ __('Activities') }}</dt><dd>{{ is_array($req->activities) && count($req->activities) ? implode(', ', $req->activities) : '-' }}</dd></div>
             @if($req->special_requests)
                 <div class="sm:col-span-2"><dt class="text-ink/60">{{ __('Special requests') }}</dt><dd class="whitespace-pre-wrap">{{ $req->special_requests }}</dd></div>
             @endif

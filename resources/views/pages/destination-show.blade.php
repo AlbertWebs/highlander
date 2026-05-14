@@ -68,7 +68,7 @@
                         </div>
                     @else
                         <div class="mt-6 rounded-card border border-dashed border-secondary/50 bg-surface/80 p-8 text-center">
-                            <p class="text-lg leading-relaxed text-ink/65">{{ __('We are preparing more detail for this destination. Tell us your dates and interests below—we will shape an itinerary around this region.') }}</p>
+                            <p class="text-lg leading-relaxed text-ink/65">{{ __('We are preparing more detail for this destination. Tell us your dates and interests below, we will shape an itinerary around this region.') }}</p>
                         </div>
                     @endif
                 </div>

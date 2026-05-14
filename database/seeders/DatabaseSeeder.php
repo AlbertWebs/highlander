@@ -46,8 +46,8 @@ class DatabaseSeeder extends Seeder
         SiteSetting::setValue('hero_link_2_label', '');
         SiteSetting::setValue('hero_link_2_url', '');
         SiteSetting::setValue('hero_icon_url', '');
-        SiteSetting::setValue('welcome_title', 'Discover Africa Beyond the Ordinary—|Bespoke safaris.|Unforgettable journeys.');
-        SiteSetting::setValue('welcome_body', "We design private safaris and nature expeditions across East Africa—from open savanna to highland trails—tailored to your dates, pace, and the wildlife you hope to see.\n\nOur guides, vehicles, and partner lodges are chosen for safety, comfort, and respect for the wild, so you travel with confidence and return with memories that last.");
+        SiteSetting::setValue('welcome_title', 'Discover Africa Beyond the Ordinary|Bespoke safaris.|Unforgettable journeys.');
+        SiteSetting::setValue('welcome_body', "We design private safaris and nature expeditions across East Africa - from open savanna to highland trails - tailored to your dates, pace, and the wildlife you hope to see.\n\nOur guides, vehicles, and partner lodges are chosen for safety, comfort, and respect for the wild, so you travel with confidence and return with memories that last.");
         SiteSetting::setValue('welcome_learn_more_label', 'Plan My Safari');
         SiteSetting::setValue('welcome_learn_more_url', '');
         SiteSetting::setValue('welcome_card_1_media_type', 'image');
@@ -59,7 +59,7 @@ class DatabaseSeeder extends Seeder
         SiteSetting::setValue('welcome_card_2_vimeo_url', '');
         SiteSetting::setValue('welcome_card_2_image_url', 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=900&h=1200&q=80');
         SiteSetting::setValue('welcome_card_2_stat', '15+');
-        SiteSetting::setValue('welcome_card_2_overlay', 'The best way to know Africa is on safari—with every day shaped for you.');
+        SiteSetting::setValue('welcome_card_2_overlay', 'The best way to know Africa is on safari - with every day shaped for you.');
         SiteSetting::setValue('welcome_card_2_link', '');
         SiteSetting::setValue('cta_title', 'Ready for your next adventure?');
         SiteSetting::setValue('cta_body', 'Speak with our travel designers and build an itinerary tailored to you.');
@@ -96,6 +96,9 @@ class DatabaseSeeder extends Seeder
         $this->call(MountKenyaItinerarySeeder::class);
         $this->call(MountKenyaExtendedItinerarySeeder::class);
         $this->call(MountKenyaIntroductionAndTcvItinerarySeeder::class);
+        if (filter_var(env('SEED_PUBLIC_ITINERARIES', false), FILTER_VALIDATE_BOOL)) {
+            $this->call(PublicItinerariesDocxSeeder::class);
+        }
 
         $dest = [
             ['name' => 'Masai Mara', 'slug' => 'masai-mara'],
@@ -142,7 +145,7 @@ class DatabaseSeeder extends Seeder
                 'role' => 'Traveller',
                 'country' => 'Spain',
                 'safari_type' => __('Luxury Safari'),
-                'quote' => 'Every detail was flawless—from the guide to the camps. We will return.',
+                'quote' => 'Every detail was flawless - from the guide to the camps. We will return.',
                 'rating' => 5,
                 'is_featured' => true,
                 'is_active' => true,
@@ -177,47 +180,47 @@ class DatabaseSeeder extends Seeder
         $seoPages = [
             'home' => [
                 'meta_title' => 'Highlanders Nature Trails | Luxury African Safaris & Nature Expeditions',
-                'meta_description' => 'Plan your dream safari with Highlanders Nature Trails—expert guides, Big Five wildlife, mountain treks, and tailor-made East Africa itineraries. Enquire for a bespoke nature journey.',
+                'meta_description' => 'Plan your dream safari with Highlanders Nature Trails - expert guides, Big Five wildlife, mountain treks, and tailor-made East Africa itineraries. Enquire for a bespoke nature journey.',
                 'meta_keywords' => $kwBrand.', '.$kwSafari.', '.$kwMountains.', '.$kwTrust.', photography safari, honeymoon safari Africa, small group safari',
             ],
             'about' => [
                 'meta_title' => 'About Us | Highlanders Nature Trails',
-                'meta_description' => 'Meet Highlanders Nature Trails—East Africa safari and adventure experts. Our vision, team, fleet, safety standards, and sustainability commitments.',
+                'meta_description' => 'Meet Highlanders Nature Trails - East Africa safari and adventure experts. Our vision, team, fleet, safety standards, and sustainability commitments.',
                 'meta_keywords' => $kwBrand.', safari company Kenya, African tour operator, sustainable safari, ethical wildlife tourism, bespoke travel Africa, about safari guides',
             ],
             'mountains' => [
                 'meta_title' => 'Mountain Treks & Alpine Trails | Highlanders Nature Trails',
-                'meta_description' => 'Trek iconic African peaks and nature trails with Highlanders Nature Trails—Mount Kenya, Kilimanjaro routes, expert mountain support, and high-altitude expeditions.',
+                'meta_description' => 'Trek iconic African peaks and nature trails with Highlanders Nature Trails - Mount Kenya, Kilimanjaro routes, expert mountain support, and high-altitude expeditions.',
                 'meta_keywords' => $kwBrand.', '.$kwMountains.', summit trekking Africa, acclimatization trek, mountain safari combo',
             ],
             'explore-africa' => [
                 'meta_title' => 'Explore Africa Destinations | Highlanders Nature Trails',
-                'meta_description' => 'Discover safari destinations with Highlanders Nature Trails—from savanna wildlife corridors to coast and crater—curated regions and expert itinerary design.',
+                'meta_description' => 'Discover safari destinations with Highlanders Nature Trails - from savanna wildlife corridors to coast and crater - curated regions and expert itinerary design.',
                 'meta_keywords' => $kwBrand.', '.$kwSafari.', Masai Mara safari, Serengeti tours, Okavango Delta, Zanzibar beach safari, East Africa destinations',
             ],
             'safari' => [
                 'meta_title' => 'Safari Experiences & Game Drives | Highlanders Nature Trails',
-                'meta_description' => 'Classic and luxury safari experiences with Highlanders Nature Trails—game drives, private conservancies, expert rangers, and wildlife itineraries across East Africa.',
+                'meta_description' => 'Classic and luxury safari experiences with Highlanders Nature Trails - game drives, private conservancies, expert rangers, and wildlife itineraries across East Africa.',
                 'meta_keywords' => $kwBrand.', '.$kwSafari.', morning game drive, evening safari, walking safari, birding safari Africa',
             ],
             'gallery' => [
                 'meta_title' => 'Safari & Nature Gallery | Highlanders Nature Trails',
-                'meta_description' => 'Safari moments, mountain vistas, and African wilderness through our lens—inspiration from Highlanders Nature Trails journeys.',
+                'meta_description' => 'Safari moments, mountain vistas, and African wilderness through our lens - inspiration from Highlanders Nature Trails journeys.',
                 'meta_keywords' => $kwBrand.', safari photography, Africa wildlife photos, travel gallery East Africa, nature landscapes',
             ],
             'articles' => [
                 'meta_title' => 'Safari Travel Insights & Stories | Highlanders Nature Trails',
-                'meta_description' => 'Safari tips, destination guides, and field stories from Highlanders Nature Trails—plan smarter African adventures with advice from seasoned guides.',
+                'meta_description' => 'Safari tips, destination guides, and field stories from Highlanders Nature Trails - plan smarter African adventures with advice from seasoned guides.',
                 'meta_keywords' => $kwBrand.', safari travel tips, Africa packing list, when to visit Kenya safari, wildlife seasons, travel blog Africa',
             ],
             'contact' => [
                 'meta_title' => 'Contact & Trip Enquiries | Highlanders Nature Trails',
-                'meta_description' => 'Contact Highlanders Nature Trails to plan your safari or mountain expedition—personalized quotes, itinerary design, and responsive support from our team.',
+                'meta_description' => 'Contact Highlanders Nature Trails to plan your safari or mountain expedition - personalized quotes, itinerary design, and responsive support from our team.',
                 'meta_keywords' => $kwBrand.', book African safari, safari enquiry, tailor-made safari quote, contact safari operator Kenya',
             ],
             'plan-my-safari' => [
                 'meta_title' => 'Plan Your Dream Safari | Highlanders Nature Trails',
-                'meta_description' => 'Tell us your travel dates, destinations, and style—request a bespoke safari itinerary from Highlanders Nature Trails. We respond with a tailored proposal.',
+                'meta_description' => 'Tell us your travel dates, destinations, and style - request a bespoke safari itinerary from Highlanders Nature Trails. We respond with a tailored proposal.',
                 'meta_keywords' => $kwBrand.', plan safari Kenya, custom safari quote, tailor-made African safari, private safari planning',
             ],
             'privacy' => [

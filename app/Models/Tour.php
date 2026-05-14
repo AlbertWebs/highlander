@@ -107,8 +107,11 @@ class Tour extends Model
     protected static function booted(): void
     {
         static::saving(function (Tour $tour): void {
-            if (! $tour->nav_safari && ! $tour->nav_mountain_safari && ! $tour->nav_explore_africa) {
-                $tour->fillFlagsFromNavBucket((string) ($tour->attributes['nav_bucket'] ?? $tour->nav_bucket ?? self::NAV_SAFARI));
+            if (! $tour->exists && ! $tour->nav_safari && ! $tour->nav_mountain_safari && ! $tour->nav_explore_africa) {
+                $bucket = (string) ($tour->attributes['nav_bucket'] ?? $tour->nav_bucket ?? '');
+                if ($bucket !== '' && in_array($bucket, [self::NAV_SAFARI, self::NAV_MOUNTAIN_SAFARI, self::NAV_EXPLORE_AFRICA], true)) {
+                    $tour->fillFlagsFromNavBucket($bucket);
+                }
             }
             $tour->nav_bucket = $tour->canonicalNavBucketFromFlags();
         });
@@ -129,7 +132,8 @@ class Tour extends Model
     }
 
     /**
-     * Single stored nav_bucket for backwards compatibility (priority: mountain, then explore, then safari).
+     * Legacy single nav_bucket string kept in sync (priority: mountain, then explore, then safari).
+     * When no menu is selected, stores the string safari as a harmless default; navigation uses the nav_* booleans only.
      */
     public function canonicalNavBucketFromFlags(): string
     {

@@ -30,7 +30,7 @@
     </div>
     <div class="md:col-span-2 rounded-2xl border border-secondary/50 bg-surface/40 p-5">
         <p class="text-sm font-medium text-ink">{{ __('Main menu (experiences)') }}</p>
-        <p class="mt-1 text-xs leading-relaxed text-ink/55">{{ __('Tick every top-nav section where this itinerary should appear. The public URL stays /experiences/{slug}. You can combine categories (for example Mount Kenya treks often belong under both Mountains and Explore Africa).') }}</p>
+        <p class="mt-1 text-xs leading-relaxed text-ink/55">{{ __('Optionally tick top-nav sections where this itinerary should appear. Leave all unchecked if it should not appear under Safari, Mountains, or Explore Africa for now. The public URL stays /experiences/{slug}. You can combine categories when you need to.') }}</p>
         <div class="mt-4 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
             <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-secondary/40 bg-white/80 px-4 py-3 shadow-sm">
                 <input type="checkbox" name="nav_safari" value="1" @checked(old('nav_safari', $tour->nav_safari ?? false)) class="mt-0.5 rounded border-secondary text-primary focus:ring-primary">

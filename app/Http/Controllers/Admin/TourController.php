@@ -13,7 +13,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class TourController extends Controller
@@ -123,12 +122,6 @@ class TourController extends Controller
         $navMountain = $request->boolean('nav_mountain_safari');
         $navExplore = $request->boolean('nav_explore_africa');
 
-        if (! $navSafari && ! $navMountain && ! $navExplore) {
-            throw ValidationException::withMessages([
-                'nav_safari' => [__('Choose at least one: Safari, Mountains, or Explore Africa.')],
-            ]);
-        }
-
         $tour->update([
             'nav_safari' => $navSafari,
             'nav_mountain_safari' => $navMountain,
@@ -160,12 +153,6 @@ class TourController extends Controller
         $data['nav_safari'] = $request->boolean('nav_safari');
         $data['nav_mountain_safari'] = $request->boolean('nav_mountain_safari');
         $data['nav_explore_africa'] = $request->boolean('nav_explore_africa');
-
-        if (! $data['nav_safari'] && ! $data['nav_mountain_safari'] && ! $data['nav_explore_africa']) {
-            throw ValidationException::withMessages([
-                'nav_safari' => [__('Choose at least one: Safari, Mountains, or Explore Africa.')],
-            ]);
-        }
 
         return $data;
     }

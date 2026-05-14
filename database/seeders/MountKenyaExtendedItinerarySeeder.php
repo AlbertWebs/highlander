@@ -34,6 +34,7 @@ class MountKenyaExtendedItinerarySeeder extends Seeder
                     'is_active' => true,
                     'is_featured' => false,
                     'sort_order' => self::SORT_BASE + $sortOffset,
+                    'nav_bucket' => Tour::NAV_MOUNTAIN_SAFARI,
                     'meta_title' => $title.' | Mount Kenya',
                     'meta_description' => Str::limit(strip_tags($overview), 155),
                 ]

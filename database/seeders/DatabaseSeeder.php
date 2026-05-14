@@ -74,9 +74,9 @@ class DatabaseSeeder extends Seeder
         SiteSetting::setValue('footer_credits', '© 2026 Highlanders Nature Trails . All rights reserved | Powered By <a href="https://designekta.com" target="_blank" rel="noopener noreferrer">Designekta Studios</a>');
 
         $tours = [
-            ['title' => 'Serengeti Signature Safari', 'price' => 4890, 'days' => 7],
-            ['title' => 'Kilimanjaro Lemosho Route', 'price' => 3200, 'days' => 8],
-            ['title' => 'Okavango Delta Escape', 'price' => 6200, 'days' => 6],
+            ['title' => 'Serengeti Signature Safari', 'price' => 4890, 'days' => 7, 'nav_bucket' => Tour::NAV_SAFARI],
+            ['title' => 'Kilimanjaro Lemosho Route', 'price' => 3200, 'days' => 8, 'nav_bucket' => Tour::NAV_MOUNTAIN_SAFARI],
+            ['title' => 'Okavango Delta Escape', 'price' => 6200, 'days' => 6, 'nav_bucket' => Tour::NAV_SAFARI],
         ];
         foreach ($tours as $i => $t) {
             Tour::query()->updateOrCreate(
@@ -89,6 +89,7 @@ class DatabaseSeeder extends Seeder
                     'is_active' => true,
                     'is_featured' => true,
                     'sort_order' => $i,
+                    'nav_bucket' => $t['nav_bucket'],
                 ]
             );
         }

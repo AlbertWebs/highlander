@@ -10,10 +10,26 @@ use Illuminate\Support\Facades\Storage;
 
 class Tour extends Model
 {
+    /** Shown under main nav Safari dropdown (general wildlife / game experiences). */
+    public const NAV_SAFARI = 'safari';
+
+    /** Shown under main nav Mountains dropdown (treks, peaks, mountain-focused itineraries). */
+    public const NAV_MOUNTAIN_SAFARI = 'mountain_safari';
+
+    /** Shown under main nav Explore Africa dropdown (regions, culture-led trips). */
+    public const NAV_EXPLORE_AFRICA = 'explore_africa';
+
+    /** @var list<string> */
+    public const NAV_BUCKETS = [
+        self::NAV_SAFARI,
+        self::NAV_MOUNTAIN_SAFARI,
+        self::NAV_EXPLORE_AFRICA,
+    ];
+
     protected $fillable = [
         'title', 'slug', 'description', 'image', 'featured_media_type', 'featured_video_url',
         'price', 'duration_days',
-        'is_active', 'is_featured', 'sort_order', 'meta_title', 'meta_description',
+        'is_active', 'is_featured', 'sort_order', 'nav_bucket', 'meta_title', 'meta_description',
     ];
 
     protected function casts(): array
@@ -41,6 +57,11 @@ class Tour extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    public function scopeForNavBucket($query, string $bucket)
+    {
+        return $query->where('nav_bucket', $bucket);
     }
 
     public function scopeFeatured($query)

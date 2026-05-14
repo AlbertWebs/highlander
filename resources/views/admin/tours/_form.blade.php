@@ -29,6 +29,22 @@
         </label>
     </div>
     <div>
+        <label class="block text-sm font-medium">{{ __('Main menu (experiences)') }}</label>
+        <select name="nav_bucket" class="mt-1 w-full rounded-xl border-secondary/60 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary">
+            @foreach(\App\Models\Tour::NAV_BUCKETS as $bucket)
+                <option value="{{ $bucket }}" @selected(old('nav_bucket', $tour->nav_bucket ?? \App\Models\Tour::NAV_SAFARI) === $bucket)>
+                    @match($bucket)
+                        @case(\App\Models\Tour::NAV_SAFARI) {{ __('Safari') }} @break
+                        @case(\App\Models\Tour::NAV_MOUNTAIN_SAFARI) {{ __('Mountain safari') }} @break
+                        @case(\App\Models\Tour::NAV_EXPLORE_AFRICA) {{ __('Explore Africa') }} @break
+                    @endmatch
+                </option>
+            @endforeach
+        </select>
+        <p class="mt-1 text-xs text-ink/55">{{ __('Lists this itinerary under the matching top menu. Public URL stays /experiences/{slug}.') }}</p>
+        @error('nav_bucket')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+    </div>
+    <div>
         <label class="block text-sm font-medium">{{ __('Sort order') }}</label>
         <input type="number" name="sort_order" value="{{ old('sort_order', $tour->sort_order ?? 0) }}" class="mt-1 w-full rounded-xl border-secondary/60 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary">
     </div>

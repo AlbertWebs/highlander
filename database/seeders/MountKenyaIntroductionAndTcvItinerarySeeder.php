@@ -21,6 +21,7 @@ class MountKenyaIntroductionAndTcvItinerarySeeder extends Seeder
 
             if ($category === 'Introduction') {
                 $this->seedIntroduction($block);
+
                 continue;
             }
 
@@ -91,6 +92,7 @@ class MountKenyaIntroductionAndTcvItinerarySeeder extends Seeder
                 'is_active' => true,
                 'is_featured' => false,
                 'sort_order' => self::TOUR_SORT_ORDER,
+                'nav_bucket' => Tour::NAV_EXPLORE_AFRICA,
                 'meta_title' => $routeName.' | Highlanders Nature Trails',
                 'meta_description' => Str::limit(strip_tags($overview), 155),
             ]

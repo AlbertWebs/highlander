@@ -1,9 +1,24 @@
 @php
+    $routeTour = request()->route('tour');
+    $experienceNavBucket = $routeTour instanceof \App\Models\Tour
+        ? (string) (filled($routeTour->nav_bucket) ? $routeTour->nav_bucket : \App\Models\Tour::NAV_SAFARI)
+        : null;
+
+    $navToursExplore = \App\Models\Tour::query()->active()->forNavBucket(\App\Models\Tour::NAV_EXPLORE_AFRICA)->orderByDesc('is_featured')->orderBy('sort_order')->orderBy('title')->limit(12)->get();
+    $navToursMountains = \App\Models\Tour::query()->active()->forNavBucket(\App\Models\Tour::NAV_MOUNTAIN_SAFARI)->orderByDesc('is_featured')->orderBy('sort_order')->orderBy('title')->limit(12)->get();
+    $navToursSafari = \App\Models\Tour::query()->active()->forNavBucket(\App\Models\Tour::NAV_SAFARI)->orderByDesc('is_featured')->orderBy('sort_order')->orderBy('title')->limit(12)->get();
+
     $navExploreChildren = collect([['label' => __('All destinations'), 'url' => route('explore-africa')]])
         ->merge(
             \App\Models\Destination::query()->active()->orderByDesc('sort_order')->limit(8)->get()->map(fn ($d) => [
                 'label' => $d->name,
                 'url' => route('explore-africa.show', $d),
+            ])
+        )
+        ->merge(
+            $navToursExplore->map(fn (\App\Models\Tour $tour) => [
+                'label' => $tour->title,
+                'url' => route('experiences.show', $tour),
             ])
         );
 
@@ -14,6 +29,12 @@
                 'url' => route('mountains.show', $m),
             ])
         )
+        ->merge(
+            $navToursMountains->map(fn (\App\Models\Tour $tour) => [
+                'label' => $tour->title,
+                'url' => route('experiences.show', $tour),
+            ])
+        )
         ->push(['label' => __('Plan your safari'), 'url' => route('plan-my-safari')]);
 
     $navSafariChildren = collect([['label' => __('All safari experiences'), 'url' => route('safari')]])
@@ -22,11 +43,14 @@
                 'label' => $s->title,
                 'url' => route('safari.show', $s),
             ])
-        );
-    foreach (\App\Models\Tour::query()->active()->featured()->orderBy('sort_order')->limit(6)->get() as $tour) {
-        $navSafariChildren->push(['label' => $tour->title, 'url' => route('experiences.show', $tour)]);
-    }
-    $navSafariChildren->push(['label' => __('Plan your safari'), 'url' => route('plan-my-safari')]);
+        )
+        ->merge(
+            $navToursSafari->map(fn (\App\Models\Tour $tour) => [
+                'label' => $tour->title,
+                'url' => route('experiences.show', $tour),
+            ])
+        )
+        ->push(['label' => __('Plan your safari'), 'url' => route('plan-my-safari')]);
 
     $nav = [
         ['type' => 'link', 'label' => __('Home'), 'route' => 'home'],
@@ -144,10 +168,15 @@
                 @foreach($nav as $item)
                     @if(($item['type'] ?? 'link') === 'dropdown')
                         @php
-                            $navActive = request()->routeIs($item['route'])
-                                || ($item['route'] === 'safari' && request()->routeIs('experiences.show'))
-                                || ($item['route'] === 'mountains' && request()->routeIs('mountains.show'))
-                                || ($item['route'] === 'explore-africa' && request()->routeIs('explore-africa.show'));
+                            $navActive = match ($item['route'] ?? '') {
+                                'safari' => request()->routeIs('safari') || request()->routeIs('safari.show')
+                                    || (request()->routeIs('experiences.show') && $experienceNavBucket === \App\Models\Tour::NAV_SAFARI),
+                                'mountains' => request()->routeIs('mountains') || request()->routeIs('mountains.show')
+                                    || (request()->routeIs('experiences.show') && $experienceNavBucket === \App\Models\Tour::NAV_MOUNTAIN_SAFARI),
+                                'explore-africa' => request()->routeIs('explore-africa') || request()->routeIs('explore-africa.show')
+                                    || (request()->routeIs('experiences.show') && $experienceNavBucket === \App\Models\Tour::NAV_EXPLORE_AFRICA),
+                                default => request()->routeIs($item['route'] ?? ''),
+                            };
                             $letter = mb_strtoupper(mb_substr($item['label'], 0, 1));
                         @endphp
                         <div
@@ -269,10 +298,15 @@
                 @foreach($nav as $item)
                     @if(($item['type'] ?? 'link') === 'dropdown')
                         @php
-                            $mActive = request()->routeIs($item['route'])
-                                || ($item['route'] === 'safari' && request()->routeIs('experiences.show'))
-                                || ($item['route'] === 'mountains' && request()->routeIs('mountains.show'))
-                                || ($item['route'] === 'explore-africa' && request()->routeIs('explore-africa.show'));
+                            $mActive = match ($item['route'] ?? '') {
+                                'safari' => request()->routeIs('safari') || request()->routeIs('safari.show')
+                                    || (request()->routeIs('experiences.show') && $experienceNavBucket === \App\Models\Tour::NAV_SAFARI),
+                                'mountains' => request()->routeIs('mountains') || request()->routeIs('mountains.show')
+                                    || (request()->routeIs('experiences.show') && $experienceNavBucket === \App\Models\Tour::NAV_MOUNTAIN_SAFARI),
+                                'explore-africa' => request()->routeIs('explore-africa') || request()->routeIs('explore-africa.show')
+                                    || (request()->routeIs('experiences.show') && $experienceNavBucket === \App\Models\Tour::NAV_EXPLORE_AFRICA),
+                                default => request()->routeIs($item['route'] ?? ''),
+                            };
                             $mLetter = mb_strtoupper(mb_substr($item['label'], 0, 1));
                         @endphp
                         <div x-data="{ sub: false }" class="flex flex-col border-b border-white/10 last:border-b-0">

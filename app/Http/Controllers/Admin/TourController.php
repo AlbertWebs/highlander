@@ -117,6 +117,7 @@ class TourController extends Controller
             'price' => ['nullable', 'numeric', 'min:0'],
             'duration_days' => ['nullable', 'integer', 'min:1', 'max:365'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:65535'],
+            'nav_bucket' => ['required', 'in:safari,mountain_safari,explore_africa'],
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'featured_media_type' => ['nullable', 'in:image,video'],
@@ -129,5 +130,6 @@ class TourController extends Controller
     {
         Cache::forget('home_page_v3');
         Cache::forget('home_page_v4');
+        Cache::forget('home_page_v7');
     }
 }

@@ -56,6 +56,10 @@ class PublicItinerariesDocxSeeder extends Seeder
             $title = (string) $map[$key]['title'];
             $slug = Str::slug($title);
             $sortOrder = $map[$key]['sort_order'] ?? null;
+            $navBucket = (string) ($map[$key]['nav_bucket'] ?? Tour::NAV_MOUNTAIN_SAFARI);
+            if (! in_array($navBucket, Tour::NAV_BUCKETS, true)) {
+                $navBucket = Tour::NAV_MOUNTAIN_SAFARI;
+            }
 
             $paragraphs = DocxPlainText::paragraphs($path);
             if ($paragraphs === []) {
@@ -76,6 +80,7 @@ class PublicItinerariesDocxSeeder extends Seeder
                 'price' => self::suggestedPriceUsd($durationDays),
                 'is_active' => true,
                 'is_featured' => false,
+                'nav_bucket' => $navBucket,
                 'meta_title' => $title.' | '.$metaSuffix,
                 'meta_description' => Str::limit(strip_tags($plainOverview), 155),
             ];

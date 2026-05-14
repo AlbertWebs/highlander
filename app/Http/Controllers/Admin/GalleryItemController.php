@@ -177,5 +177,6 @@ class GalleryItemController extends Controller
     {
         Cache::forget('home_page_v3');
         Cache::forget('home_page_v4');
+        Cache::forget('home_page_v7');
     }
 }

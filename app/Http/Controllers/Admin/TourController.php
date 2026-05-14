@@ -20,15 +20,24 @@ class TourController extends Controller
     public function index(Request $request): View
     {
         $q = $request->string('q')->trim();
+        $perPage = (int) $request->input('per_page', 30);
+        $perPage = in_array($perPage, [10, 15, 25, 30, 50, 100], true) ? $perPage : 30;
+
         $tours = Tour::query()
             ->with(['mountain', 'destination'])
             ->withCount('itineraryDays')
-            ->when($q, fn ($query) => $query->where('title', 'like', '%'.$q.'%'))
+            ->when($q, function ($query) use ($q): void {
+                $like = '%'.$q.'%';
+                $query->where(function ($inner) use ($like): void {
+                    $inner->where('title', 'like', $like)
+                        ->orWhere('slug', 'like', $like);
+                });
+            })
             ->orderByDesc('id')
-            ->paginate(15)
+            ->paginate($perPage)
             ->withQueryString();
 
-        return view('admin.tours.index', compact('tours', 'q'));
+        return view('admin.tours.index', compact('tours', 'q', 'perPage'));
     }
 
     public function create(): View

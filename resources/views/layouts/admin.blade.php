@@ -40,7 +40,7 @@
                 </div>
             </div>
         </header>
-        <div class="admin-main-scroll flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 lg:p-8">
+        <div class="admin-main-scroll flex-1 min-h-0 overflow-auto p-4 lg:p-8">
             @if(session('success'))
                 <div class="mb-4 rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">{{ session('success') }}</div>
             @endif

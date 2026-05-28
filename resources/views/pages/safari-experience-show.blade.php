@@ -139,9 +139,9 @@
                                                                 — {{ $day->title }}
                                                             @endif
                                                         </p>
-                                                        @if(filled($day->description))
+                                                        @if(filled($day->body))
                                                             <div class="prose prose-ink prose-site mt-2 max-w-none space-y-2 text-sm leading-relaxed text-ink/75">
-                                                                {!! $formatRichText($day->description) !!}
+                                                                {!! $formatRichText($day->body) !!}
                                                             </div>
                                                         @endif
                                                     </div>

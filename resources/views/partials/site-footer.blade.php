@@ -42,6 +42,36 @@
         ['route' => 'photo-credits', 'label' => __('Photo credits')],
     ];
 
+    $importantLinks = [
+        ['route' => 'plan-my-safari', 'label' => __('Plan my safari')],
+        ['route' => 'contact', 'label' => __('Get in touch')],
+        ['route' => 'safari', 'label' => __('All safari styles')],
+        ['route' => 'mountains', 'label' => __('All mountains')],
+        ['route' => 'explore-africa', 'label' => __('All destinations')],
+        ['route' => 'gallery', 'label' => __('Gallery')],
+        ['route' => 'articles', 'label' => __('Articles')],
+    ];
+
+    $footerSafariStyles = \App\Models\SafariExperience::query()
+        ->active()
+        ->orderBy('sort_order')
+        ->orderBy('title')
+        ->take(6)
+        ->get();
+
+    $footerMountains = \App\Models\Mountain::query()
+        ->active()
+        ->orderBy('name')
+        ->take(5)
+        ->get();
+
+    $footerDestinations = \App\Models\Destination::query()
+        ->active()
+        ->orderByDesc('sort_order')
+        ->orderBy('name')
+        ->take(5)
+        ->get();
+
     $footerFeaturedTours = \App\Models\Tour::query()
         ->active()
         ->featured()
@@ -57,7 +87,7 @@
     <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" aria-hidden="true"></div>
     <div class="relative site-gutter-x py-14 sm:py-16 lg:py-20">
         @include('partials.site-trust-badges')
-        <div class="grid gap-12 sm:gap-14 lg:grid-cols-2 xl:grid-cols-4 lg:gap-10 xl:gap-12">
+        <div class="grid gap-10 sm:gap-12 lg:grid-cols-2 xl:grid-cols-5 lg:gap-8 xl:gap-10">
             {{-- Brand --}}
             <div class="lg:max-w-sm">
                 @if($footerLogoUrl)
@@ -84,7 +114,7 @@
                 @endif
             </div>
 
-            {{-- Explore: two balanced columns on md+ --}}
+            {{-- Explore --}}
             <div>
                 <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Explore') }}</p>
                 <ul class="mt-5 grid grid-cols-2 gap-x-8 gap-y-2.5 text-sm text-white/85" role="list">
@@ -96,29 +126,33 @@
                 </ul>
             </div>
 
-            {{-- Featured Experiences --}}
+            {{-- Important links --}}
             <div>
-                <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Featured Experiences') }}</p>
+                <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Important links') }}</p>
                 <ul class="mt-5 space-y-2.5 text-sm text-white/85" role="list">
-                    @forelse($footerFeaturedTours as $tour)
+                    @foreach($importantLinks as $link)
                         <li>
-                            <a
-                                href="{{ route('experiences.show', $tour) }}"
-                                class="inline-block max-w-full rounded-sm leading-snug hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
-                            >{{ $tour->title }}</a>
+                            <a href="{{ route($link['route']) }}" class="inline-block rounded-sm hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60">{{ $link['label'] }}</a>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+
+            {{-- Safari styles --}}
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Safari styles') }}</p>
+                <ul class="mt-5 space-y-2.5 text-sm text-white/85" role="list">
+                    @forelse($footerSafariStyles as $style)
+                        <li>
+                            <a href="{{ route('safari.show', $style) }}" class="inline-block max-w-full leading-snug hover:text-accent">{{ $style->title }}</a>
                         </li>
                     @empty
-                        <li>
-                            <a
-                                href="{{ route('safari') }}"
-                                class="inline-block rounded-sm text-white/70 hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
-                            >{{ __('Browse safari experiences') }}</a>
-                        </li>
+                        <li><a href="{{ route('safari') }}" class="inline-block hover:text-accent">{{ __('Browse safari styles') }}</a></li>
                     @endforelse
                 </ul>
             </div>
 
-            {{-- Contact --}}
+            {{-- Contact + regional links --}}
             <div>
                 <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Contact') }}</p>
                 <ul class="mt-5 space-y-3 text-sm text-white/85" role="list">
@@ -142,6 +176,17 @@
                         <li class="text-white/75">{{ $siteHours }}</li>
                     @endif
                 </ul>
+                <div class="mt-6 border-t border-white/10 pt-4">
+                    <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/55">{{ __('Mountain & destination hubs') }}</p>
+                    <div class="mt-2 space-y-1.5 text-sm text-white/80">
+                        @foreach($footerMountains as $m)
+                            <a href="{{ route('mountains.show', $m) }}" class="block hover:text-accent">{{ $m->name }}</a>
+                        @endforeach
+                        @foreach($footerDestinations as $d)
+                            <a href="{{ route('explore-africa.show', $d) }}" class="block hover:text-accent">{{ $d->name }}</a>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
 

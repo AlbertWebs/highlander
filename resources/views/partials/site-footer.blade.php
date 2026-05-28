@@ -85,9 +85,9 @@
     data-aos-duration="850"
 >
     <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" aria-hidden="true"></div>
-    <div class="relative site-gutter-x py-14 sm:py-16 lg:py-20">
+    <div class="relative site-gutter-x py-12 sm:py-14 lg:py-16">
         @include('partials.site-trust-badges')
-        <div class="grid gap-10 sm:gap-12 lg:grid-cols-12 lg:gap-8 xl:gap-10">
+        <div class="grid gap-y-10 gap-x-8 sm:gap-y-12 sm:gap-x-10 lg:grid-cols-12 lg:gap-x-12 xl:gap-x-14">
             {{-- Brand --}}
             <div class="lg:col-span-4 xl:col-span-3">
                 @if($footerLogoUrl)
@@ -116,10 +116,10 @@
 
             {{-- Explore + important links --}}
             <div class="lg:col-span-4 xl:col-span-3">
-                <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Explore') }}</p>
-                        <ul class="mt-5 space-y-2.5 text-sm text-white/85" role="list">
+                        <ul class="mt-4 space-y-2.5 text-sm text-white/85" role="list">
                             @foreach($exploreLinks as $link)
                                 <li>
                                     <a href="{{ route($link['route']) }}" class="inline-block rounded-sm hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60">{{ $link['label'] }}</a>
@@ -129,7 +129,7 @@
                     </div>
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Important links') }}</p>
-                        <ul class="mt-5 space-y-2.5 text-sm text-white/85" role="list">
+                        <ul class="mt-4 space-y-2.5 text-sm text-white/85" role="list">
                             @foreach($importantLinks as $link)
                                 <li>
                                     <a href="{{ route($link['route']) }}" class="inline-block rounded-sm hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60">{{ $link['label'] }}</a>
@@ -143,7 +143,7 @@
             {{-- Safari styles --}}
             <div class="lg:col-span-6 xl:col-span-4">
                 <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Safari styles') }}</p>
-                <ul class="mt-5 space-y-2.5 text-sm text-white/85" role="list">
+                <ul class="mt-4 space-y-2.5 text-sm text-white/85" role="list">
                     @forelse($footerSafariStyles as $style)
                         <li>
                             <a href="{{ route('safari.show', $style) }}" class="inline-block max-w-full leading-snug hover:text-accent">{{ $style->title }}</a>
@@ -157,7 +157,7 @@
             {{-- Contact + regional links --}}
             <div class="lg:col-span-6 xl:col-span-2">
                 <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Contact') }}</p>
-                <ul class="mt-5 space-y-3 text-sm text-white/85" role="list">
+                <ul class="mt-4 space-y-3 text-sm text-white/85" role="list">
                     <li>
                         <a href="{{ route('contact') }}" class="inline-block font-medium text-white hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60">{{ __('Get in touch') }}</a>
                     </li>
@@ -181,9 +181,9 @@
             </div>
         </div>
 
-        <div class="mt-10 border-t border-white/10 pt-6">
+        <div class="mt-12 border-t border-white/10 pt-7">
             <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/55">{{ __('Mountain & destination hubs') }}</p>
-            <div class="mt-3 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="mt-4 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.14em] text-white/45">{{ __('Mountains') }}</p>
                     <div class="mt-2 space-y-1.5 text-sm text-white/80">
@@ -213,7 +213,7 @@
             </div>
         </div>
 
-        <div class="mt-14 border-t border-white/15 pt-8">
+        <div class="mt-12 border-t border-white/15 pt-7">
             <div class="flex flex-col items-stretch gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
                 <p class="footer-credits-line text-center text-xs leading-relaxed text-white/60 sm:text-left [&_a]:font-medium [&_a]:text-white/85 [&_a]:underline [&_a]:underline-offset-2 [&_a]:transition hover:[&_a]:text-accent">
                     @if(filled($footerCredits))

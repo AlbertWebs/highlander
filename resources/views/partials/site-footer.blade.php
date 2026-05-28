@@ -87,9 +87,9 @@
     <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" aria-hidden="true"></div>
     <div class="relative site-gutter-x py-12 sm:py-14 lg:py-16">
         @include('partials.site-trust-badges')
-        <div class="grid gap-y-10 gap-x-8 sm:gap-y-12 sm:gap-x-10 lg:grid-cols-2 lg:gap-x-12 xl:grid-cols-[minmax(180px,1.1fr)_minmax(130px,0.85fr)_minmax(150px,0.95fr)_minmax(460px,2.4fr)_minmax(170px,1fr)] xl:gap-x-10">
+        <div class="grid gap-y-10 gap-x-8 sm:gap-y-12 sm:gap-x-10 lg:grid-cols-12 lg:gap-x-8 xl:gap-x-10">
             {{-- Brand --}}
-            <div>
+            <div class="lg:col-span-2">
                 @if($footerLogoUrl)
                     <img src="{{ $footerLogoUrl }}" alt="{{ config('app.name') }}" class="mb-5 h-10 w-auto max-w-[200px] object-contain object-left">
                 @endif
@@ -115,7 +115,7 @@
             </div>
 
             {{-- Explore --}}
-            <div>
+            <div class="lg:col-span-2">
                 <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Explore') }}</p>
                 <ul class="mt-4 space-y-2.5 text-sm text-white/85" role="list">
                     @foreach($exploreLinks as $link)
@@ -127,7 +127,7 @@
             </div>
 
             {{-- Important links --}}
-            <div>
+            <div class="lg:col-span-2">
                 <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Important links') }}</p>
                 <ul class="mt-4 space-y-2.5 text-sm text-white/85" role="list">
                     @foreach($importantLinks as $link)
@@ -139,9 +139,9 @@
             </div>
 
             {{-- Safari styles --}}
-            <div>
+            <div class="lg:col-span-4">
                 <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Safari styles') }}</p>
-                <ul class="mt-4 grid gap-x-10 gap-y-2.5 text-sm text-white/85 md:grid-cols-2 xl:grid-cols-2" role="list">
+                <ul class="mt-4 grid gap-x-8 gap-y-2.5 text-sm text-white/85 md:grid-cols-2" role="list">
                     @forelse($footerSafariStyles as $style)
                         <li>
                             <a href="{{ route('safari.show', $style) }}" class="inline-block max-w-full break-normal leading-snug hover:text-accent">{{ $style->title }}</a>
@@ -153,7 +153,7 @@
             </div>
 
             {{-- Contact --}}
-            <div>
+            <div class="lg:col-span-2">
                 <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Contact') }}</p>
                 <ul class="mt-4 space-y-3 text-sm text-white/85" role="list">
                     <li>

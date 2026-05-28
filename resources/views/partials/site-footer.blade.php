@@ -87,9 +87,9 @@
     <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" aria-hidden="true"></div>
     <div class="relative site-gutter-x py-14 sm:py-16 lg:py-20">
         @include('partials.site-trust-badges')
-        <div class="grid gap-10 sm:gap-12 lg:grid-cols-2 xl:grid-cols-5 lg:gap-8 xl:gap-10">
+        <div class="grid gap-10 sm:gap-12 lg:grid-cols-12 lg:gap-8 xl:gap-10">
             {{-- Brand --}}
-            <div class="lg:max-w-sm">
+            <div class="lg:col-span-4 xl:col-span-3">
                 @if($footerLogoUrl)
                     <img src="{{ $footerLogoUrl }}" alt="{{ config('app.name') }}" class="mb-5 h-10 w-auto max-w-[200px] object-contain object-left">
                 @endif
@@ -114,32 +114,34 @@
                 @endif
             </div>
 
-            {{-- Explore --}}
-            <div>
-                <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Explore') }}</p>
-                <ul class="mt-5 grid grid-cols-2 gap-x-8 gap-y-2.5 text-sm text-white/85" role="list">
-                    @foreach($exploreLinks as $link)
-                        <li>
-                            <a href="{{ route($link['route']) }}" class="inline-block rounded-sm hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60">{{ $link['label'] }}</a>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-
-            {{-- Important links --}}
-            <div>
-                <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Important links') }}</p>
-                <ul class="mt-5 space-y-2.5 text-sm text-white/85" role="list">
-                    @foreach($importantLinks as $link)
-                        <li>
-                            <a href="{{ route($link['route']) }}" class="inline-block rounded-sm hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60">{{ $link['label'] }}</a>
-                        </li>
-                    @endforeach
-                </ul>
+            {{-- Explore + important links --}}
+            <div class="lg:col-span-4 xl:col-span-3">
+                <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Explore') }}</p>
+                        <ul class="mt-5 space-y-2.5 text-sm text-white/85" role="list">
+                            @foreach($exploreLinks as $link)
+                                <li>
+                                    <a href="{{ route($link['route']) }}" class="inline-block rounded-sm hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60">{{ $link['label'] }}</a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Important links') }}</p>
+                        <ul class="mt-5 space-y-2.5 text-sm text-white/85" role="list">
+                            @foreach($importantLinks as $link)
+                                <li>
+                                    <a href="{{ route($link['route']) }}" class="inline-block rounded-sm hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60">{{ $link['label'] }}</a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             {{-- Safari styles --}}
-            <div>
+            <div class="lg:col-span-6 xl:col-span-4">
                 <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Safari styles') }}</p>
                 <ul class="mt-5 space-y-2.5 text-sm text-white/85" role="list">
                     @forelse($footerSafariStyles as $style)
@@ -153,7 +155,7 @@
             </div>
 
             {{-- Contact + regional links --}}
-            <div>
+            <div class="lg:col-span-6 xl:col-span-2">
                 <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Contact') }}</p>
                 <ul class="mt-5 space-y-3 text-sm text-white/85" role="list">
                     <li>
@@ -176,17 +178,38 @@
                         <li class="text-white/75">{{ $siteHours }}</li>
                     @endif
                 </ul>
-                <div class="mt-6 border-t border-white/10 pt-4">
-                    <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/55">{{ __('Mountain & destination hubs') }}</p>
+            </div>
+        </div>
+
+        <div class="mt-10 border-t border-white/10 pt-6">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/55">{{ __('Mountain & destination hubs') }}</p>
+            <div class="mt-3 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.14em] text-white/45">{{ __('Mountains') }}</p>
                     <div class="mt-2 space-y-1.5 text-sm text-white/80">
                         @foreach($footerMountains as $m)
                             <a href="{{ route('mountains.show', $m) }}" class="block hover:text-accent">{{ $m->name }}</a>
                         @endforeach
+                    </div>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.14em] text-white/45">{{ __('Destinations') }}</p>
+                    <div class="mt-2 space-y-1.5 text-sm text-white/80">
                         @foreach($footerDestinations as $d)
                             <a href="{{ route('explore-africa.show', $d) }}" class="block hover:text-accent">{{ $d->name }}</a>
                         @endforeach
                     </div>
                 </div>
+                @if($footerFeaturedTours->isNotEmpty())
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-white/45">{{ __('Featured itineraries') }}</p>
+                        <div class="mt-2 space-y-1.5 text-sm text-white/80">
+                            @foreach($footerFeaturedTours->take(5) as $tour)
+                                <a href="{{ route('tours.show', $tour) }}" class="block hover:text-accent">{{ $tour->title }}</a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
 

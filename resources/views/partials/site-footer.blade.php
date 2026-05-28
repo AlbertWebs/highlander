@@ -205,7 +205,7 @@
                         <p class="text-xs font-semibold uppercase tracking-[0.14em] text-white/45">{{ __('Featured itineraries') }}</p>
                         <div class="mt-2 space-y-1.5 text-sm text-white/80">
                             @foreach($footerFeaturedTours->take(5) as $tour)
-                                <a href="{{ route('tours.show', $tour) }}" class="block hover:text-accent">{{ $tour->title }}</a>
+                                <a href="{{ route('experiences.show', $tour) }}" class="block hover:text-accent">{{ $tour->title }}</a>
                             @endforeach
                         </div>
                     </div>

@@ -21,12 +21,14 @@ class TourController extends Controller
     public function index(Request $request): View
     {
         $q = $request->string('q')->trim();
+        $unassignedOnly = $request->boolean('unassigned');
         $perPage = (int) $request->input('per_page', 30);
         $perPage = in_array($perPage, [10, 15, 25, 30, 50, 100], true) ? $perPage : 30;
 
         $tours = Tour::query()
             ->with(['mountain', 'destination', 'safariExperiences:id,title'])
             ->withCount('itineraryDays')
+            ->when($unassignedOnly, fn ($query) => $query->whereDoesntHave('safariExperiences'))
             ->when($q, function ($query) use ($q): void {
                 $like = '%'.$q.'%';
                 $query->where(function ($inner) use ($like): void {
@@ -43,7 +45,7 @@ class TourController extends Controller
             ->orderBy('title')
             ->get(['id', 'title']);
 
-        return view('admin.tours.index', compact('tours', 'q', 'perPage', 'safariStyles'));
+        return view('admin.tours.index', compact('tours', 'q', 'perPage', 'safariStyles', 'unassignedOnly'));
     }
 
     public function create(): View

@@ -30,13 +30,22 @@
 @if(filled($q))
     <p class="mb-3 text-sm text-ink/65">{{ __('Showing tours matching ":q".', ['q' => $q]) }}</p>
 @endif
+@if(!empty($unassignedOnly))
+    <p class="mb-3 text-sm text-ink/65">{{ __('Showing itineraries not linked to any safari style.') }}</p>
+@endif
 @php
     $pageTours = $tours->getCollection();
     $groupedTours = collect();
-    foreach (($safariStyles ?? collect()) as $style) {
-        $styleTours = $pageTours->filter(fn ($tour) => $tour->safariExperiences->contains('id', $style->id))->values();
-        if ($styleTours->isNotEmpty()) {
-            $groupedTours->push(['label' => $style->title, 'tours' => $styleTours]);
+    if (!empty($unassignedOnly)) {
+        if ($pageTours->isNotEmpty()) {
+            $groupedTours->push(['label' => __('Unassigned itineraries'), 'tours' => $pageTours->values()]);
+        }
+    } else {
+        foreach (($safariStyles ?? collect()) as $style) {
+            $styleTours = $pageTours->filter(fn ($tour) => $tour->safariExperiences->contains('id', $style->id))->values();
+            if ($styleTours->isNotEmpty()) {
+                $groupedTours->push(['label' => $style->title, 'tours' => $styleTours]);
+            }
         }
     }
 @endphp

@@ -33,6 +33,7 @@
         ['label' => __('Content'), 'items' => [
             ['r' => 'admin.tours.index', 'l' => __('Tours'), 'i' => 'map'],
             ['r' => 'admin.tours.index', 'l' => __('Itineraries'), 'i' => 'doc'],
+            ['u' => route('admin.tours.index', ['unassigned' => 1]), 'l' => __('Unassigned itineraries'), 'i' => 'inbox', 'active' => request()->routeIs('admin.tours.*') && request()->boolean('unassigned')],
             ['r' => 'admin.destinations.index', 'l' => __('Destinations'), 'i' => 'globe'],
             ['r' => 'admin.mountains.index', 'l' => __('Mountains'), 'i' => 'mountain'],
             ['r' => 'admin.safari.index', 'l' => __('Safari'), 'i' => 'camera'],
@@ -108,11 +109,11 @@
                 @endif
                 @foreach($group['items'] as $link)
                     @php
-                        $active = $routeActive($link['r']);
+                        $active = array_key_exists('active', $link) ? (bool) $link['active'] : $routeActive($link['r']);
                         $d = $icons[$link['i']] ?? $icons['squares'];
                     @endphp
                     <a
-                        href="{{ route($link['r']) }}"
+                        href="{{ $link['u'] ?? route($link['r']) }}"
                         title="{{ $link['l'] }}"
                         @class([
                             'group relative flex items-center gap-3 rounded-xl py-2.5 pl-2.5 pr-3 text-[0.8125rem] font-medium transition duration-200',

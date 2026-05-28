@@ -112,7 +112,7 @@
                             <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                 @foreach($safariExperience->galleryImages as $idx => $photo)
                                     <button type="button" @click="show({{ $idx }})" class="block overflow-hidden rounded-xl border border-secondary/35 bg-surface/40 text-left">
-                                        <img src="{{ $photo->imageUrl() }}" alt="" class="h-44 w-full object-cover transition duration-300 hover:scale-[1.02]" loading="lazy">
+                                        <img src="{{ $photo->imageUrl() }}" alt="" class="h-52 w-full object-cover object-center transition duration-300 hover:scale-[1.02]" loading="lazy">
                                     </button>
                                 @endforeach
                             </div>
@@ -133,7 +133,9 @@
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                                     </button>
 
-                                    <img :src="photos[index]" alt="" class="max-h-[85vh] w-auto max-w-full rounded-xl border border-white/20 shadow-2xl">
+                                    <div class="h-[78vh] w-full max-w-5xl overflow-hidden rounded-xl border border-white/20 bg-black/30 shadow-2xl">
+                                        <img :src="photos[index]" alt="" class="h-full w-full object-cover object-center">
+                                    </div>
 
                                     <button type="button" @click="next()" class="absolute right-1 sm:right-3 rounded-full bg-black/50 p-2 text-white hover:bg-black/70" aria-label="{{ __('Next image') }}">
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>

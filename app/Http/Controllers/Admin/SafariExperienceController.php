@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\SafariExperience;
+use App\Models\SafariExperienceImage;
 use App\Models\Tour;
 use App\Support\SlugHelper;
 use Illuminate\Http\RedirectResponse;
@@ -57,6 +58,7 @@ class SafariExperienceController extends Controller
             $data['image'] = $request->file('image')->store('safari', 'public');
         }
         $m = SafariExperience::query()->create($data);
+        $this->storeGalleryImages($request, $m);
         $m->tours()->sync($request->input('tour_ids', []));
         ActivityLog::record('safari.created', $m->title, $m);
         Cache::forget('home_page_v3');
@@ -66,11 +68,14 @@ class SafariExperienceController extends Controller
 
     public function edit(SafariExperience $safariExperience): View
     {
-        $safariExperience->load('tours:id');
+        $safariExperience->load([
+            'tours:id',
+            'galleryImages:id,safari_experience_id,image,sort_order',
+        ]);
 
         return view('admin.safari.edit', [
             'safariExperience' => $safariExperience,
-            'tours' => $this->tourOptions(),
+            'tours' => $this->tourOptions($safariExperience),
         ]);
     }
 
@@ -88,6 +93,8 @@ class SafariExperienceController extends Controller
             $data['image'] = $request->file('image')->store('safari', 'public');
         }
         $safariExperience->update($data);
+        $this->removeGalleryImages($request, $safariExperience);
+        $this->storeGalleryImages($request, $safariExperience);
         $safariExperience->tours()->sync($request->input('tour_ids', []));
         ActivityLog::record('safari.updated', $safariExperience->title, $safariExperience);
         Cache::forget('home_page_v3');
@@ -100,6 +107,9 @@ class SafariExperienceController extends Controller
         if ($safariExperience->image) {
             Storage::disk('public')->delete($safariExperience->image);
         }
+        $safariExperience->galleryImages->each(function (SafariExperienceImage $image): void {
+            Storage::disk('public')->delete($image->image);
+        });
         ActivityLog::record('safari.deleted', $safariExperience->title, $safariExperience);
         $safariExperience->delete();
         Cache::forget('home_page_v3');
@@ -125,16 +135,67 @@ class SafariExperienceController extends Controller
             'image' => ['nullable', 'image', 'max:5120'],
             'tour_ids' => ['nullable', 'array'],
             'tour_ids.*' => ['integer', 'exists:tours,id'],
+            'gallery_images' => ['nullable', 'array'],
+            'gallery_images.*' => ['image', 'max:5120'],
+            'remove_gallery_image_ids' => ['nullable', 'array'],
+            'remove_gallery_image_ids.*' => ['integer', 'exists:safari_experience_images,id'],
         ]);
     }
 
-    protected function tourOptions()
+    protected function tourOptions(?SafariExperience $safariExperience = null)
     {
         return Tour::query()
             ->active()
+            ->where(function ($query) use ($safariExperience): void {
+                $query->whereDoesntHave('safariExperiences');
+
+                if ($safariExperience instanceof SafariExperience) {
+                    $query->orWhereHas('safariExperiences', function ($linked) use ($safariExperience): void {
+                        $linked->whereKey($safariExperience->getKey());
+                    });
+                }
+            })
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
             ->orderBy('title')
             ->get(['id', 'title', 'slug', 'duration_days']);
+    }
+
+    protected function storeGalleryImages(Request $request, SafariExperience $safariExperience): void
+    {
+        $files = $request->file('gallery_images', []);
+        if (! is_array($files) || $files === []) {
+            return;
+        }
+
+        $start = (int) ($safariExperience->galleryImages()->max('sort_order') ?? -1) + 1;
+        foreach (array_values($files) as $index => $file) {
+            $path = $file->store('safari/gallery', 'public');
+            $safariExperience->galleryImages()->create([
+                'image' => $path,
+                'sort_order' => $start + $index,
+            ]);
+        }
+    }
+
+    protected function removeGalleryImages(Request $request, SafariExperience $safariExperience): void
+    {
+        $ids = collect($request->input('remove_gallery_image_ids', []))
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->values();
+
+        if ($ids->isEmpty()) {
+            return;
+        }
+
+        $images = $safariExperience->galleryImages()
+            ->whereIn('id', $ids)
+            ->get(['id', 'image']);
+
+        foreach ($images as $image) {
+            Storage::disk('public')->delete($image->image);
+            $image->delete();
+        }
     }
 }

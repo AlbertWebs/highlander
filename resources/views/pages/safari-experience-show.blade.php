@@ -92,6 +92,19 @@
                         </div>
                     @endif
 
+                    @if($safariExperience->galleryImages->isNotEmpty())
+                        <div class="mt-8 rounded-card border border-secondary/30 bg-white/90 p-6 shadow-sm sm:p-8">
+                            <h2 class="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-primary">{{ __('Gallery') }}</h2>
+                            <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                @foreach($safariExperience->galleryImages as $photo)
+                                    <a href="{{ $photo->imageUrl() }}" target="_blank" rel="noopener noreferrer" class="block overflow-hidden rounded-xl border border-secondary/35 bg-surface/40">
+                                        <img src="{{ $photo->imageUrl() }}" alt="" class="h-44 w-full object-cover transition duration-300 hover:scale-[1.02]" loading="lazy">
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="mt-8 rounded-card border border-secondary/30 bg-white/90 p-6 shadow-sm sm:p-8">
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-primary">{{ __('Itineraries for this safari') }}</h2>

@@ -167,6 +167,8 @@ class PageController extends Controller
             abort(404);
         }
 
+        $safariExperience->load('galleryImages:id,safari_experience_id,image,sort_order');
+
         $pageTitle = $safariExperience->title.' - '.config('app.name');
         $meta_title = $safariExperience->title;
 

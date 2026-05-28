@@ -644,6 +644,21 @@ Alpine.start();
 document.addEventListener('DOMContentLoaded', () => {
     initScrollAnimations();
 
+    document.addEventListener('change', (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLInputElement)) {
+            return;
+        }
+        if (target.type !== 'file' || !target.classList.contains('js-preserve-scroll-on-file')) {
+            return;
+        }
+
+        const currentY = window.scrollY;
+        window.requestAnimationFrame(() => {
+            window.scrollTo({ top: currentY, behavior: 'auto' });
+        });
+    });
+
     window.addEventListener(
         'resize',
         () => {

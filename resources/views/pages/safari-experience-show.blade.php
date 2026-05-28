@@ -120,16 +120,16 @@
                             <div
                                 x-show="open"
                                 x-transition.opacity
-                                class="fixed inset-0 z-[70] bg-black/85 p-4 sm:p-8"
+                                class="fixed inset-0 z-[999] bg-black/90 p-4 sm:p-8"
                                 style="display:none;"
                                 @click.self="close()"
                             >
                                 <div class="relative mx-auto flex h-full max-w-6xl items-center justify-center">
-                                    <button type="button" @click="close()" class="absolute right-2 top-2 z-10 rounded-full bg-black/50 p-2 text-white hover:bg-black/70" aria-label="{{ __('Close gallery') }}">
-                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    <button type="button" @click.stop="close()" class="absolute right-2 top-2 z-[1001] inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-black/65 text-white shadow-lg transition hover:bg-black/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 sm:right-4 sm:top-4" aria-label="{{ __('Close gallery') }}">
+                                        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                     </button>
 
-                                    <button type="button" @click="prev()" class="absolute left-1 sm:left-3 rounded-full bg-black/50 p-2 text-white hover:bg-black/70" aria-label="{{ __('Previous image') }}">
+                                    <button type="button" @click.stop="prev()" class="absolute left-1 z-[1000] inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/55 text-white shadow-lg transition hover:bg-black/75 sm:left-3 sm:h-11 sm:w-11" aria-label="{{ __('Previous image') }}">
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                                     </button>
 
@@ -137,7 +137,7 @@
                                         <img :src="photos[index]" alt="" class="h-full w-full object-cover object-center">
                                     </div>
 
-                                    <button type="button" @click="next()" class="absolute right-1 sm:right-3 rounded-full bg-black/50 p-2 text-white hover:bg-black/70" aria-label="{{ __('Next image') }}">
+                                    <button type="button" @click.stop="next()" class="absolute right-1 z-[1000] inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/55 text-white shadow-lg transition hover:bg-black/75 sm:right-3 sm:h-11 sm:w-11" aria-label="{{ __('Next image') }}">
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                                     </button>
                                 </div>

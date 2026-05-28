@@ -1,6 +1,9 @@
 @php
     /** @var \App\Models\SafariExperience $safariExperience */
     /** @var \Illuminate\Support\Collection<int, \App\Models\Tour> $relatedTours */
+    /** @var \Illuminate\Support\Collection<int, \App\Models\SafariExperience> $otherSafariStyles */
+    /** @var \Illuminate\Support\Collection<int, \App\Models\Tour> $mountainExperiences */
+    /** @var \Illuminate\Support\Collection<int, \App\Models\Tour> $exploreAfricaExperiences */
     $tourFallbackImg = 'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=400&q=80';
 @endphp
 
@@ -38,49 +41,57 @@
                 </span>
                 <div>
                     <h3 id="related-tours-heading" class="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-primary">{{ __('Related experiences') }}</h3>
-                    <p class="text-xs text-ink/50">{{ __('Sample itineraries that pair well') }}</p>
+                    <p class="text-xs text-ink/50">{{ __('Other safari, mountain, and Explore Africa options') }}</p>
                 </div>
             </div>
         </div>
         <div class="divide-y divide-secondary/15 p-2 sm:p-3">
-            @forelse($relatedTours as $tour)
-                <a
-                    href="{{ route('experiences.show', $tour) }}"
-                    class="group flex gap-3.5 rounded-2xl p-3 transition first:pt-2 last:pb-2 hover:bg-primary/[0.04]"
-                >
-                    <div class="relative h-[4.75rem] w-[5.75rem] shrink-0 overflow-hidden rounded-xl bg-secondary/35 ring-1 ring-secondary/40 shadow-sm">
-                        @if($tour->imageUrl())
-                            <img
-                                src="{{ $tour->imageUrl() }}"
-                                alt=""
-                                class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                                loading="lazy"
-                                width="92"
-                                height="76"
-                            >
-                        @else
-                            <img src="{{ $tourFallbackImg }}" alt="" class="h-full w-full object-cover opacity-90" loading="lazy">
-                        @endif
-                        @if($tour->is_featured)
-                            <span class="absolute left-1 top-1 rounded-md bg-primary/95 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-white shadow-sm">{{ __('Top pick') }}</span>
-                        @endif
+            <div class="space-y-3 p-1">
+                <div>
+                    <p class="px-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-ink/55">{{ __('Other safari styles') }}</p>
+                    <div class="mt-1.5 space-y-1.5">
+                        @forelse(($otherSafariStyles ?? collect()) as $style)
+                            <a href="{{ route('safari.show', $style) }}" class="block rounded-xl border border-secondary/30 bg-surface/35 px-3 py-2 text-sm font-medium text-ink transition hover:border-primary/30 hover:bg-primary/[0.04] hover:text-primary">
+                                {{ $style->title }}
+                            </a>
+                        @empty
+                            <p class="px-2 py-1.5 text-sm text-ink/55">{{ __('No other safari styles yet.') }}</p>
+                        @endforelse
                     </div>
-                    <div class="min-w-0 flex-1 py-0.5">
-                        <p class="line-clamp-2 text-sm font-semibold leading-snug text-ink transition group-hover:text-primary">{{ $tour->title }}</p>
-                        @if($tour->duration_days)
-                            <p class="mt-1.5 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink/45">
-                                {{ trans_choice(':count day|:count days', $tour->duration_days, ['count' => $tour->duration_days]) }}
-                            </p>
-                        @endif
-                        <span class="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-primary sm:mt-2 sm:opacity-0 sm:transition sm:group-hover:opacity-100">
-                            {{ __('View itinerary') }}
-                            <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                        </span>
+                </div>
+
+                <div class="border-t border-secondary/20 pt-3">
+                    <p class="px-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-ink/55">{{ __('Other mountains') }}</p>
+                    <div class="mt-1.5 space-y-1.5">
+                        @forelse(($mountainExperiences ?? collect()) as $tour)
+                            <a href="{{ route('experiences.show', $tour) }}" class="block rounded-xl border border-secondary/30 bg-surface/35 px-3 py-2 text-sm font-medium text-ink transition hover:border-primary/30 hover:bg-primary/[0.04] hover:text-primary">
+                                {{ $tour->title }}
+                                @if($tour->mountain)
+                                    <span class="block text-xs font-normal text-ink/55">{{ $tour->mountain->name }}</span>
+                                @endif
+                            </a>
+                        @empty
+                            <p class="px-2 py-1.5 text-sm text-ink/55">{{ __('No mountain experiences available.') }}</p>
+                        @endforelse
                     </div>
-                </a>
-            @empty
-                <p class="px-2 py-4 text-center text-sm text-ink/60">{{ __('Experiences will appear here as we add them.') }}</p>
-            @endforelse
+                </div>
+
+                <div class="border-t border-secondary/20 pt-3">
+                    <p class="px-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-ink/55">{{ __('Other Explore Africa') }}</p>
+                    <div class="mt-1.5 space-y-1.5">
+                        @forelse(($exploreAfricaExperiences ?? collect()) as $tour)
+                            <a href="{{ route('experiences.show', $tour) }}" class="block rounded-xl border border-secondary/30 bg-surface/35 px-3 py-2 text-sm font-medium text-ink transition hover:border-primary/30 hover:bg-primary/[0.04] hover:text-primary">
+                                {{ $tour->title }}
+                                @if($tour->destination)
+                                    <span class="block text-xs font-normal text-ink/55">{{ $tour->destination->name }}</span>
+                                @endif
+                            </a>
+                        @empty
+                            <p class="px-2 py-1.5 text-sm text-ink/55">{{ __('No Explore Africa experiences available.') }}</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="border-t border-secondary/30 bg-surface/50 px-4 py-3 text-center sm:px-5">
             <a href="{{ route('safari') }}" class="text-sm font-semibold text-primary underline decoration-primary/35 underline-offset-2 transition hover:decoration-primary">{{ __('Browse all safari styles') }}</a>

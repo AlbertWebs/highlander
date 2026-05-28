@@ -199,6 +199,31 @@ class PageController extends Controller
                 return [1, 9999, $tour->title];
             })
             ->values();
+        $otherSafariStyles = SafariExperience::query()
+            ->active()
+            ->whereKeyNot($safariExperience->getKey())
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->limit(4)
+            ->get();
+        $mountainExperiences = Tour::query()
+            ->active()
+            ->whereNotNull('mountain_id')
+            ->whereNotIn('id', $relatedTours->pluck('id'))
+            ->with('mountain:id,name,slug')
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->limit(4)
+            ->get();
+        $exploreAfricaExperiences = Tour::query()
+            ->active()
+            ->whereNotNull('destination_id')
+            ->whereNotIn('id', $relatedTours->pluck('id'))
+            ->with('destination:id,name,slug')
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->limit(4)
+            ->get();
         $testimonials = Testimonial::query()
             ->active()
             ->orderByDesc('is_featured')
@@ -229,6 +254,9 @@ class PageController extends Controller
             'meta_title',
             'meta_description',
             'relatedTours',
+            'otherSafariStyles',
+            'mountainExperiences',
+            'exploreAfricaExperiences',
             'safariSeo',
             'testimonials',
             'seoJsonLd',

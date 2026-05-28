@@ -89,7 +89,7 @@
         @include('partials.site-trust-badges')
         <div class="grid gap-y-10 gap-x-8 sm:gap-y-12 sm:gap-x-10 lg:grid-cols-12 lg:gap-x-12 xl:gap-x-14">
             {{-- Brand --}}
-            <div class="lg:col-span-4 xl:col-span-3">
+            <div class="lg:col-span-4 xl:col-span-2">
                 @if($footerLogoUrl)
                     <img src="{{ $footerLogoUrl }}" alt="{{ config('app.name') }}" class="mb-5 h-10 w-auto max-w-[200px] object-contain object-left">
                 @endif
@@ -115,7 +115,7 @@
             </div>
 
             {{-- Explore + important links --}}
-            <div class="lg:col-span-4 xl:col-span-3">
+            <div class="lg:col-span-4 xl:col-span-2">
                 <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Explore') }}</p>
@@ -141,9 +141,9 @@
             </div>
 
             {{-- Safari styles --}}
-            <div class="lg:col-span-6 xl:col-span-4">
+            <div class="lg:col-span-6 xl:col-span-6">
                 <p class="text-sm font-semibold uppercase tracking-wider text-accent/95">{{ __('Safari styles') }}</p>
-                <ul class="mt-4 space-y-2.5 text-sm text-white/85" role="list">
+                <ul class="mt-4 grid gap-x-8 gap-y-2.5 text-sm text-white/85 xl:grid-cols-2" role="list">
                     @forelse($footerSafariStyles as $style)
                         <li>
                             <a href="{{ route('safari.show', $style) }}" class="inline-block max-w-full leading-snug hover:text-accent">{{ $style->title }}</a>

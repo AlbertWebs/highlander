@@ -117,6 +117,23 @@
         </div>
 
         <aside class="min-w-0 space-y-4 xl:sticky xl:top-20">
+            <div class="rounded-2xl border border-secondary/50 bg-white p-5 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-primary">{{ __('Itineraries') }}</p>
+                <p class="mt-2 text-sm leading-relaxed text-ink/70">
+                    {{ __('Add or remove itinerary links for this safari style from the Linked itineraries section in the form.') }}
+                </p>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <a href="#linked-itineraries" class="inline-flex items-center justify-center rounded-lg bg-primary px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-primary/90">
+                        {{ __('Edit linked itineraries') }}
+                    </a>
+                    <a href="{{ route('admin.tours.create') }}" class="inline-flex items-center justify-center rounded-lg border border-secondary/60 bg-white px-3.5 py-2 text-xs font-semibold text-primary hover:bg-surface">
+                        {{ __('Create itinerary') }}
+                    </a>
+                    <a href="{{ route('admin.tours.index') }}" class="inline-flex items-center justify-center rounded-lg border border-secondary/60 bg-white px-3.5 py-2 text-xs font-medium text-ink/80 hover:bg-surface">
+                        {{ __('All itineraries') }}
+                    </a>
+                </div>
+            </div>
             <div class="rounded-2xl border border-secondary/50 bg-gradient-to-br from-surface to-white p-5 shadow-sm">
                 <p class="text-xs font-semibold uppercase tracking-[0.14em] text-primary">{{ __('Tips') }}</p>
                 <ul class="mt-3 list-inside list-disc space-y-2 text-sm leading-relaxed text-ink/70">

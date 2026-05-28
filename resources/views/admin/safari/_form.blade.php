@@ -9,7 +9,7 @@
 @endphp
 
 <div class="space-y-8">
-    <div class="rounded-2xl border border-secondary/50 bg-white p-6 shadow-soft sm:p-8">
+    <div id="linked-itineraries" class="rounded-2xl border border-secondary/50 bg-white p-6 shadow-soft sm:p-8">
         <h3 class="text-base font-semibold text-ink">{{ __('Content') }}</h3>
         <p class="mt-1 text-sm text-ink/55">{{ __('Title and copy appear on the public Safari page cards.') }}</p>
 

@@ -122,7 +122,8 @@
                                     x-show="open"
                                     x-transition.opacity
                                     class="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-[1.5px] p-3 sm:p-6"
-                                    style="display:none;"
+                                    x-cloak
+                                    style="display:none; position:fixed; inset:0; z-index:2147483647;"
                                     @click.self="close()"
                                 >
                                     <div class="mx-auto flex h-full w-full max-w-6xl items-center justify-center">

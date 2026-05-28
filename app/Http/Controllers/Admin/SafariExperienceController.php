@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\SafariExperience;
+use App\Models\Tour;
 use App\Support\SlugHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ class SafariExperienceController extends Controller
     {
         $q = $request->string('q')->trim();
         $safariExperiences = SafariExperience::query()
+            ->with(['tours:id,title,slug'])
             ->when($q, fn ($query) => $query->where('title', 'like', '%'.$q.'%'))
             ->orderBy('sort_order')
             ->orderByDesc('id')
@@ -41,7 +43,9 @@ class SafariExperienceController extends Controller
 
     public function create(): View
     {
-        return view('admin.safari.create');
+        return view('admin.safari.create', [
+            'tours' => $this->tourOptions(),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -53,6 +57,7 @@ class SafariExperienceController extends Controller
             $data['image'] = $request->file('image')->store('safari', 'public');
         }
         $m = SafariExperience::query()->create($data);
+        $m->tours()->sync($request->input('tour_ids', []));
         ActivityLog::record('safari.created', $m->title, $m);
         Cache::forget('home_page_v3');
 
@@ -61,7 +66,12 @@ class SafariExperienceController extends Controller
 
     public function edit(SafariExperience $safariExperience): View
     {
-        return view('admin.safari.edit', compact('safariExperience'));
+        $safariExperience->load('tours:id');
+
+        return view('admin.safari.edit', [
+            'safariExperience' => $safariExperience,
+            'tours' => $this->tourOptions(),
+        ]);
     }
 
     public function update(Request $request, SafariExperience $safariExperience): RedirectResponse
@@ -78,6 +88,7 @@ class SafariExperienceController extends Controller
             $data['image'] = $request->file('image')->store('safari', 'public');
         }
         $safariExperience->update($data);
+        $safariExperience->tours()->sync($request->input('tour_ids', []));
         ActivityLog::record('safari.updated', $safariExperience->title, $safariExperience);
         Cache::forget('home_page_v3');
 
@@ -112,6 +123,18 @@ class SafariExperienceController extends Controller
             'duration' => ['nullable', 'string', 'max:255'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:65535'],
             'image' => ['nullable', 'image', 'max:5120'],
+            'tour_ids' => ['nullable', 'array'],
+            'tour_ids.*' => ['integer', 'exists:tours,id'],
         ]);
+    }
+
+    protected function tourOptions()
+    {
+        return Tour::query()
+            ->active()
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->get(['id', 'title', 'slug', 'duration_days']);
     }
 }

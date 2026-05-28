@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
@@ -22,6 +23,11 @@ class SafariExperience extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    public function tours(): BelongsToMany
+    {
+        return $this->belongsToMany(Tour::class)->withTimestamps();
     }
 
     /**

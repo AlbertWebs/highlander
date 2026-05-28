@@ -112,6 +112,48 @@
     </div>
 
     <div class="rounded-2xl border border-secondary/50 bg-white p-6 shadow-soft sm:p-8">
+        <h3 class="text-base font-semibold text-ink">{{ __('Linked itineraries') }}</h3>
+        <p class="mt-1 text-sm text-ink/55">{{ __('Select tour itineraries that belong to this safari style. These links are used on safari detail pages.') }}</p>
+        <p class="mt-1 text-xs text-ink/50">
+            <a href="{{ route('admin.tours.create') }}" class="font-semibold text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">{{ __('Create itinerary') }}</a>
+            <span class="text-ink/35"> · </span>
+            <a href="{{ route('admin.tours.index') }}" class="text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">{{ __('Manage all itineraries') }}</a>
+        </p>
+
+        @php
+            $selectedTours = collect(old('tour_ids', $isEdit ? $safariExperience->tours->pluck('id')->all() : []))
+                ->map(fn ($id) => (int) $id)
+                ->all();
+        @endphp
+
+        <div class="mt-5 max-h-72 space-y-2 overflow-y-auto rounded-xl border border-secondary/45 bg-surface/40 p-3">
+            @forelse(($tours ?? collect()) as $tour)
+                <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-transparent px-3 py-2.5 transition hover:border-secondary/50 hover:bg-white">
+                    <input
+                        type="checkbox"
+                        name="tour_ids[]"
+                        value="{{ $tour->id }}"
+                        @checked(in_array($tour->id, $selectedTours, true))
+                        class="mt-0.5 rounded border-secondary text-primary focus:ring-2 focus:ring-primary/30"
+                    >
+                    <span class="min-w-0">
+                        <span class="block truncate text-sm font-medium text-ink">{{ $tour->title }}</span>
+                        <span class="block text-xs text-ink/55">{{ $tour->slug }}@if($tour->duration_days) · {{ __(':days days', ['days' => $tour->duration_days]) }}@endif</span>
+                    </span>
+                </label>
+            @empty
+                <p class="px-1 py-2 text-sm text-ink/60">{{ __('No active itineraries yet. Create one first, then link it here.') }}</p>
+            @endforelse
+        </div>
+        @error('tour_ids')
+            <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
+        @enderror
+        @error('tour_ids.*')
+            <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div class="rounded-2xl border border-secondary/50 bg-white p-6 shadow-soft sm:p-8">
         <h3 class="text-base font-semibold text-ink">{{ __('Image') }}</h3>
         <p class="mt-1 text-sm text-ink/55">{{ __('Landscape photo for the card. JPEG, PNG, WebP or GIF - max 5 MB.') }}</p>
 

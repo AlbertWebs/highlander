@@ -6,6 +6,7 @@ use App\Support\Vimeo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -171,6 +172,11 @@ class Tour extends Model
     public function itineraryDays(): HasMany
     {
         return $this->hasMany(TourItineraryDay::class)->orderBy('day_number');
+    }
+
+    public function safariExperiences(): BelongsToMany
+    {
+        return $this->belongsToMany(SafariExperience::class)->withTimestamps();
     }
 
     public function mountain(): BelongsTo

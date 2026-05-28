@@ -39,10 +39,6 @@
             $groupedTours->push(['label' => $style->title, 'tours' => $styleTours]);
         }
     }
-    $unassignedTours = $pageTours->filter(fn ($tour) => $tour->safariExperiences->isEmpty())->values();
-    if ($unassignedTours->isNotEmpty()) {
-        $groupedTours->push(['label' => __('Unassigned to safari'), 'tours' => $unassignedTours]);
-    }
 @endphp
 
 @if($pageTours->isNotEmpty())

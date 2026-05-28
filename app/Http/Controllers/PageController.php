@@ -109,6 +109,13 @@ class PageController extends Controller
         $mountainTours = RelatedToursForMountain::allForMountain($mountain);
         $relatedTours = $mountainTours->take(8)->values();
         $mountainIntro = $this->mountainLeadIntro($mountain);
+        $countrySafaris = SafariExperience::query()
+            ->active()
+            ->where('mountain_id', $mountain->getKey())
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->get(['id', 'title', 'slug', 'duration', 'image']);
+        $mountainCountry = $this->mountainCountryLabel($mountain);
 
         return view('pages.mountain-show', compact(
             'mountain',
@@ -118,6 +125,8 @@ class PageController extends Controller
             'relatedTours',
             'mountainTours',
             'mountainIntro',
+            'countrySafaris',
+            'mountainCountry',
         ));
     }
 
@@ -326,6 +335,24 @@ class PageController extends Controller
             'mount-kilimanjaro', 'kilimanjaro' => __('Kilimanjaro is Africa’s highest free-standing volcano: rainforest, alpine desert, and summit glaciers. Every active itinerary we publish for this mountain is listed below.'),
             default => __('Trek :name with Highlanders Nature Trails. We list every active itinerary below whose programme copy or title references this peak: compare duration and budget, then enquire to tailor dates.', ['name' => $mountain->name]),
         };
+    }
+
+    protected function mountainCountryLabel(Mountain $mountain): string
+    {
+        $slug = strtolower((string) $mountain->slug);
+        $name = strtolower((string) $mountain->name);
+
+        if (str_contains($slug, 'kilimanjaro') || str_contains($name, 'kilimanjaro') || str_contains($slug, 'meru')) {
+            return 'Tanzania';
+        }
+        if (str_contains($slug, 'kenya') || str_contains($name, 'kenya') || str_contains($slug, 'kilimambogo')) {
+            return 'Kenya';
+        }
+        if (str_contains($slug, 'rwenzori')) {
+            return 'Uganda';
+        }
+
+        return 'this region';
     }
 
     public function featuredExperienceShow(Tour $tour): View

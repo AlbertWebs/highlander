@@ -25,7 +25,7 @@ class TourController extends Controller
         $perPage = in_array($perPage, [10, 15, 25, 30, 50, 100], true) ? $perPage : 30;
 
         $tours = Tour::query()
-            ->with(['mountain', 'destination'])
+            ->with(['mountain', 'destination', 'safariExperiences:id,title'])
             ->withCount('itineraryDays')
             ->when($q, function ($query) use ($q): void {
                 $like = '%'.$q.'%';
@@ -38,7 +38,12 @@ class TourController extends Controller
             ->paginate($perPage)
             ->withQueryString();
 
-        return view('admin.tours.index', compact('tours', 'q', 'perPage'));
+        $safariStyles = SafariExperience::query()
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->get(['id', 'title']);
+
+        return view('admin.tours.index', compact('tours', 'q', 'perPage', 'safariStyles'));
     }
 
     public function create(): View

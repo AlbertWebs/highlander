@@ -190,7 +190,15 @@ class PageController extends Controller
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
             ->limit(6)
-            ->get();
+            ->get()
+            ->sortBy(function (Tour $tour): array {
+                if (preg_match('/\bday\s*(\d+)\b/i', (string) $tour->title, $m) === 1) {
+                    return [0, (int) $m[1], $tour->title];
+                }
+
+                return [1, 9999, $tour->title];
+            })
+            ->values();
         $testimonials = Testimonial::query()
             ->active()
             ->orderByDesc('is_featured')

@@ -21,6 +21,51 @@
         ? $safariExperience->duration
         : __('Wildlife, reserves, and pacing tailored to your dates.');
     $safariSeo = $safariSeo ?? [];
+
+    $formatRichText = static function (?string $text): string {
+        $value = trim((string) $text);
+        if ($value === '') {
+            return '';
+        }
+
+        $lines = preg_split('/\r\n|\r|\n/', $value) ?: [];
+        $chunks = [];
+        $listItems = [];
+
+        $flushList = static function () use (&$chunks, &$listItems): void {
+            if ($listItems === []) {
+                return;
+            }
+
+            $items = array_map(
+                static fn (string $item): string => '<li>'.e(trim($item)).'</li>',
+                $listItems
+            );
+            $chunks[] = '<ul class="list-disc space-y-1 pl-5">'.implode('', $items).'</ul>';
+            $listItems = [];
+        };
+
+        foreach ($lines as $line) {
+            $trimmed = trim($line);
+
+            if ($trimmed === '') {
+                $flushList();
+                continue;
+            }
+
+            if (preg_match('/^[-*•]\s+(.+)$/u', $trimmed, $m) === 1) {
+                $listItems[] = $m[1];
+                continue;
+            }
+
+            $flushList();
+            $chunks[] = '<p>'.e($trimmed).'</p>';
+        }
+
+        $flushList();
+
+        return implode('', $chunks);
+    };
 @endphp
 
 @section('content')
@@ -41,8 +86,8 @@
                     @if(filled($safariExperience->description))
                         <div class="rounded-card border border-secondary/30 bg-white/90 p-6 shadow-sm sm:p-8">
                             <h2 class="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-primary">{{ __('Introduction') }}</h2>
-                            <div class="prose prose-ink prose-site mt-4 max-w-none text-[1.0625rem] leading-[1.75] text-ink/90 sm:text-lg sm:leading-[1.7]">
-                                <p class="whitespace-pre-wrap">{{ $safariExperience->description }}</p>
+                            <div class="prose prose-ink prose-site mt-4 max-w-none space-y-4 text-[1.0625rem] leading-[1.8] text-ink/90 sm:text-lg sm:leading-[1.8]">
+                                {!! $formatRichText($safariExperience->description) !!}
                             </div>
                         </div>
                     @endif
@@ -65,11 +110,13 @@
                                         </div>
 
                                         @if(filled($tour->description))
-                                            <p class="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-ink/80">{{ $tour->description }}</p>
+                                            <div class="prose prose-ink prose-site mt-3 max-w-none space-y-3 text-sm leading-relaxed text-ink/80">
+                                                {!! $formatRichText($tour->description) !!}
+                                            </div>
                                         @endif
 
                                         @if($tour->itineraryDays->isNotEmpty())
-                                            <div class="mt-4 space-y-2 border-t border-secondary/30 pt-4">
+                                            <div class="mt-4 space-y-3 border-t border-secondary/30 pt-4">
                                                 <p class="text-xs font-semibold uppercase tracking-[0.12em] text-primary">{{ __('Day by day') }}</p>
                                                 @foreach($tour->itineraryDays as $day)
                                                     <div class="rounded-lg border border-secondary/30 bg-white/75 p-3">
@@ -80,7 +127,9 @@
                                                             @endif
                                                         </p>
                                                         @if(filled($day->description))
-                                                            <p class="mt-1 text-sm leading-relaxed text-ink/75">{{ $day->description }}</p>
+                                                            <div class="prose prose-ink prose-site mt-2 max-w-none space-y-2 text-sm leading-relaxed text-ink/75">
+                                                                {!! $formatRichText($day->description) !!}
+                                                            </div>
                                                         @endif
                                                     </div>
                                                 @endforeach

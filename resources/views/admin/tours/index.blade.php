@@ -30,23 +30,43 @@
 @if(filled($q))
     <p class="mb-3 text-sm text-ink/65">{{ __('Showing tours matching ":q".', ['q' => $q]) }}</p>
 @endif
-<div class="max-w-full overflow-x-auto rounded-2xl border border-secondary/50 bg-white shadow-soft [-webkit-overflow-scrolling:touch]">
-    <table class="w-full min-w-0 table-auto divide-y divide-secondary/40 text-xs sm:text-sm">
-        <thead class="bg-secondary/30 text-left text-[0.65rem] font-semibold uppercase leading-tight text-ink/70 sm:text-xs">
-            <tr>
-                <th class="whitespace-nowrap px-2 py-2 sm:px-3 sm:py-3">{{ __('ID') }}</th>
-                <th class="min-w-0 px-2 py-2 sm:px-3 sm:py-3">{{ __('Title') }}</th>
-                <th class="whitespace-nowrap px-2 py-2 sm:px-3 sm:py-3">{{ __('Menus') }}</th>
-                <th class="hidden min-w-0 px-2 py-2 md:table-cell md:px-3 md:py-3">{{ __('Hub') }}</th>
-                <th class="whitespace-nowrap px-2 py-2 sm:px-3 sm:py-3">{{ __('Status') }}</th>
-                <th class="whitespace-nowrap px-2 py-2 sm:px-3 sm:py-3">{{ __('Itin.') }}</th>
-                <th class="whitespace-nowrap px-2 py-2 sm:px-3 sm:py-3">{{ __('Updated') }}</th>
-                <th class="whitespace-nowrap px-2 py-2 text-right sm:px-3 sm:py-3">{{ __('Actions') }}</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-secondary/30">
-            @forelse($tours as $tour)
-                <tr class="transition-colors duration-200 ease-out hover:bg-secondary/20">
+@php
+    $pageTours = $tours->getCollection();
+    $groupedTours = collect();
+    foreach (($safariStyles ?? collect()) as $style) {
+        $styleTours = $pageTours->filter(fn ($tour) => $tour->safariExperiences->contains('id', $style->id))->values();
+        if ($styleTours->isNotEmpty()) {
+            $groupedTours->push(['label' => $style->title, 'tours' => $styleTours]);
+        }
+    }
+    $unassignedTours = $pageTours->filter(fn ($tour) => $tour->safariExperiences->isEmpty())->values();
+    if ($unassignedTours->isNotEmpty()) {
+        $groupedTours->push(['label' => __('Unassigned to safari'), 'tours' => $unassignedTours]);
+    }
+@endphp
+
+@if($pageTours->isNotEmpty())
+    <div class="space-y-6">
+        @foreach($groupedTours as $group)
+            <section>
+                <h3 class="mb-2 text-sm font-semibold text-ink">{{ $group['label'] }} <span class="text-ink/50">({{ $group['tours']->count() }})</span></h3>
+                <div class="max-w-full overflow-x-auto rounded-2xl border border-secondary/50 bg-white shadow-soft [-webkit-overflow-scrolling:touch]">
+                    <table class="w-full min-w-0 table-auto divide-y divide-secondary/40 text-xs sm:text-sm">
+                        <thead class="bg-secondary/30 text-left text-[0.65rem] font-semibold uppercase leading-tight text-ink/70 sm:text-xs">
+                            <tr>
+                                <th class="whitespace-nowrap px-2 py-2 sm:px-3 sm:py-3">{{ __('ID') }}</th>
+                                <th class="min-w-0 px-2 py-2 sm:px-3 sm:py-3">{{ __('Title') }}</th>
+                                <th class="whitespace-nowrap px-2 py-2 sm:px-3 sm:py-3">{{ __('Menus') }}</th>
+                                <th class="hidden min-w-0 px-2 py-2 md:table-cell md:px-3 md:py-3">{{ __('Hub') }}</th>
+                                <th class="whitespace-nowrap px-2 py-2 sm:px-3 sm:py-3">{{ __('Status') }}</th>
+                                <th class="whitespace-nowrap px-2 py-2 sm:px-3 sm:py-3">{{ __('Itin.') }}</th>
+                                <th class="whitespace-nowrap px-2 py-2 sm:px-3 sm:py-3">{{ __('Updated') }}</th>
+                                <th class="whitespace-nowrap px-2 py-2 text-right sm:px-3 sm:py-3">{{ __('Actions') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-secondary/30">
+                            @foreach($group['tours'] as $tour)
+                                <tr class="transition-colors duration-200 ease-out hover:bg-secondary/20">
                     <td class="whitespace-nowrap px-2 py-2 tabular-nums text-ink/80 sm:px-3 sm:py-3">{{ $tour->id }}</td>
                     <td class="max-w-[11rem] px-2 py-2 font-medium text-primary sm:max-w-[18rem] sm:px-3 sm:py-3 md:max-w-xs lg:max-w-md">
                         <span class="line-clamp-2 break-words" title="{{ $tour->title }}">{{ $tour->title }}</span>
@@ -112,7 +132,17 @@
                         </form>
                     </td>
                 </tr>
-            @empty
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        @endforeach
+    </div>
+@else
+    <div class="max-w-full overflow-x-auto rounded-2xl border border-secondary/50 bg-white shadow-soft [-webkit-overflow-scrolling:touch]">
+        <table class="w-full min-w-0 table-auto divide-y divide-secondary/40 text-xs sm:text-sm">
+            <tbody>
                 <tr>
                     <td colspan="8" class="px-4 py-12 text-center text-sm text-ink/60">
                         @if(filled($q))
@@ -124,10 +154,10 @@
                         @endif
                     </td>
                 </tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
+            </tbody>
+        </table>
+    </div>
+@endif
 <div class="mt-6">{{ $tours->links() }}</div>
 </div>
 @endsection

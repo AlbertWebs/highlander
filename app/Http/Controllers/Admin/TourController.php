@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Destination;
 use App\Models\Mountain;
+use App\Models\SafariExperience;
 use App\Models\Tour;
 use App\Support\SlugHelper;
 use Illuminate\Database\Eloquent\Collection;
@@ -59,6 +60,7 @@ class TourController extends Controller
             $data['image'] = $request->file('image')->store('tours', 'public');
         }
         $tour = Tour::query()->create($data);
+        $tour->safariExperiences()->sync($request->input('safari_experience_ids', []));
         ActivityLog::record('tour.created', $tour->title, $tour);
         $this->forgetHomeCache();
 
@@ -96,6 +98,7 @@ class TourController extends Controller
             $data['image'] = $request->file('image')->store('tours', 'public');
         }
         $tour->update($data);
+        $tour->safariExperiences()->sync($request->input('safari_experience_ids', []));
         ActivityLog::record('tour.updated', $tour->title, $tour);
         $this->forgetHomeCache();
 
@@ -157,13 +160,15 @@ class TourController extends Controller
             'image' => ['nullable', 'image', 'max:5120'],
             'mountain_id' => ['nullable', 'integer', 'exists:mountains,id'],
             'destination_id' => ['nullable', 'integer', 'exists:destinations,id'],
+            'safari_experience_ids' => ['nullable', 'array'],
+            'safari_experience_ids.*' => ['integer', 'exists:safari_experiences,id'],
         ]);
 
         return $data;
     }
 
     /**
-     * @return array{mountains: Collection<int, Mountain>, destinations: Collection<int, Destination>}
+     * @return array{mountains: Collection<int, Mountain>, destinations: Collection<int, Destination>, safariExperiences: Collection<int, SafariExperience>}
      */
     protected function hubFormData(?Tour $tour = null): array
     {
@@ -179,6 +184,10 @@ class TourController extends Controller
         return [
             'mountains' => $mountains,
             'destinations' => Destination::query()->orderBy('sort_order')->orderBy('name')->get(['id', 'name', 'slug']),
+            'safariExperiences' => SafariExperience::query()
+                ->orderBy('sort_order')
+                ->orderBy('title')
+                ->get(['id', 'title', 'slug', 'duration']),
         ];
     }
 

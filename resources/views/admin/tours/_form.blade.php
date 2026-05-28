@@ -68,6 +68,48 @@
             </div>
         </div>
     </div>
+    <div class="md:col-span-2 rounded-2xl border border-secondary/40 bg-white p-5 shadow-sm">
+        <p class="text-sm font-medium text-ink">{{ __('Safari styles') }}</p>
+        <p class="mt-1 text-xs leading-relaxed text-ink/55">{{ __('Link this itinerary to one or more safari styles. Linked itineraries are prioritized on each safari style detail page.') }}</p>
+        <p class="mt-1 text-xs text-ink/50">
+            <a href="{{ route('admin.safari.create') }}" target="_blank" rel="noopener noreferrer" class="font-semibold text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">{{ __('Add safari style') }}</a>
+            @if(($safariExperiences ?? collect())->isNotEmpty())
+                <span class="text-ink/40"> · </span>
+                <a href="{{ route('admin.safari.index') }}" target="_blank" rel="noopener noreferrer" class="text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">{{ __('All safari styles') }}</a>
+            @endif
+        </p>
+        @php
+            $selectedSafariStyles = collect(old(
+                'safari_experience_ids',
+                isset($tour) ? $tour->safariExperiences->pluck('id')->all() : []
+            ))->map(fn ($id) => (int) $id)->all();
+        @endphp
+        <div class="mt-4 max-h-72 space-y-2 overflow-y-auto rounded-xl border border-secondary/45 bg-surface/40 p-3">
+            @forelse(($safariExperiences ?? collect()) as $style)
+                <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-transparent px-3 py-2.5 transition hover:border-secondary/50 hover:bg-white">
+                    <input
+                        type="checkbox"
+                        name="safari_experience_ids[]"
+                        value="{{ $style->id }}"
+                        @checked(in_array($style->id, $selectedSafariStyles, true))
+                        class="mt-0.5 rounded border-secondary text-primary focus:ring-2 focus:ring-primary/30"
+                    >
+                    <span class="min-w-0">
+                        <span class="block truncate text-sm font-medium text-ink">{{ $style->title }}</span>
+                        <span class="block text-xs text-ink/55">{{ $style->slug }}@if(filled($style->duration)) · {{ $style->duration }}@endif</span>
+                    </span>
+                </label>
+            @empty
+                <p class="px-1 py-2 text-sm text-ink/60">{{ __('No safari styles yet. Add one first, then link it here.') }}</p>
+            @endforelse
+        </div>
+        @error('safari_experience_ids')
+            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+        @enderror
+        @error('safari_experience_ids.*')
+            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+        @enderror
+    </div>
     <div>
         <label class="block text-sm font-medium">{{ __('Sort order') }}</label>
         <input type="number" name="sort_order" value="{{ old('sort_order', $tour->sort_order ?? 0) }}" class="mt-1 w-full rounded-xl border-secondary/60 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary">

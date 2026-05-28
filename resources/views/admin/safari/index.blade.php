@@ -101,6 +101,11 @@
                         @if(filled($s->duration))
                             <p class="mt-1 text-xs font-medium text-primary/90">{{ $s->duration }}</p>
                         @endif
+                        @if(filled($s->country))
+                            <p class="mt-1 text-xs text-ink/65">
+                                <span class="font-semibold text-ink/75">{{ __('Country:') }}</span> {{ $s->country }}
+                            </p>
+                        @endif
                         @if($s->mountain)
                             <p class="mt-1 text-xs text-ink/65">
                                 <span class="font-semibold text-ink/75">{{ __('Mountain:') }}</span> {{ $s->mountain->name }}

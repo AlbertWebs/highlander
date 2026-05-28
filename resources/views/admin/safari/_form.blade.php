@@ -77,6 +77,24 @@
             </div>
 
             <div>
+                <label for="safari-country" class="text-sm font-medium text-ink">{{ __('Country') }}</label>
+                <select
+                    id="safari-country"
+                    name="country"
+                    class="form-input-interactive mt-1.5 w-full rounded-xl border border-secondary/60 bg-white px-4 py-3 text-sm shadow-sm"
+                >
+                    <option value="">{{ __('Select country') }}</option>
+                    @foreach(['Kenya', 'Tanzania', 'Uganda'] as $country)
+                        <option value="{{ $country }}" @selected(old('country', $safariExperience->country ?? '') === $country)>{{ $country }}</option>
+                    @endforeach
+                </select>
+                <p class="mt-1.5 text-xs text-ink/50">{{ __('Use this to link the safari style to a country.') }}</p>
+                @error('country')
+                    <p class="mt-1.5 text-sm text-red-700">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
                 <label for="safari-mountain" class="text-sm font-medium text-ink">{{ __('Linked mountain') }}</label>
                 <select
                     id="safari-mountain"

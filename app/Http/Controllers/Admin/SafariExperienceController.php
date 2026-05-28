@@ -134,6 +134,7 @@ class SafariExperienceController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'duration' => ['nullable', 'string', 'max:255'],
+            'country' => ['nullable', 'string', 'max:120'],
             'mountain_id' => ['nullable', 'integer', 'exists:mountains,id'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:65535'],
             'image' => ['nullable', 'image', 'max:5120'],

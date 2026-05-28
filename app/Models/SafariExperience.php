@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class SafariExperience extends Model
 {
     protected $fillable = [
-        'title', 'slug', 'description', 'image', 'duration', 'mountain_id', 'is_active', 'sort_order',
+        'title', 'slug', 'description', 'image', 'duration', 'country', 'mountain_id', 'is_active', 'sort_order',
     ];
 
     protected function casts(): array

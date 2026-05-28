@@ -209,6 +209,26 @@
                             <p class="mt-4 text-sm text-ink/65">{{ __('No itineraries have been added for this safari yet.') }}</p>
                         @endif
                     </div>
+
+                    <div class="mt-8 rounded-card border border-secondary/35 bg-gradient-to-br from-white via-surface/80 to-tint-green/20 p-6 shadow-sm sm:p-8">
+                        <p class="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-primary">{{ __('Next step') }}</p>
+                        <h3 class="mt-2 font-serif text-xl font-semibold text-ink sm:text-2xl">{{ __('Plan this safari style') }}</h3>
+                        <p class="mt-2 max-w-2xl text-sm leading-relaxed text-ink/65">{{ __('Share your dates and travel goals and we will tailor this itinerary for your group.') }}</p>
+                        <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                            <a href="{{ route('plan-my-safari', ['safari' => $safariExperience->slug]) }}" class="btn-primary flex min-h-[2.9rem] items-center justify-center gap-2 bg-gradient-to-r from-primary via-primary to-accent px-5 py-3 hover:brightness-110">
+                                <svg class="h-4 w-4 shrink-0 opacity-90" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                {{ __('Plan this safari') }}
+                            </a>
+                            <a href="{{ route('contact') }}" class="btn-secondary flex min-h-[2.9rem] items-center justify-center gap-2 px-5 py-3">
+                                <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                {{ __('Ask a question') }}
+                            </a>
+                            <a href="{{ route('explore-africa') }}" class="btn-outline flex min-h-[2.9rem] items-center justify-center gap-2 px-5 py-3">
+                                <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3"/></svg>
+                                {{ __('Explore Africa') }}
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
                 <aside class="mt-8 min-h-0 lg:col-span-4 lg:mt-0 lg:flex lg:flex-col" aria-label="{{ __('Safari style sidebar') }}">

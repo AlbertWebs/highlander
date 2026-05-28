@@ -49,7 +49,7 @@
 
                     <div class="mt-8 rounded-card border border-secondary/30 bg-white/90 p-6 shadow-sm sm:p-8">
                         <div class="flex items-center justify-between gap-3">
-                            <h2 class="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-primary">{{ __('Allocated itineraries') }}</h2>
+                            <h2 class="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-primary">{{ __('Itineraries for this safari') }}</h2>
                             <a href="{{ route('safari') }}" class="text-xs font-semibold text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">{{ __('All safari styles') }}</a>
                         </div>
 
@@ -66,7 +66,7 @@
                                 @endforeach
                             </div>
                         @else
-                            <p class="mt-4 text-sm text-ink/65">{{ __('No itineraries allocated yet for this safari style.') }}</p>
+                            <p class="mt-4 text-sm text-ink/65">{{ __('No itineraries have been added for this safari yet.') }}</p>
                         @endif
                     </div>
                 </div>

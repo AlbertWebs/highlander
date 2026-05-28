@@ -184,7 +184,12 @@ class PageController extends Controller
                 160
             );
 
-        $relatedTours = RelatedToursForSafariExperience::get($safariExperience, 6);
+        $relatedTours = $safariExperience->tours()
+            ->active()
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->limit(6)
+            ->get();
         $testimonials = Testimonial::query()
             ->active()
             ->orderByDesc('is_featured')

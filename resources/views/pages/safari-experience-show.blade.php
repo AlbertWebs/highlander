@@ -54,15 +54,39 @@
                         </div>
 
                         @if(($relatedTours ?? collect())->isNotEmpty())
-                            <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            <div class="mt-4 space-y-4">
                                 @foreach($relatedTours as $tour)
-                                    <a href="{{ route('experiences.show', $tour) }}" class="group rounded-xl border border-secondary/40 bg-surface/40 p-4 transition hover:border-primary/35 hover:bg-white">
-                                        <p class="text-sm font-semibold text-ink group-hover:text-primary">{{ $tour->title }}</p>
-                                        @if($tour->duration_days)
-                                            <p class="mt-1 text-xs text-ink/55">{{ trans_choice(':days day|:days days', $tour->duration_days, ['days' => $tour->duration_days]) }}</p>
+                                    <article class="rounded-xl border border-secondary/40 bg-surface/40 p-5">
+                                        <div class="flex flex-wrap items-center justify-between gap-2">
+                                            <h3 class="text-base font-semibold text-ink">{{ $tour->title }}</h3>
+                                            @if($tour->duration_days)
+                                                <p class="text-xs font-medium text-ink/55">{{ trans_choice(':days day|:days days', $tour->duration_days, ['days' => $tour->duration_days]) }}</p>
+                                            @endif
+                                        </div>
+
+                                        @if(filled($tour->description))
+                                            <p class="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-ink/80">{{ $tour->description }}</p>
                                         @endif
-                                        <p class="mt-2 text-xs font-semibold text-primary">{{ __('View itinerary') }} &rarr;</p>
-                                    </a>
+
+                                        @if($tour->itineraryDays->isNotEmpty())
+                                            <div class="mt-4 space-y-2 border-t border-secondary/30 pt-4">
+                                                <p class="text-xs font-semibold uppercase tracking-[0.12em] text-primary">{{ __('Day by day') }}</p>
+                                                @foreach($tour->itineraryDays as $day)
+                                                    <div class="rounded-lg border border-secondary/30 bg-white/75 p-3">
+                                                        <p class="text-sm font-semibold text-ink">
+                                                            {{ __('Day :day', ['day' => $day->day_number]) }}
+                                                            @if(filled($day->title))
+                                                                — {{ $day->title }}
+                                                            @endif
+                                                        </p>
+                                                        @if(filled($day->description))
+                                                            <p class="mt-1 text-sm leading-relaxed text-ink/75">{{ $day->description }}</p>
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </article>
                                 @endforeach
                             </div>
                         @else

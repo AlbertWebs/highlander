@@ -186,6 +186,7 @@ class PageController extends Controller
 
         $relatedTours = $safariExperience->tours()
             ->active()
+            ->with(['itineraryDays' => fn ($query) => $query->orderBy('day_number')])
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
             ->limit(6)

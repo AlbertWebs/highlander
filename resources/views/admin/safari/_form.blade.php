@@ -164,13 +164,13 @@
         <p class="mt-1 text-sm text-ink/55">{{ __('Landscape photo for the card. JPEG, PNG, WebP or GIF - max 5 MB.') }}</p>
 
         <div x-data="fileImagePreview(@js($previewUrl))" class="mt-4">
-            <label class="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-8 text-center transition hover:border-primary/35 hover:bg-primary/[0.04] sm:flex-row sm:justify-center sm:gap-4 sm:py-6">
-                <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp" class="sr-only js-preserve-scroll-on-file" @change="pick($event)">
+            <input type="file" x-ref="heroImageInput" name="image" accept="image/jpeg,image/png,image/gif,image/webp" class="sr-only js-preserve-scroll-on-file" @change="pick($event)">
+            <button type="button" @click.prevent="$refs.heroImageInput.click()" class="flex w-full cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-8 text-center transition hover:border-primary/35 hover:bg-primary/[0.04] sm:flex-row sm:justify-center sm:gap-4 sm:py-6">
                 <svg class="h-10 w-10 shrink-0 text-ink/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <span class="mt-3 text-sm font-medium text-ink/80 sm:mt-0">{{ __('Choose or replace image') }}</span>
-            </label>
+            </button>
             <div x-show="preview" x-transition class="mt-4 overflow-hidden rounded-xl border border-secondary/45 bg-white shadow-sm">
                 <p class="border-b border-secondary/30 bg-surface/60 px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-ink/45">{{ __('Preview') }}</p>
                 <div class="p-4">
@@ -204,14 +204,16 @@
             </div>
         @endif
 
-        <label class="mt-4 flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-8 text-center transition hover:border-primary/35 hover:bg-primary/[0.04]">
-            <input type="file" name="gallery_images[]" accept="image/jpeg,image/png,image/gif,image/webp" multiple class="sr-only js-preserve-scroll-on-file">
+        <div x-data>
+        <input type="file" x-ref="galleryInput" name="gallery_images[]" accept="image/jpeg,image/png,image/gif,image/webp" multiple class="sr-only js-preserve-scroll-on-file">
+        <button type="button" @click.prevent="$refs.galleryInput.click()" class="mt-4 flex w-full cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-8 text-center transition hover:border-primary/35 hover:bg-primary/[0.04]">
             <svg class="h-10 w-10 text-ink/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 16V4m0 0-4 4m4-4 4 4M4 16.5V18a2 2 0 002 2h12a2 2 0 002-2v-1.5" />
             </svg>
             <span class="mt-3 text-sm font-medium text-ink/80">{{ __('Drop images here or click to upload') }}</span>
             <span class="mt-1 text-xs text-ink/55">{{ __('You can select multiple files at once.') }}</span>
-        </label>
+        </button>
+        </div>
 
         @error('gallery_images')
             <p class="mt-2 text-sm text-red-700">{{ $message }}</p>

@@ -31,7 +31,7 @@
             ['r' => 'admin.safari-requests.index', 'l' => __('Safari Requests'), 'i' => 'map'],
         ]],
         ['label' => __('Content'), 'items' => [
-            ['r' => 'admin.tours.index', 'l' => __('Tours'), 'i' => 'map'],
+            ['r' => 'admin.tours.index', 'l' => __('Itineraries'), 'i' => 'map'],
             ['r' => 'admin.destinations.index', 'l' => __('Destinations'), 'i' => 'globe'],
             ['r' => 'admin.mountains.index', 'l' => __('Mountains'), 'i' => 'mountain'],
             ['r' => 'admin.safari.index', 'l' => __('Safari'), 'i' => 'camera'],

@@ -139,6 +139,11 @@
                                                                 — {{ $day->title }}
                                                             @endif
                                                         </p>
+                                                        @if($day->imageUrl())
+                                                            <div class="mt-2 overflow-hidden rounded-lg border border-secondary/30 bg-white">
+                                                                <img src="{{ $day->imageUrl() }}" alt="{{ __('Day :day image', ['day' => $day->day_number]) }}" class="h-48 w-full object-cover" loading="lazy">
+                                                            </div>
+                                                        @endif
                                                         @if(filled($day->body))
                                                             <div class="prose prose-ink prose-site mt-2 max-w-none space-y-2 text-sm leading-relaxed text-ink/75">
                                                                 {!! $formatRichText($day->body) !!}

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use App\Models\Mountain;
 use App\Models\SafariExperience;
 use App\Models\SafariExperienceImage;
 use App\Models\Tour;
@@ -20,7 +21,7 @@ class SafariExperienceController extends Controller
     {
         $q = $request->string('q')->trim();
         $safariExperiences = SafariExperience::query()
-            ->with(['tours:id,title,slug'])
+            ->with(['tours:id,title,slug', 'mountain:id,name'])
             ->when($q, fn ($query) => $query->where('title', 'like', '%'.$q.'%'))
             ->orderBy('sort_order')
             ->orderByDesc('id')
@@ -46,6 +47,7 @@ class SafariExperienceController extends Controller
     {
         return view('admin.safari.create', [
             'tours' => $this->tourOptions(),
+            'mountains' => $this->mountainOptions(),
         ]);
     }
 
@@ -76,6 +78,7 @@ class SafariExperienceController extends Controller
         return view('admin.safari.edit', [
             'safariExperience' => $safariExperience,
             'tours' => $this->tourOptions($safariExperience),
+            'mountains' => $this->mountainOptions($safariExperience),
         ]);
     }
 
@@ -131,6 +134,7 @@ class SafariExperienceController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'duration' => ['nullable', 'string', 'max:255'],
+            'mountain_id' => ['nullable', 'integer', 'exists:mountains,id'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:65535'],
             'image' => ['nullable', 'image', 'max:5120'],
             'tour_ids' => ['nullable', 'array'],
@@ -197,5 +201,22 @@ class SafariExperienceController extends Controller
             Storage::disk('public')->delete($image->image);
             $image->delete();
         }
+    }
+
+    protected function mountainOptions(?SafariExperience $safariExperience = null)
+    {
+        $mountains = Mountain::query()
+            ->active()
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        if ($safariExperience?->mountain_id) {
+            $linked = Mountain::query()->find($safariExperience->mountain_id, ['id', 'name']);
+            if ($linked instanceof Mountain && ! $mountains->contains('id', $linked->id)) {
+                $mountains = $mountains->prepend($linked)->values();
+            }
+        }
+
+        return $mountains;
     }
 }

@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class SafariExperience extends Model
 {
     protected $fillable = [
-        'title', 'slug', 'description', 'image', 'duration', 'is_active', 'sort_order',
+        'title', 'slug', 'description', 'image', 'duration', 'mountain_id', 'is_active', 'sort_order',
     ];
 
     protected function casts(): array
@@ -18,6 +19,7 @@ class SafariExperience extends Model
         return [
             'is_active' => 'boolean',
             'sort_order' => 'integer',
+            'mountain_id' => 'integer',
         ];
     }
 
@@ -36,6 +38,11 @@ class SafariExperience extends Model
     public function tours(): BelongsToMany
     {
         return $this->belongsToMany(Tour::class)->withTimestamps();
+    }
+
+    public function mountain(): BelongsTo
+    {
+        return $this->belongsTo(Mountain::class);
     }
 
     /**

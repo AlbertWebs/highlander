@@ -101,6 +101,11 @@
                         @if(filled($s->duration))
                             <p class="mt-1 text-xs font-medium text-primary/90">{{ $s->duration }}</p>
                         @endif
+                        @if($s->mountain)
+                            <p class="mt-1 text-xs text-ink/65">
+                                <span class="font-semibold text-ink/75">{{ __('Mountain:') }}</span> {{ $s->mountain->name }}
+                            </p>
+                        @endif
                         <p class="mt-1 line-clamp-2 text-xs text-ink/55">{{ \Illuminate\Support\Str::limit(strip_tags((string) $s->description), 120) }}</p>
                         <p class="mt-2 text-xs text-ink/60">
                             {{ trans_choice(':count linked itinerary|:count linked itineraries', $s->tours->count(), ['count' => $s->tours->count()]) }}

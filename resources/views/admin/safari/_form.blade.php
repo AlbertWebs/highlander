@@ -6,16 +6,10 @@
     $previewUrl = ($isEdit && $safariExperience->image)
         ? \Illuminate\Support\Facades\Storage::disk('public')->url($safariExperience->image)
         : '';
-    $existingGalleryImages = $isEdit
-        ? $safariExperience->galleryImages->map(fn ($img) => [
-            'id' => $img->id,
-            'url' => $img->imageUrl(),
-        ])->all()
-        : [];
 @endphp
 
 <div class="space-y-8">
-    <div id="linked-itineraries" class="rounded-2xl border border-secondary/50 bg-white p-6 shadow-soft sm:p-8">
+    <div class="rounded-2xl border border-secondary/50 bg-white p-6 shadow-soft sm:p-8">
         <h3 class="text-base font-semibold text-ink">{{ __('Content') }}</h3>
         <p class="mt-1 text-sm text-ink/55">{{ __('Title and copy appear on the public Safari page cards.') }}</p>
 
@@ -39,7 +33,7 @@
                     <p class="mt-2 text-xs text-ink/55">
                         {{ __('Public URL') }}:
                         <a href="{{ route('safari.show', $safariExperience) }}" target="_blank" rel="noopener noreferrer" class="font-mono text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">{{ parse_url(route('safari.show', $safariExperience), PHP_URL_PATH) }}</a>
-                        <span class="text-ink/45"> - {{ __('updates when you change the title') }}</span>
+                        <span class="text-ink/45"> — {{ __('updates when you change the title') }}</span>
                     </p>
                 @endif
             </div>
@@ -72,42 +66,6 @@
                 >
                 <p class="mt-1.5 text-xs text-ink/50">{{ __('Optional line under the title on the card.') }}</p>
                 @error('duration')
-                    <p class="mt-1.5 text-sm text-red-700">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div>
-                <label for="safari-country" class="text-sm font-medium text-ink">{{ __('Country') }}</label>
-                <select
-                    id="safari-country"
-                    name="country"
-                    class="form-input-interactive mt-1.5 w-full rounded-xl border border-secondary/60 bg-white px-4 py-3 text-sm shadow-sm"
-                >
-                    <option value="">{{ __('Select country') }}</option>
-                    @foreach(['Kenya', 'Tanzania', 'Uganda'] as $country)
-                        <option value="{{ $country }}" @selected(old('country', $safariExperience->country ?? '') === $country)>{{ $country }}</option>
-                    @endforeach
-                </select>
-                <p class="mt-1.5 text-xs text-ink/50">{{ __('Use this to link the safari style to a country.') }}</p>
-                @error('country')
-                    <p class="mt-1.5 text-sm text-red-700">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div>
-                <label for="safari-mountain" class="text-sm font-medium text-ink">{{ __('Linked mountain') }}</label>
-                <select
-                    id="safari-mountain"
-                    name="mountain_id"
-                    class="form-input-interactive mt-1.5 w-full rounded-xl border border-secondary/60 bg-white px-4 py-3 text-sm shadow-sm"
-                >
-                    <option value="">{{ __('None') }}</option>
-                    @foreach(($mountains ?? collect()) as $m)
-                        <option value="{{ $m->id }}" @selected((string) old('mountain_id', $safariExperience->mountain_id ?? '') === (string) $m->id)>{{ $m->name }}</option>
-                    @endforeach
-                </select>
-                <p class="mt-1.5 text-xs text-ink/50">{{ __('Use this to associate the safari style with a mountain.') }}</p>
-                @error('mountain_id')
                     <p class="mt-1.5 text-sm text-red-700">{{ $message }}</p>
                 @enderror
             </div>
@@ -154,59 +112,17 @@
     </div>
 
     <div class="rounded-2xl border border-secondary/50 bg-white p-6 shadow-soft sm:p-8">
-        <h3 class="text-base font-semibold text-ink">{{ __('Linked itineraries') }}</h3>
-        <p class="mt-1 text-sm text-ink/55">{{ __('Select tour itineraries that belong to this safari style. This list shows itineraries not linked to another safari (plus already linked ones when editing).') }}</p>
-        <p class="mt-1 text-xs text-ink/50">
-            <a href="{{ route('admin.tours.create') }}" class="font-semibold text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">{{ __('Create itinerary') }}</a>
-            <span class="text-ink/35"> · </span>
-            <a href="{{ route('admin.tours.index') }}" class="text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">{{ __('Manage all itineraries') }}</a>
-        </p>
-
-        @php
-            $selectedTours = collect(old('tour_ids', $isEdit ? $safariExperience->tours->pluck('id')->all() : []))
-                ->map(fn ($id) => (int) $id)
-                ->all();
-        @endphp
-
-        <div class="mt-5 max-h-72 space-y-2 overflow-y-auto rounded-xl border border-secondary/45 bg-surface/40 p-3">
-            @forelse(($tours ?? collect()) as $tour)
-                <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-transparent px-3 py-2.5 transition hover:border-secondary/50 hover:bg-white">
-                    <input
-                        type="checkbox"
-                        name="tour_ids[]"
-                        value="{{ $tour->id }}"
-                        @checked(in_array($tour->id, $selectedTours, true))
-                        class="mt-0.5 rounded border-secondary text-primary focus:ring-2 focus:ring-primary/30"
-                    >
-                    <span class="min-w-0">
-                        <span class="block truncate text-sm font-medium text-ink">{{ $tour->title }}</span>
-                        <span class="block text-xs text-ink/55">{{ $tour->slug }}@if($tour->duration_days) · {{ __(':days days', ['days' => $tour->duration_days]) }}@endif</span>
-                    </span>
-                </label>
-            @empty
-                <p class="px-1 py-2 text-sm text-ink/60">{{ __('No unlinked active itineraries available. Create one first, or unlink from another safari.') }}</p>
-            @endforelse
-        </div>
-        @error('tour_ids')
-            <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
-        @enderror
-        @error('tour_ids.*')
-            <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
-        @enderror
-    </div>
-
-    <div class="rounded-2xl border border-secondary/50 bg-white p-6 shadow-soft sm:p-8">
         <h3 class="text-base font-semibold text-ink">{{ __('Image') }}</h3>
-        <p class="mt-1 text-sm text-ink/55">{{ __('Landscape photo for the card. JPEG, PNG, WebP or GIF - max 5 MB.') }}</p>
+        <p class="mt-1 text-sm text-ink/55">{{ __('Landscape photo for the card. JPEG, PNG, WebP or GIF — max 5 MB.') }}</p>
 
         <div x-data="fileImagePreview(@js($previewUrl))" class="mt-4">
-            <input type="file" x-ref="heroImageInput" name="image" accept="image/jpeg,image/png,image/gif,image/webp" class="sr-only js-preserve-scroll-on-file" @change="pick($event)">
-            <button type="button" @click.prevent="$refs.heroImageInput.click()" class="flex w-full cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-8 text-center transition hover:border-primary/35 hover:bg-primary/[0.04] sm:flex-row sm:justify-center sm:gap-4 sm:py-6">
+            <label class="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-8 text-center transition hover:border-primary/35 hover:bg-primary/[0.04] sm:flex-row sm:justify-center sm:gap-4 sm:py-6">
+                <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp" class="sr-only" @change="pick($event)">
                 <svg class="h-10 w-10 shrink-0 text-ink/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <span class="mt-3 text-sm font-medium text-ink/80 sm:mt-0">{{ __('Choose or replace image') }}</span>
-            </button>
+            </label>
             <div x-show="preview" x-transition class="mt-4 overflow-hidden rounded-xl border border-secondary/45 bg-white shadow-sm">
                 <p class="border-b border-secondary/30 bg-surface/60 px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-ink/45">{{ __('Preview') }}</p>
                 <div class="p-4">
@@ -216,49 +132,6 @@
         </div>
         @error('image')
             <p class="mt-1.5 text-sm text-red-700">{{ $message }}</p>
-        @enderror
-    </div>
-
-    <div class="rounded-2xl border border-secondary/50 bg-white p-6 shadow-soft sm:p-8">
-        <h3 class="text-base font-semibold text-ink">{{ __('Gallery') }}</h3>
-        <p class="mt-1 text-sm text-ink/55">{{ __('Add multiple safari photos. These appear on the safari style page gallery.') }}</p>
-
-        @if(!empty($existingGalleryImages))
-            <div class="mt-4">
-                <p class="text-xs font-semibold uppercase tracking-wide text-ink/55">{{ __('Current gallery images') }}</p>
-                <div class="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    @foreach($existingGalleryImages as $image)
-                        <label class="overflow-hidden rounded-xl border border-secondary/40 bg-surface/40">
-                            <img src="{{ $image['url'] }}" alt="" class="h-28 w-full object-cover">
-                            <span class="flex items-center gap-2 px-3 py-2 text-xs text-ink/70">
-                                <input type="checkbox" name="remove_gallery_image_ids[]" value="{{ $image['id'] }}" class="rounded border-secondary text-primary focus:ring-primary/30">
-                                {{ __('Remove') }}
-                            </span>
-                        </label>
-                    @endforeach
-                </div>
-            </div>
-        @endif
-
-        <div x-data>
-        <input type="file" x-ref="galleryInput" name="gallery_images[]" accept="image/jpeg,image/png,image/gif,image/webp" multiple class="sr-only js-preserve-scroll-on-file">
-        <button type="button" @click.prevent="$refs.galleryInput.click()" class="mt-4 flex w-full cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-8 text-center transition hover:border-primary/35 hover:bg-primary/[0.04]">
-            <svg class="h-10 w-10 text-ink/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 16V4m0 0-4 4m4-4 4 4M4 16.5V18a2 2 0 002 2h12a2 2 0 002-2v-1.5" />
-            </svg>
-            <span class="mt-3 text-sm font-medium text-ink/80">{{ __('Drop images here or click to upload') }}</span>
-            <span class="mt-1 text-xs text-ink/55">{{ __('You can select multiple files at once.') }}</span>
-        </button>
-        </div>
-
-        @error('gallery_images')
-            <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
-        @enderror
-        @error('gallery_images.*')
-            <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
-        @enderror
-        @error('remove_gallery_image_ids.*')
-            <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
         @enderror
     </div>
 </div>

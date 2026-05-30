@@ -14,23 +14,10 @@ class RelatedToursForSafariExperience
      */
     public static function get(SafariExperience $safariExperience, int $limit = 2): Collection
     {
-        $linked = $safariExperience->tours()
-            ->active()
-            ->orderByDesc('is_featured')
-            ->orderBy('sort_order')
-            ->limit($limit)
-            ->get();
-
-        if ($linked->count() >= $limit) {
-            return $linked;
-        }
-
         $tokens = self::tokens($safariExperience);
 
         if ($tokens === []) {
-            return $linked->concat(
-                self::fallbackTours($limit, $linked->pluck('id')->all(), $limit - $linked->count())
-            )->values();
+            return self::fallbackTours($limit);
         }
 
         $matched = Tour::query()
@@ -41,20 +28,25 @@ class RelatedToursForSafariExperience
                     $q->orWhere('title', 'like', $pat)->orWhere('description', 'like', $pat);
                 }
             })
-            ->whereNotIn('id', $linked->pluck('id'))
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
-            ->limit($limit - $linked->count())
+            ->limit($limit)
             ->get();
 
-        $combined = $linked->concat($matched)->values();
-        if ($combined->count() >= $limit) {
-            return $combined->take($limit)->values();
+        if ($matched->count() >= $limit) {
+            return $matched;
         }
 
-        return $combined->concat(
-            self::fallbackTours($limit, $combined->pluck('id')->all(), $limit - $combined->count())
-        )->values();
+        $needed = $limit - $matched->count();
+        $more = Tour::query()
+            ->active()
+            ->whereNotIn('id', $matched->pluck('id'))
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->limit($needed)
+            ->get();
+
+        return $matched->concat($more)->values();
     }
 
     /**
@@ -87,16 +79,13 @@ class RelatedToursForSafariExperience
         return array_values(array_unique($out));
     }
 
-    private static function fallbackTours(int $limit, array $excludeIds = [], ?int $take = null): Collection
+    private static function fallbackTours(int $limit): Collection
     {
-        $need = $take ?? $limit;
-
         return Tour::query()
             ->active()
-            ->whereNotIn('id', $excludeIds)
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
-            ->limit($need)
+            ->limit($limit)
             ->get();
     }
 }

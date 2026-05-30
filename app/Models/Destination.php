@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class Destination extends Model
@@ -25,11 +24,6 @@ class Destination extends Model
         return $query->where('is_active', true);
     }
 
-    public function tours(): HasMany
-    {
-        return $this->hasMany(Tour::class);
-    }
-
     /**
      * Image for public cards (e.g. homepage): uploaded file, or a stock fallback by slug when none is set.
      */
@@ -43,7 +37,7 @@ class Destination extends Model
     }
 
     /**
-     * Curated landscape photos when no admin upload exists (Unsplash - hotlink allowed).
+     * Curated landscape photos when no admin upload exists (Unsplash — hotlink allowed).
      *
      * @see https://unsplash.com/license
      */

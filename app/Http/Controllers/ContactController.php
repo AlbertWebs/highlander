@@ -12,7 +12,7 @@ class ContactController extends Controller
     public function store(Request $request): RedirectResponse
     {
         if ($request->filled('hp_website')) {
-            return back()->with('success', __('Thank you, we will be in touch shortly.'));
+            return back()->with('success', __('Thank you—we will be in touch shortly.'));
         }
 
         $data = $request->validate([
@@ -47,6 +47,6 @@ class ContactController extends Controller
             ]);
         }
 
-        return back()->with('success', __('Thank you, we will be in touch shortly.'));
+        return back()->with('success', __('Thank you—we will be in touch shortly.'));
     }
 }

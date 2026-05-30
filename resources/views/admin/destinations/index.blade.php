@@ -38,7 +38,7 @@
                 <h2 id="destinations-admin-heading" class="text-lg font-semibold text-ink">{{ __('Your destinations') }}</h2>
                 <p class="mt-1 text-sm text-ink/60">
                     @if($destinations->total() === 0)
-                        {{ __('No destinations yet - add your first region below.') }}
+                        {{ __('No destinations yet — add your first region below.') }}
                     @else
                         {{ __(':count in this list', ['count' => $destinations->total()]) }}
                         @if(filled($q))

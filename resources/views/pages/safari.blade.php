@@ -1,6 +1,6 @@
 @extends('layouts.site')
 
-@section('title', filled($meta_title ?? null) ? $meta_title : __('Safari').' - '.config('app.name'))
+@section('title', filled($meta_title ?? null) ? $meta_title : __('Safari').' — '.config('app.name'))
 
 @push('meta')
     @include('partials.seo-meta')

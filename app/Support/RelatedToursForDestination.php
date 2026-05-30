@@ -9,111 +9,44 @@ use Illuminate\Support\Collection;
 class RelatedToursForDestination
 {
     /**
-     * All active tours associated with this destination hub (for destination detail pages).
-     * Tours explicitly linked in admin (destination_id) are listed first; the rest follow
-     * keyword patterns on title, description, and slug. Mount Kenya uses the curated hub slug list.
-     *
-     * @return Collection<int, Tour>
+     * Active tours whose title or description match keywords from the destination name/slug,
+     * topped up with featured tours when fewer than $limit matches.
      */
-    public static function allForDestination(Destination $destination, int $max = 200): Collection
+    public static function get(Destination $destination, int $limit = 2): Collection
     {
-        $cap = max(1, $max);
+        $tokens = self::tokens($destination);
 
-        $linked = Tour::query()
-            ->active()
-            ->where('destination_id', $destination->id)
-            ->orderByDesc('is_featured')
-            ->orderBy('sort_order')
-            ->orderBy('title')
-            ->get();
-
-        $heuristic = self::heuristicAllForDestination($destination, $cap);
-        $linkedIds = $linked->pluck('id')->all();
-        $heuristicFiltered = $heuristic->whereNotIn('id', $linkedIds)->values();
-
-        return $linked->concat($heuristicFiltered)->take($cap)->values();
-    }
-
-    /**
-     * @return Collection<int, Tour>
-     */
-    private static function heuristicAllForDestination(Destination $destination, int $max): Collection
-    {
-        $cap = max(1, $max);
-
-        if ($destination->slug === 'mount-kenya') {
-            return Tour::query()
-                ->active()
-                ->whereIn('slug', Tour::mountKenyaDestinationHubSlugs())
-                ->orderByDesc('is_featured')
-                ->orderBy('sort_order')
-                ->orderBy('title')
-                ->limit($cap)
-                ->get();
+        if ($tokens === []) {
+            return self::fallbackTours($limit);
         }
 
-        $patterns = self::destinationKeywordPatterns($destination);
-        if ($patterns === []) {
-            return collect();
-        }
-
-        return Tour::query()
+        $matched = Tour::query()
             ->active()
-            ->where(function ($q) use ($patterns): void {
-                foreach ($patterns as $fragment) {
-                    $fragment = strtolower(trim($fragment));
-                    if ($fragment === '') {
-                        continue;
-                    }
-                    $pat = '%'.$fragment.'%';
-                    $q->orWhereRaw('LOWER(title) like ?', [$pat])
-                        ->orWhereRaw('LOWER(COALESCE(description, "")) like ?', [$pat])
-                        ->orWhereRaw('LOWER(slug) like ?', [$pat]);
+            ->where(function ($q) use ($tokens): void {
+                foreach ($tokens as $t) {
+                    $pat = '%'.$t.'%';
+                    $q->orWhere('title', 'like', $pat)->orWhere('description', 'like', $pat);
                 }
             })
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
-            ->orderBy('title')
-            ->limit($cap)
+            ->limit($limit)
             ->get();
-    }
 
-    /**
-     * Active tours whose title or description match keywords from the destination name/slug,
-     * topped up with featured tours when fewer than $limit matches.
-     *
-     * @return Collection<int, Tour>
-     */
-    public static function get(Destination $destination, int $limit = 2): Collection
-    {
-        $all = self::allForDestination($destination, max($limit, 200));
-        if ($all->isNotEmpty()) {
-            return $all->take(max(1, $limit))->values();
+        if ($matched->count() >= $limit) {
+            return $matched;
         }
 
-        return self::fallbackTours($limit);
-    }
+        $needed = $limit - $matched->count();
+        $more = Tour::query()
+            ->active()
+            ->whereNotIn('id', $matched->pluck('id'))
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->limit($needed)
+            ->get();
 
-    /**
-     * @return list<string>
-     */
-    private static function destinationKeywordPatterns(Destination $destination): array
-    {
-        $slug = strtolower(str_replace('_', '-', trim((string) $destination->slug)));
-
-        $map = [
-            'masai-mara' => ['masai mara', 'maasai mara', 'masai', 'mara', 'serengeti'],
-            'maasai-mara' => ['masai mara', 'maasai mara', 'masai', 'mara', 'serengeti'],
-            'okavango' => ['okavango', 'okavango delta'],
-            'drakensberg' => ['drakensberg'],
-            'zanzibar-coast' => ['zanzibar', 'zanzibar coast'],
-        ];
-
-        if (isset($map[$slug])) {
-            return $map[$slug];
-        }
-
-        return self::tokens($destination);
+        return $matched->concat($more)->values();
     }
 
     /**

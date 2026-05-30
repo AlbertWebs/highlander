@@ -39,7 +39,7 @@
                 <h2 id="mountains-admin-heading" class="text-lg font-semibold text-ink">{{ __('Your mountains') }}</h2>
                 <p class="mt-1 text-sm text-ink/60">
                     @if($mountains->total() === 0)
-                        {{ __('No mountains yet - add your first peak below.') }}
+                        {{ __('No mountains yet — add your first peak below.') }}
                     @else
                         {{ __(':count in this list', ['count' => $mountains->total()]) }}
                         @if(filled($q))
@@ -107,13 +107,13 @@
                             </button>
                         </form>
                     </div>
-                    <div class="flex min-h-[2.75rem] items-center justify-end gap-3 border-t border-secondary/30 bg-surface/30 px-3 py-2">
-                        <a href="{{ route('admin.mountains.edit', $m) }}" class="inline-flex items-center text-xs font-semibold text-primary hover:underline">{{ __('Edit') }}</a>
-                        <span class="h-4 w-px shrink-0 bg-secondary/50" aria-hidden="true"></span>
-                        <form action="{{ route('admin.mountains.destroy', $m) }}" method="post" class="m-0 inline-flex items-center leading-none" onsubmit="return confirm(@json(__('Delete?')));">
+                    <div class="flex flex-wrap gap-2 border-t border-secondary/30 bg-surface/30 px-3 py-2">
+                        <a href="{{ route('admin.mountains.edit', $m) }}" class="text-xs font-semibold text-primary hover:underline">{{ __('Edit') }}</a>
+                        <span class="text-ink/25" aria-hidden="true">|</span>
+                        <form action="{{ route('admin.mountains.destroy', $m) }}" method="post" class="inline" onsubmit="return confirm(@json(__('Delete?')));">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="inline-flex items-center bg-transparent p-0 text-xs font-semibold text-red-600 hover:underline">{{ __('Delete') }}</button>
+                            <button type="submit" class="text-xs font-medium text-red-600 hover:underline">{{ __('Delete') }}</button>
                         </form>
                     </div>
                 </article>

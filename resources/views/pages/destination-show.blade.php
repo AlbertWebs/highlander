@@ -60,10 +60,6 @@
                         </a>
                     </div>
 
-                    @if(filled($destinationIntro ?? ''))
-                        <p class="mt-4 max-w-none text-base leading-relaxed text-ink/85 sm:max-w-3xl">{{ $destinationIntro }}</p>
-                    @endif
-
                     @if(filled($destination->description))
                         <div class="mt-6 rounded-card border border-secondary/30 bg-white/90 p-6 shadow-sm sm:p-8">
                             <div class="prose prose-ink prose-headings:font-serif prose-headings:tracking-tight prose-headings:text-primary prose-h2:text-2xl prose-h3:text-xl prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-site max-w-none text-[1.0625rem] leading-[1.75] text-ink/90 sm:text-lg sm:leading-[1.7]">
@@ -72,7 +68,7 @@
                         </div>
                     @else
                         <div class="mt-6 rounded-card border border-dashed border-secondary/50 bg-surface/80 p-8 text-center">
-                            <p class="text-lg leading-relaxed text-ink/65">{{ __('We are preparing more detail for this destination. Tell us your dates and interests below, we will shape an itinerary around this region.') }}</p>
+                            <p class="text-lg leading-relaxed text-ink/65">{{ __('We are preparing more detail for this destination. Tell us your dates and interests below—we will shape an itinerary around this region.') }}</p>
                         </div>
                     @endif
                 </div>
@@ -81,11 +77,6 @@
                     @include('partials.destination-sidebar', ['destination' => $destination, 'relatedTours' => $relatedTours])
                 </aside>
             </div>
-
-            @include('partials.destination-experiences-list', [
-                'destination' => $destination,
-                'destinationTours' => $destinationTours ?? collect(),
-            ])
 
             <div id="plan-this-destination" class="mt-14 scroll-mt-28 sm:mt-16">
                 <div class="rounded-card border border-secondary/40 bg-gradient-to-br from-white via-surface/80 to-tint-green/25 px-6 py-9 shadow-card sm:px-10 sm:py-11">

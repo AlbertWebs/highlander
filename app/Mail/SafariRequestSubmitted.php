@@ -18,7 +18,7 @@ class SafariRequestSubmitted extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: __('New Safari Request').' - '.$this->safariRequest->full_name,
+            subject: __('New Safari Request').' — '.$this->safariRequest->full_name,
         );
     }
 

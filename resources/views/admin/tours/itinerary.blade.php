@@ -114,7 +114,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-ink">{{ __('Day photo') }}</label>
-                            <p class="mt-0.5 text-xs text-ink/55">{{ __('Optional. JPEG, PNG, WebP or GIF - max 5 MB.') }}</p>
+                            <p class="mt-0.5 text-xs text-ink/55">{{ __('Optional. JPEG, PNG, WebP or GIF — max 5 MB.') }}</p>
                             <input type="hidden" x-bind:name="'days[' + index + '][existing_image]'" x-model="day.existing_image">
                             <input
                                 type="file"

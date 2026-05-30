@@ -2,7 +2,7 @@
 
 
 
-@section('title', filled($meta_title ?? null) ? $meta_title : __('Contact').' - '.config('app.name'))
+@section('title', filled($meta_title ?? null) ? $meta_title : __('Contact').' — '.config('app.name'))
 
 
 
@@ -254,7 +254,7 @@
 
                         <select name="tour_id" class="mt-1 w-full rounded-xl border-secondary/60 bg-white px-4 py-3 shadow-sm focus:border-primary focus:ring-primary">
 
-                            <option value="">-</option>
+                            <option value="">—</option>
 
                             @foreach($tours as $t)
 

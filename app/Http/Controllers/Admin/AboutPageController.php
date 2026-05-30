@@ -42,7 +42,7 @@ class AboutPageController extends Controller
 
         $request->validate([
             'hero_title' => ['required', 'string', 'max:255'],
-            'hero_subtitle' => ['nullable', 'string', 'max:6000'],
+            'hero_subtitle' => ['nullable', 'string', 'max:2000'],
             'hero_image' => ['nullable', 'image', 'max:8192'],
             'remove_hero_image' => ['nullable', 'boolean'],
             'intro_heading' => ['required', 'string', 'max:255'],
@@ -70,13 +70,13 @@ class AboutPageController extends Controller
             'vision_cards' => ['nullable', 'array'],
             'vision_cards.*.id' => ['required', 'integer', 'exists:about_vision_mission_cards,id'],
             'vision_cards.*.title' => ['required', 'string', 'max:255'],
-            'vision_cards.*.body' => ['required', 'string', 'max:12000'],
+            'vision_cards.*.body' => ['required', 'string', 'max:2000'],
             'vision_cards.*.icon' => ['nullable', 'string', 'max:32'],
             'vision_cards.*.is_active' => ['nullable', 'boolean'],
             'core_values' => ['nullable', 'array'],
             'core_values.*.id' => ['required', 'integer', 'exists:about_core_values,id'],
             'core_values.*.title' => ['required', 'string', 'max:255'],
-            'core_values.*.description' => ['nullable', 'string', 'max:6000'],
+            'core_values.*.description' => ['nullable', 'string', 'max:2000'],
             'core_values.*.icon' => ['nullable', 'string', 'max:32'],
             'core_values.*.is_active' => ['nullable', 'boolean'],
             'fleet_subsections' => ['nullable', 'array'],
@@ -101,7 +101,7 @@ class AboutPageController extends Controller
             'sustainability_items' => ['nullable', 'array'],
             'sustainability_items.*.id' => ['required', 'integer', 'exists:about_sustainability_items,id'],
             'sustainability_items.*.title' => ['required', 'string', 'max:255'],
-            'sustainability_items.*.description' => ['nullable', 'string', 'max:6000'],
+            'sustainability_items.*.description' => ['nullable', 'string', 'max:2000'],
             'sustainability_items.*.icon' => ['nullable', 'string', 'max:32'],
             'sustainability_items.*.is_active' => ['nullable', 'boolean'],
         ]);

@@ -31,7 +31,7 @@
     'wide' => true,
 ])
 
-{{-- Content panel below hero - spaced from header image (surface gap) --}}
+{{-- Content panel below hero — spaced from header image (surface gap) --}}
 <section class="relative z-10 mt-6 bg-surface pb-20 sm:mt-8 lg:mt-10" aria-labelledby="mountain-overview-heading">
     <div class="site-gutter-x w-full max-w-none">
         <div class="w-full rounded-t-[1.25rem] border border-secondary/25 bg-gradient-to-b from-white to-surface/90 px-5 py-10 shadow-[0_-8px_40px_rgba(46,46,46,0.07)] sm:rounded-t-[1.75rem] sm:px-10 sm:py-12 lg:px-14">
@@ -69,10 +69,6 @@
                         </a>
                     </div>
 
-                    @if(filled($mountainIntro ?? ''))
-                        <p class="mt-4 max-w-none text-base leading-relaxed text-ink/85 sm:max-w-3xl">{{ $mountainIntro }}</p>
-                    @endif
-
                     @if(filled($mountain->description))
                         <div class="mt-6 rounded-card border border-secondary/30 bg-white/90 p-6 shadow-sm sm:p-8">
                             <div class="prose prose-ink prose-headings:font-serif prose-headings:tracking-tight prose-headings:text-primary prose-h2:text-2xl prose-h3:text-xl prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-site max-w-none text-[1.0625rem] leading-[1.75] text-ink/90 sm:text-lg sm:leading-[1.7]">
@@ -90,37 +86,6 @@
                     @include('partials.mountain-sidebar', ['mountain' => $mountain, 'relatedTours' => $relatedTours])
                 </aside>
             </div>
-
-            @include('partials.mountain-experiences-list', [
-                'mountain' => $mountain,
-                'mountainTours' => $mountainTours ?? collect(),
-            ])
-
-            <section class="mt-10 rounded-2xl border border-secondary/30 bg-white/95 p-6 shadow-sm sm:p-8" aria-labelledby="country-safaris-heading">
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                        <h2 id="country-safaris-heading" class="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-primary">{{ __('Safaris in :country', ['country' => $mountainCountry ?? __('this region')]) }}</h2>
-                        <p class="mt-1 text-sm text-ink/60">{{ __('Safari styles linked to this mountain in the same country.') }}</p>
-                    </div>
-                    <a href="{{ route('safari') }}" class="text-sm font-semibold text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">{{ __('All safari styles') }}</a>
-                </div>
-
-                @if(($countrySafaris ?? collect())->isNotEmpty())
-                    <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        @foreach($countrySafaris as $style)
-                            <a href="{{ route('safari.show', $style) }}" class="group rounded-xl border border-secondary/35 bg-surface/40 p-4 transition hover:border-primary/35 hover:bg-white">
-                                <p class="line-clamp-2 text-sm font-semibold text-ink group-hover:text-primary">{{ $style->title }}</p>
-                                @if(filled($style->duration))
-                                    <p class="mt-1 text-xs font-medium text-ink/55">{{ $style->duration }}</p>
-                                @endif
-                                <p class="mt-2 text-xs font-semibold text-primary">{{ __('Open safari') }} &rarr;</p>
-                            </a>
-                        @endforeach
-                    </div>
-                @else
-                    <p class="mt-4 text-sm text-ink/60">{{ __('No safari styles linked to this mountain yet.') }}</p>
-                @endif
-            </section>
 
             <div id="plan-this-mountain" class="mt-14 scroll-mt-28 sm:mt-16">
                 <div class="rounded-card border border-secondary/40 bg-gradient-to-br from-white via-surface/80 to-tint-green/25 px-6 py-9 shadow-card sm:px-10 sm:py-11">

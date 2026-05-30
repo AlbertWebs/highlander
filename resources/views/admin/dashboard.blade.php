@@ -54,7 +54,7 @@
             @forelse($recentActivity as $log)
                 <li class="border-b border-secondary/30 pb-2">
                     <span class="font-medium text-ink">{{ $log->action }}</span>
-                    @if($log->description)<span class="text-ink/70"> - {{ $log->description }}</span>@endif
+                    @if($log->description)<span class="text-ink/70"> — {{ $log->description }}</span>@endif
                     <span class="block text-xs text-ink/50">{{ $log->created_at->diffForHumans() }} @if($log->user) · {{ $log->user->name }} @endif</span>
                 </li>
             @empty

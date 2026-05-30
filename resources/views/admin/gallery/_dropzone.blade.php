@@ -44,7 +44,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
         </svg>
         <p class="mt-3 text-sm font-medium text-ink">{{ __('Drop images here') }}</p>
-        <p class="mt-1 text-xs text-ink/55">{{ __('or click to browse - up to 30 files') }}</p>
+        <p class="mt-1 text-xs text-ink/55">{{ __('or click to browse — up to 30 files') }}</p>
     </div>
 
     <template x-if="error">

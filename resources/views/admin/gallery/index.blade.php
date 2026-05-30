@@ -46,15 +46,15 @@
             <ul class="grid gap-3 text-sm text-ink/75 sm:grid-cols-2 lg:grid-cols-3">
                 <li class="flex gap-2 rounded-lg bg-surface/80 px-3 py-2">
                     <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-[0.65rem] font-bold text-primary">1</span>
-                    <span><span class="font-medium text-ink">{{ __('Upload') }}</span> - {{ __('bulk below, or add one image with full details.') }}</span>
+                    <span><span class="font-medium text-ink">{{ __('Upload') }}</span> — {{ __('bulk below, or add one image with full details.') }}</span>
                 </li>
                 <li class="flex gap-2 rounded-lg bg-surface/80 px-3 py-2">
                     <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-[0.65rem] font-bold text-primary">2</span>
-                    <span><span class="font-medium text-ink">{{ __('Categorize') }}</span> - {{ __('optional titles and categories help the public filter.') }}</span>
+                    <span><span class="font-medium text-ink">{{ __('Categorize') }}</span> — {{ __('optional titles and categories help the public filter.') }}</span>
                 </li>
                 <li class="flex gap-2 rounded-lg bg-surface/80 px-3 py-2 sm:col-span-2 lg:col-span-1">
                     <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-[0.65rem] font-bold text-primary">3</span>
-                    <span><span class="font-medium text-ink">{{ __('Publish') }}</span> - {{ __('use On/Off to show or hide an image on the public gallery.') }}</span>
+                    <span><span class="font-medium text-ink">{{ __('Publish') }}</span> — {{ __('use On/Off to show or hide an image on the public gallery.') }}</span>
                 </li>
             </ul>
         </div>
@@ -74,7 +74,7 @@
                 <h2 id="gallery-library-heading" class="text-lg font-semibold text-ink">{{ __('Your gallery images') }}</h2>
                 <p class="mt-1 text-sm text-ink/60">
                     @if($items->total() === 0)
-                        {{ __('No images yet - upload above or add a single image.') }}
+                        {{ __('No images yet — upload above or add a single image.') }}
                     @else
                         {{ __(':count images in this list', ['count' => $items->total()]) }}
                         @if(filled($q))
@@ -115,7 +115,7 @@
                     </div>
                     <div class="flex items-start justify-between gap-2 border-t border-secondary/40 p-3 text-sm">
                         <div class="min-w-0">
-                            <p class="truncate font-medium text-ink">{{ $g->title ?: '-' }}</p>
+                            <p class="truncate font-medium text-ink">{{ $g->title ?: '—' }}</p>
                             <p class="mt-0.5 truncate text-xs text-ink/50">#{{ $g->id }}</p>
                             @if($g->category)
                                 <p class="mt-1 truncate text-xs font-medium text-primary">{{ $g->category->name }}</p>

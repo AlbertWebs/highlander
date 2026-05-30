@@ -1,6 +1,6 @@
 @extends('layouts.site')
 
-@section('title', filled($meta_title ?? null) ? $meta_title : config('app.name').' - '.__('Discover Africa'))
+@section('title', filled($meta_title ?? null) ? $meta_title : config('app.name').' — '.__('Discover Africa'))
 
 @push('meta')
     @include('partials.seo-meta')
@@ -178,12 +178,12 @@
         $img2Raw = trim((string) ($welcome_card_2_image_url ?? ''));
         $welcomeImg2 = filled($img2Raw) ? $img2Raw : 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=900&h=1200&q=80';
     @endphp
-    {{-- Same horizontal inset as hero headline (site-gutter-x only - no max-width centering) --}}
+    {{-- Same horizontal inset as hero headline (site-gutter-x only — no max-width centering) --}}
     <div class="site-gutter-x">
         <div
             class="grid grid-cols-1 items-stretch gap-12 md:grid-cols-2 md:gap-x-8 md:gap-y-12 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0 xl:gap-x-12"
         >
-            {{-- Column 1: headline, body, primary CTA - wider on lg for readable measure --}}
+            {{-- Column 1: headline, body, primary CTA — wider on lg for readable measure --}}
             <div class="flex min-w-0 flex-col justify-center md:col-span-2 lg:col-span-5 lg:pr-3 xl:pr-6" data-aos="fade-right" data-aos-duration="800">
                 <h2 class="mb-4 font-serif text-[1.875rem] font-semibold leading-[1.18] tracking-tight text-ink sm:text-[2.125rem] lg:text-[2.375rem] lg:leading-[1.15] xl:text-[2.5rem]">
                     @foreach($welcomeLines as $line)
@@ -278,44 +278,25 @@
             </p>
         </header>
 
-        <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-7 lg:grid-cols-4 lg:gap-6 xl:gap-8">
-            @forelse($featured_tours as $tour)
-                <article
-                    class="group flex min-w-0 flex-col overflow-hidden rounded-3xl border border-secondary/20 bg-white shadow-[0_6px_32px_rgba(46,46,46,0.08)] ring-1 ring-primary/[0.06] transition duration-300 ease-out hover:-translate-y-1 hover:border-primary/25 hover:shadow-[0_20px_48px_rgba(46,46,46,0.14)]"
-                    data-aos="fade-up"
-                    data-aos-duration="800"
-                    data-aos-delay="{{ min(400, 100 * $loop->index) }}"
-                >
-                    <div class="h-1 w-full bg-gradient-to-r from-primary via-accent to-primary opacity-90 transition duration-500 group-hover:opacity-100"></div>
-                    <div class="img-zoom-parent relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-secondary/45 to-primary/[0.12]">
-                        @include('partials.tour-featured-media', ['tour' => $tour])
-                        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-primary/5 opacity-95 transition duration-300 group-hover:from-black/55" aria-hidden="true"></div>
-                        @if($tour->duration_days)
-                            <p class="absolute bottom-3 left-3 rounded-full border border-white/35 bg-black/40 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white backdrop-blur-md">
-                                {{ trans_choice(':count day|:count days', $tour->duration_days, ['count' => $tour->duration_days]) }}
-                            </p>
-                        @endif
+        @php
+            $hasFeaturedByCountry = ! empty($featured_tours_by_country);
+        @endphp
+        @if($hasFeaturedByCountry)
+            @foreach($featured_tours_by_country as $country => $countryTours)
+                <div @class(['mt-12' => $loop->first, 'mt-14 sm:mt-16' => ! $loop->first]) data-aos="fade-up" data-aos-duration="800">
+                    <h3 class="font-serif text-xl font-semibold tracking-tight text-primary sm:text-2xl">
+                        {{ \App\Models\Tour::countryLabel($country) }}
+                    </h3>
+                    <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-7 lg:grid-cols-4 lg:gap-6 xl:gap-8">
+                        @foreach($countryTours as $tour)
+                            @include('partials.featured-tour-card', ['tour' => $tour, 'cardIndex' => $loop->index])
+                        @endforeach
                     </div>
-                    <div class="flex flex-1 flex-col bg-gradient-to-b from-white via-white to-primary/[0.05] px-6 pb-6 pt-5 sm:px-7">
-                        <h3 class="font-serif text-lg font-semibold leading-snug tracking-tight text-ink transition group-hover:text-primary sm:text-[1.125rem]">{{ $tour->title }}</h3>
-                        <p class="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-ink/72">{{ $tour->description }}</p>
-                        {{-- Narrow 4-up cards: stack CTAs from lg; smaller type + padding so labels read cleanly --}}
-                        <div class="mt-5 grid grid-cols-2 gap-2 sm:gap-2.5 lg:grid-cols-1 lg:gap-2">
-                            <a
-                                href="{{ route('plan-my-safari', ['tour' => $tour->slug]) }}"
-                                class="btn-primary min-w-0 w-full justify-center bg-gradient-to-r from-primary via-primary to-accent px-2.5 py-2 text-[0.625rem] leading-tight tracking-[0.04em] hover:brightness-110 sm:px-3 sm:text-[0.6875rem] sm:tracking-[0.05em] lg:py-2 lg:text-xs"
-                            >{{ __('Plan This Safari') }}</a>
-                            <a
-                                href="{{ route('experiences.show', $tour) }}"
-                                class="btn-secondary min-w-0 w-full justify-center px-2.5 py-2 text-[0.625rem] leading-tight tracking-[0.04em] sm:px-3 sm:text-[0.6875rem] sm:tracking-[0.05em] lg:py-2 lg:text-xs"
-                            >{{ __('Explore this Safari') }}</a>
-                        </div>
-                    </div>
-                </article>
-            @empty
-                <p class="col-span-full max-w-prose text-center text-base leading-relaxed text-ink/65 sm:col-span-2 lg:col-span-4">{{ __('Add featured tours from the admin panel.') }}</p>
-            @endforelse
-        </div>
+                </div>
+            @endforeach
+        @else
+            <p class="mt-12 max-w-prose text-center text-base leading-relaxed text-ink/65 lg:text-left">{{ __('Add featured tours with a country (Kenya, Tanzania, or Uganda) from the admin panel.') }}</p>
+        @endif
     </div>
 </section>
 
@@ -336,13 +317,9 @@
             <h2 id="why-choose-heading" class="mt-5 font-serif text-[1.875rem] font-semibold leading-[1.12] tracking-tight text-ink sm:text-[2.35rem] lg:text-[2.65rem]">
                 {{ filled(trim((string) ($why_choose_title ?? ''))) ? $why_choose_title : __('Why Choose Us') }}
             </h2>
-            @php
-                $whyChooseIntro = trim((string) ($why_choose_subtitle ?? ''));
-                if ($whyChooseIntro === '') {
-                    $whyChooseIntro = __('Planning an East Africa journey should feel collaborative, not confusing. We combine deep local knowledge with careful logistics so your safari or mountain trip stays smooth, safe, and true to the landscapes you came to see. Whether it is your first game drive or a return visit, we focus on honest advice, steady execution, and partners who share our respect for the wild.');
-                }
-            @endphp
-            <p class="mx-auto mt-5 max-w-3xl text-pretty text-base leading-relaxed text-ink/70 sm:text-lg">{{ $whyChooseIntro }}</p>
+            @if(filled(trim((string) ($why_choose_subtitle ?? ''))))
+                <p class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ink/70 sm:text-lg">{{ $why_choose_subtitle }}</p>
+            @endif
         </header>
 
         <div class="mx-auto mt-14 grid w-full max-w-none gap-6 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3 lg:gap-7 xl:gap-8">
@@ -362,7 +339,7 @@
                 {{ __('Destinations') }}
             </p>
             <h2 id="popular-destinations-heading" class="mt-4 mb-8 font-serif text-3xl font-semibold tracking-tight text-primary sm:text-4xl">{{ __('Popular Destinations') }}</h2>
-            <p class="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-ink/80 sm:text-base lg:mx-0">{{ __('From savanna to coast - explore places we know by heart.') }}</p>
+            <p class="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-ink/80 sm:text-base lg:mx-0">{{ __('From savanna to coast—explore places we know by heart.') }}</p>
         </header>
     </div>
 
@@ -383,24 +360,13 @@
             <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-secondary/35 to-transparent sm:w-20" aria-hidden="true"></div>
             <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-secondary/35 to-transparent sm:w-20" aria-hidden="true"></div>
             <div class="overflow-hidden pb-2 pt-1">
-                @php
-                    $destMarqueeSec = max(28, min(90, $destinations->count() * 14));
-                @endphp
-                <div
-                    class="destinations-marquee-track flex w-max flex-nowrap gap-0"
-                    style="--hl-dest-marquee-duration: {{ $destMarqueeSec }}s;"
-                >
-                    {{-- Two identical strips, no gap between strips: -50% transform = one seamless loop --}}
-                    <div class="flex shrink-0 gap-6 pe-6">
-                        @foreach($destinations as $dest)
-                            @include('partials.destination-card-home', ['dest' => $dest])
-                        @endforeach
-                    </div>
-                    <div class="flex shrink-0 gap-6 pe-6" aria-hidden="true">
-                        @foreach($destinations as $dest)
-                            @include('partials.destination-card-home', ['dest' => $dest])
-                        @endforeach
-                    </div>
+                <div class="destinations-marquee-track flex w-max gap-6">
+                    @foreach($destinations as $dest)
+                        @include('partials.destination-card-home', ['dest' => $dest])
+                    @endforeach
+                    @foreach($destinations as $dest)
+                        @include('partials.destination-card-home', ['dest' => $dest])
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -409,16 +375,15 @@
 
 @php
     $testimonialSlides = $testimonials->isEmpty() ? collect() : $testimonials->chunk(2);
-    $testimonialSlideCount = max(1, $testimonialSlides->count());
 @endphp
-<section class="overflow-x-hidden bg-white section-divider section-y">
-    <div class="site-gutter-x mx-auto max-w-7xl min-w-0">
-        <h2 class="mx-auto mb-6 max-w-4xl px-2 text-center font-serif text-2xl font-semibold leading-snug text-primary text-balance sm:mb-8 sm:text-4xl sm:leading-tight" data-aos="fade-up" data-aos-duration="800">{{ __('Testimonials') }}</h2>
+<section class="bg-white section-divider section-y">
+    <div class="site-gutter-x mx-auto max-w-7xl">
+        <h2 class="mb-8 text-center font-serif text-3xl font-semibold text-primary sm:text-4xl" data-aos="fade-up" data-aos-duration="800">{{ __('Testimonials') }}</h2>
         @if($testimonials->isEmpty())
             <p class="text-center text-ink/60">{{ __('Testimonials will appear here.') }}</p>
         @else
             <div
-                class="max-w-full min-w-0 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                class="rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 x-data="testimonialCarousel({ total: {{ $testimonialSlides->count() }} })"
                 role="region"
                 tabindex="0"
@@ -440,14 +405,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                         </svg>
                     </button>
-                    <div class="min-w-0 max-w-full flex-1 overflow-hidden">
+                    <div class="min-w-0 flex-1 overflow-hidden">
                         <div
                             class="flex transition-transform duration-500 ease-out motion-reduce:transition-none motion-reduce:duration-0"
-                            :style="`width: {{ $testimonialSlideCount * 100 }}%; transform: translateX(calc(-1 * ${current} * (100% / ${total})))`"
+                            :style="`transform: translateX(-${current * 100}%)`"
                         >
                             @foreach($testimonialSlides as $slide)
-                                <div class="min-w-0 shrink-0 px-1 sm:px-2" style="flex: 0 0 calc(100% / {{ $testimonialSlideCount }})">
-                                    <div class="grid min-w-0 max-w-full grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-6 lg:gap-8">
+                                <div class="min-w-full shrink-0 px-0.5 sm:px-1">
+                                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-6 lg:gap-8">
                                         @foreach($slide as $t)
                                             @php
                                                 $rating = min(5, max(1, (int) ($t->rating ?? 5)));
@@ -455,8 +420,8 @@
                                                 $soloInSlide = $slide->count() === 1;
                                             @endphp
                                             <blockquote @class([
-                                                'card-depth flex min-h-[260px] min-w-0 max-w-full flex-col p-5 sm:min-h-[280px] sm:p-8',
-                                                'sm:col-span-2 sm:mx-auto sm:max-w-xl md:max-w-2xl' => $soloInSlide,
+                                                'card-depth flex min-h-[260px] flex-col p-6 sm:min-h-[280px] sm:p-8',
+                                                'sm:col-span-2 sm:max-w-xl sm:justify-self-center md:max-w-2xl' => $soloInSlide,
                                             ])>
                                                 <div class="flex flex-col gap-5 sm:flex-row sm:gap-6">
                                                     @if($t->image)
@@ -470,7 +435,7 @@
                                                                 <span class="text-lg leading-none {{ $i <= $rating ? 'text-amber-500' : 'text-ink/15' }}" aria-hidden="true">★</span>
                                                             @endfor
                                                         </div>
-                                                        <p class="mt-4 break-words text-base leading-relaxed text-ink/90 sm:text-lg">“{{ $t->quote }}”</p>
+                                                        <p class="mt-4 text-base leading-relaxed text-ink/90 sm:text-lg">“{{ $t->quote }}”</p>
                                                         <footer class="mt-6 border-t border-secondary/35 pt-5">
                                                             <cite class="not-italic font-serif text-lg font-semibold text-primary">{{ $t->name }}</cite>
                                                             @if(filled($t->country))

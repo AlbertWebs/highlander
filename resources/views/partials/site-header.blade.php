@@ -1,51 +1,17 @@
 @php
-    $routeTour = request()->route('tour');
-    $expNavSafari = $routeTour instanceof \App\Models\Tour && $routeTour->nav_safari;
-    $expNavMountain = $routeTour instanceof \App\Models\Tour && $routeTour->nav_mountain_safari;
-    $expNavExplore = $routeTour instanceof \App\Models\Tour && $routeTour->nav_explore_africa;
-
-    $navToursSafari = \App\Models\Tour::query()->active()->forNavBucket(\App\Models\Tour::NAV_SAFARI)->orderByDesc('is_featured')->orderBy('sort_order')->orderBy('title')->limit(12)->get();
-    $navToursMountain = \App\Models\Tour::query()->active()->forNavBucket(\App\Models\Tour::NAV_MOUNTAIN_SAFARI)->orderByDesc('is_featured')->orderBy('sort_order')->orderBy('title')->limit(12)->get();
-    $navToursExplore = \App\Models\Tour::query()->active()->forNavBucket(\App\Models\Tour::NAV_EXPLORE_AFRICA)->orderByDesc('is_featured')->orderBy('sort_order')->orderBy('title')->limit(12)->get();
-
-    $mountKenyaDestination = \App\Models\Destination::query()->active()->where('slug', 'mount-kenya')->first();
-    $destinationsForExploreNav = \App\Models\Destination::query()->active();
-    if ($mountKenyaDestination !== null) {
-        $destinationsForExploreNav->where('slug', '!=', 'mount-kenya');
-    }
-
-    $navExploreChildren = collect([['label' => __('All destinations'), 'url' => route('explore-africa')]]);
-    if ($mountKenyaDestination !== null) {
-        $navExploreChildren->push([
-            'label' => __('Mount Kenya'),
-            'url' => route('explore-africa.show', $mountKenyaDestination),
-        ]);
-    }
-    $navExploreChildren = $navExploreChildren
+    $navExploreChildren = collect([['label' => __('All destinations'), 'url' => route('explore-africa')]])
         ->merge(
-            $destinationsForExploreNav->orderByDesc('sort_order')->limit(8)->get()->map(fn ($d) => [
+            \App\Models\Destination::query()->active()->orderByDesc('sort_order')->limit(8)->get()->map(fn ($d) => [
                 'label' => $d->name,
                 'url' => route('explore-africa.show', $d),
-            ])
-        )
-        ->merge(
-            $navToursExplore->map(fn (\App\Models\Tour $tour) => [
-                'label' => $tour->title,
-                'url' => route('experiences.show', $tour),
             ])
         );
 
     $navMountainsChildren = collect([['label' => __('All mountains'), 'url' => route('mountains')]])
         ->merge(
-            \App\Models\Mountain::forMainMenu()->map(fn ($m) => [
+            \App\Models\Mountain::query()->active()->orderBy('name')->limit(8)->get()->map(fn ($m) => [
                 'label' => $m->name,
                 'url' => route('mountains.show', $m),
-            ])
-        )
-        ->merge(
-            $navToursMountain->map(fn (\App\Models\Tour $tour) => [
-                'label' => $tour->title,
-                'url' => route('experiences.show', $tour),
             ])
         )
         ->push(['label' => __('Plan your safari'), 'url' => route('plan-my-safari')]);
@@ -56,14 +22,11 @@
                 'label' => $s->title,
                 'url' => route('safari.show', $s),
             ])
-        )
-        ->merge(
-            $navToursSafari->map(fn (\App\Models\Tour $tour) => [
-                'label' => $tour->title,
-                'url' => route('experiences.show', $tour),
-            ])
-        )
-        ->push(['label' => __('Plan your safari'), 'url' => route('plan-my-safari')]);
+        );
+    foreach (\App\Models\Tour::query()->active()->featured()->orderBy('sort_order')->limit(6)->get() as $tour) {
+        $navSafariChildren->push(['label' => $tour->title, 'url' => route('experiences.show', $tour)]);
+    }
+    $navSafariChildren->push(['label' => __('Plan your safari'), 'url' => route('plan-my-safari')]);
 
     $nav = [
         ['type' => 'link', 'label' => __('Home'), 'route' => 'home'],
@@ -181,15 +144,10 @@
                 @foreach($nav as $item)
                     @if(($item['type'] ?? 'link') === 'dropdown')
                         @php
-                            $navActive = match ($item['route'] ?? '') {
-                                'safari' => request()->routeIs('safari') || request()->routeIs('safari.show')
-                                    || (request()->routeIs('experiences.show') && $expNavSafari),
-                                'mountains' => request()->routeIs('mountains') || request()->routeIs('mountains.show')
-                                    || (request()->routeIs('experiences.show') && $expNavMountain),
-                                'explore-africa' => request()->routeIs('explore-africa') || request()->routeIs('explore-africa.show')
-                                    || (request()->routeIs('experiences.show') && $expNavExplore),
-                                default => request()->routeIs($item['route'] ?? ''),
-                            };
+                            $navActive = request()->routeIs($item['route'])
+                                || ($item['route'] === 'safari' && request()->routeIs('experiences.show'))
+                                || ($item['route'] === 'mountains' && request()->routeIs('mountains.show'))
+                                || ($item['route'] === 'explore-africa' && request()->routeIs('explore-africa.show'));
                             $letter = mb_strtoupper(mb_substr($item['label'], 0, 1));
                         @endphp
                         <div
@@ -311,15 +269,10 @@
                 @foreach($nav as $item)
                     @if(($item['type'] ?? 'link') === 'dropdown')
                         @php
-                            $mActive = match ($item['route'] ?? '') {
-                                'safari' => request()->routeIs('safari') || request()->routeIs('safari.show')
-                                    || (request()->routeIs('experiences.show') && $expNavSafari),
-                                'mountains' => request()->routeIs('mountains') || request()->routeIs('mountains.show')
-                                    || (request()->routeIs('experiences.show') && $expNavMountain),
-                                'explore-africa' => request()->routeIs('explore-africa') || request()->routeIs('explore-africa.show')
-                                    || (request()->routeIs('experiences.show') && $expNavExplore),
-                                default => request()->routeIs($item['route'] ?? ''),
-                            };
+                            $mActive = request()->routeIs($item['route'])
+                                || ($item['route'] === 'safari' && request()->routeIs('experiences.show'))
+                                || ($item['route'] === 'mountains' && request()->routeIs('mountains.show'))
+                                || ($item['route'] === 'explore-africa' && request()->routeIs('explore-africa.show'));
                             $mLetter = mb_strtoupper(mb_substr($item['label'], 0, 1));
                         @endphp
                         <div x-data="{ sub: false }" class="flex flex-col border-b border-white/10 last:border-b-0">

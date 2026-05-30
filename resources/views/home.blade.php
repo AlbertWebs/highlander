@@ -283,13 +283,74 @@
         @endphp
         @if($hasFeaturedByCountry)
             @foreach($featured_tours_by_country as $country => $countryTours)
-                <div @class(['mt-12' => $loop->first, 'mt-14 sm:mt-16' => ! $loop->first]) data-aos="fade-up" data-aos-duration="800">
-                    <h3 class="font-serif text-xl font-semibold tracking-tight text-primary sm:text-2xl">
-                        {{ \App\Models\Tour::countryLabel($country) }}
-                    </h3>
+                @php
+                    $countryMeta = \App\Models\Tour::countryHeadingMeta($country);
+                    $featuredInitial = \App\Models\Tour::HOMEPAGE_FEATURED_INITIAL;
+                    $hasMoreTours = $countryTours->count() > $featuredInitial;
+                @endphp
+                <div
+                    @class(['mt-12' => $loop->first, 'mt-14 sm:mt-16' => ! $loop->first])
+                    data-aos="fade-up"
+                    data-aos-duration="800"
+                    x-data="{ expanded: false }"
+                >
+                    <div class="flex flex-col gap-5 border-b border-primary/20 pb-6 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
+                        <div class="min-w-0 flex-1">
+                            <p class="inline-flex items-center gap-2 text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-primary">
+                                <span class="h-1 w-6 rounded-full bg-gradient-to-r from-primary to-accent" aria-hidden="true"></span>
+                                {{ $countryMeta['eyebrow'] }}
+                            </p>
+                            <h3 class="mt-3 font-serif text-[1.625rem] font-semibold leading-[1.12] tracking-tight text-ink sm:text-[2rem] lg:text-[2.125rem]">
+                                <span class="bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent">{{ $countryMeta['title'] }}</span>
+                            </h3>
+                            @if(filled($countryMeta['subtitle']))
+                                <p class="mt-3 max-w-2xl text-sm leading-relaxed text-ink/70 sm:text-[0.9375rem]">
+                                    {{ $countryMeta['subtitle'] }}
+                                </p>
+                            @endif
+                            <p class="mt-2 text-xs font-medium tabular-nums text-ink/45">
+                                {{ trans_choice(':count experience|:count experiences', $countryTours->count(), ['count' => $countryTours->count()]) }}
+                            </p>
+                        </div>
+                        @if($hasMoreTours)
+                            <button
+                                type="button"
+                                class="btn-outline inline-flex shrink-0 items-center gap-2 self-start px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] sm:ml-auto sm:self-end"
+                                @click="expanded = !expanded"
+                                :aria-expanded="expanded"
+                            >
+                                <span x-text="expanded ? @js($countryMeta['show_less']) : @js($countryMeta['show_more'])"></span>
+                                <svg
+                                    class="h-4 w-4 shrink-0 transition-transform duration-300"
+                                    :class="expanded && 'rotate-180'"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                        @endif
+                    </div>
                     <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-7 lg:grid-cols-4 lg:gap-6 xl:gap-8">
                         @foreach($countryTours as $tour)
-                            @include('partials.featured-tour-card', ['tour' => $tour, 'cardIndex' => $loop->index])
+                            <div
+                                @if($loop->index >= $featuredInitial)
+                                    x-show="expanded"
+                                    x-cloak
+                                    x-transition:enter="transition ease-out duration-300"
+                                    x-transition:enter-start="opacity-0 translate-y-2"
+                                    x-transition:enter-end="opacity-100 translate-y-0"
+                                @endif
+                            >
+                                @include('partials.featured-tour-card', [
+                                    'tour' => $tour,
+                                    'cardIndex' => $loop->index,
+                                    'showPrice' => false,
+                                ])
+                            </div>
                         @endforeach
                     </div>
                 </div>

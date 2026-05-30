@@ -96,6 +96,8 @@ class Tour extends Model
         };
     }
 
+    public const HOMEPAGE_FEATURED_INITIAL = 4;
+
     public static function countryLabel(string $country): string
     {
         return match ($country) {
@@ -103,6 +105,43 @@ class Tour extends Model
             self::COUNTRY_TANZANIA => __('Tanzania'),
             self::COUNTRY_UGANDA => __('Uganda'),
             default => ucfirst($country),
+        };
+    }
+
+    /**
+     * @return array{eyebrow: string, title: string, subtitle: string, show_more: string, show_less: string}
+     */
+    public static function countryHeadingMeta(string $country): array
+    {
+        return match ($country) {
+            self::COUNTRY_KENYA => [
+                'eyebrow' => __('Kenya'),
+                'title' => __('Kenyan Safaris'),
+                'subtitle' => __('Savanna wildlife, Mount Kenya treks, and curated journeys across the Rift Valley.'),
+                'show_more' => __('Show more from Kenya'),
+                'show_less' => __('Show fewer'),
+            ],
+            self::COUNTRY_TANZANIA => [
+                'eyebrow' => __('Tanzania'),
+                'title' => __('Tanzania'),
+                'subtitle' => __('Serengeti plains, Ngorongoro, Kilimanjaro ascents, and Indian Ocean extensions.'),
+                'show_more' => __('Show more from Tanzania'),
+                'show_less' => __('Show fewer'),
+            ],
+            self::COUNTRY_UGANDA => [
+                'eyebrow' => __('Uganda'),
+                'title' => __('Uganda'),
+                'subtitle' => __('Gorilla forests, Nile adventures, and classic savanna in the Pearl of Africa.'),
+                'show_more' => __('Show more from Uganda'),
+                'show_less' => __('Show fewer'),
+            ],
+            default => [
+                'eyebrow' => ucfirst($country),
+                'title' => ucfirst($country),
+                'subtitle' => '',
+                'show_more' => __('Show more'),
+                'show_less' => __('Show fewer'),
+            ],
         };
     }
 

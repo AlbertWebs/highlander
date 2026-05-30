@@ -8,7 +8,7 @@
     <div class="img-zoom-parent relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-secondary/50 to-primary/20">
         @include('partials.tour-featured-media', ['tour' => $tour])
         <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-primary/10 opacity-90 transition duration-300 group-hover:from-black/50 group-hover:via-transparent group-hover:to-primary/20"></div>
-        @if($tour->price)
+        @if(($showPrice ?? false) && $tour->price)
             <p class="absolute bottom-3 left-3 rounded-full border border-white/30 bg-primary px-3 py-1 text-xs font-bold tabular-nums text-white shadow-lg ring-2 ring-primary/30">{{ __('From') }} ${{ number_format($tour->price, 0) }}</p>
         @endif
     </div>

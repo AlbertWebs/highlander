@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Pagination\LengthAwarePaginator as Paginator;
 use Illuminate\Support\Facades\Storage;
 
 class SafariExperience extends Model
@@ -25,9 +29,28 @@ class SafariExperience extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function (self $safari): void {
+            if (filled($safari->country)) {
+                $safari->country = strtolower((string) $safari->country);
+            }
+        });
+    }
+
     public function mountain(): BelongsTo
     {
         return $this->belongsTo(Mountain::class);
+    }
+
+    public function tours(): BelongsToMany
+    {
+        return $this->belongsToMany(Tour::class)->withTimestamps();
+    }
+
+    public function galleryImages(): HasMany
+    {
+        return $this->hasMany(SafariExperienceImage::class)->orderBy('sort_order');
     }
 
     public function scopeActive($query)
@@ -82,7 +105,7 @@ class SafariExperience extends Model
     public function homepageFeaturedSortKey(): array
     {
         $countryOrder = array_search(
-            strtolower((string) ($this->country ?? '')),
+            self::resolveHomepageCountry($this) ?? '',
             Tour::HOMEPAGE_COUNTRIES,
             true
         );
@@ -96,28 +119,92 @@ class SafariExperience extends Model
     }
 
     /**
+     * Country code for homepage grouping (kenya / tanzania / uganda), or null if unknown.
+     */
+    public static function resolveHomepageCountry(self $safari): ?string
+    {
+        $stored = strtolower(trim((string) ($safari->country ?? '')));
+        if (in_array($stored, Tour::HOMEPAGE_COUNTRIES, true)) {
+            return $stored;
+        }
+
+        return self::inferCountryFromText(
+            (string) $safari->title,
+            (string) $safari->slug,
+            (string) ($safari->description ?? '')
+        );
+    }
+
+    /**
+     * Active safari experiences from Admin → Safari, grouped by country.
+     *
      * @return array<string, \Illuminate\Support\Collection<int, self>>
      */
     public static function featuredForHomepageByCountry(): array
     {
         $safaris = self::query()
             ->active()
-            ->whereIn('country', Tour::HOMEPAGE_COUNTRIES)
-            ->get()
-            ->sortBy(fn (self $safari) => $safari->homepageFeaturedSortKey())
-            ->values();
+            ->orderBy('sort_order')
+            ->get();
 
         $grouped = [];
         foreach (Tour::HOMEPAGE_COUNTRIES as $country) {
-            $countrySafaris = $safaris->filter(
-                fn (self $s) => strtolower((string) $s->country) === $country
-            )->values();
+            $countrySafaris = $safaris
+                ->filter(fn (self $safari) => self::resolveHomepageCountry($safari) === $country)
+                ->sortBy(fn (self $safari) => $safari->homepageFeaturedSortKey())
+                ->values();
+
             if ($countrySafaris->isNotEmpty()) {
                 $grouped[$country] = $countrySafaris;
             }
         }
 
         return $grouped;
+    }
+
+    /**
+     * Active safari experiences for a country (Admin → Safari), sorted for display.
+     *
+     * @return \Illuminate\Support\Collection<int, self>
+     */
+    public static function activeForCountry(string $country): \Illuminate\Support\Collection
+    {
+        if (! in_array($country, Tour::HOMEPAGE_COUNTRIES, true)) {
+            return collect();
+        }
+
+        return self::query()
+            ->active()
+            ->orderBy('sort_order')
+            ->orderByDesc('id')
+            ->get()
+            ->filter(fn (self $safari) => self::resolveHomepageCountry($safari) === $country)
+            ->sortBy(fn (self $safari) => $safari->homepageFeaturedSortKey())
+            ->values();
+    }
+
+    public static function paginateActiveForCountry(?string $country, int $perPage = 12): LengthAwarePaginator
+    {
+        $query = self::query()->active()->orderBy('sort_order')->orderByDesc('id');
+
+        if ($country === null) {
+            return $query->paginate($perPage)->withQueryString();
+        }
+
+        $filtered = $query->get()
+            ->filter(fn (self $safari) => self::resolveHomepageCountry($safari) === $country)
+            ->values();
+
+        $page = max(1, (int) request()->query('page', 1));
+        $items = $filtered->slice(($page - 1) * $perPage, $perPage)->values();
+
+        return new Paginator(
+            $items,
+            $filtered->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
     }
 
     public static function inferCountryFromText(string $title, string $slug = '', string $description = ''): ?string

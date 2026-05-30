@@ -65,6 +65,9 @@
                 <a href="{{ route('admin.safari.create') }}" class="inline-flex items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-ink shadow-sm ring-1 ring-black/[0.04] hover:bg-accent/90">
                     {{ __('Add safari experience') }}
                 </a>
+                <a href="{{ route('admin.tours.create') }}" class="inline-flex items-center justify-center rounded-xl border border-secondary/60 bg-white px-4 py-2.5 text-sm font-semibold text-primary shadow-sm hover:bg-surface">
+                    {{ __('Create itinerary') }}
+                </a>
             </div>
         </div>
 
@@ -99,6 +102,14 @@
                             <p class="mt-1 text-xs font-medium text-primary/90">{{ $s->duration }}</p>
                         @endif
                         <p class="mt-1 line-clamp-2 text-xs text-ink/55">{{ \Illuminate\Support\Str::limit(strip_tags((string) $s->description), 120) }}</p>
+                        <p class="mt-2 text-xs text-ink/60">
+                            {{ trans_choice(':count linked itinerary|:count linked itineraries', $s->tours->count(), ['count' => $s->tours->count()]) }}
+                        </p>
+                        @if($s->tours->isNotEmpty())
+                            <p class="mt-1 line-clamp-2 text-xs text-ink/50">
+                                {{ $s->tours->take(2)->pluck('title')->implode(' · ') }}
+                            </p>
+                        @endif
                         <form method="POST" action="{{ route('admin.safari.toggle', $s) }}" class="mt-3" title="{{ __('Toggle visibility on public site') }}">
                             @csrf
                             @method('PATCH')

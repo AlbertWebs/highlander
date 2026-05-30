@@ -24,7 +24,9 @@ use App\Support\RelatedToursForDestination;
 use App\Support\RelatedToursForMountain;
 use App\Support\RelatedToursForSafariExperience;
 use App\Support\RelatedToursForTour;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator as Paginator;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -126,14 +128,58 @@ class PageController extends Controller
 
         $relatedTours = RelatedToursForDestination::get($destination, 2);
 
-        return view('pages.destination-show', compact('destination', 'pageTitle', 'meta_title', 'meta_description', 'relatedTours'));
+        $countryCode = $destination->countryCodeForSafaris();
+        $countrySafaris = $countryCode
+            ? SafariExperience::activeForCountry($countryCode)
+            : collect();
+        $countryMeta = $countryCode ? Tour::countryHeadingMeta($countryCode) : null;
+
+        return view('pages.destination-show', compact(
+            'destination',
+            'pageTitle',
+            'meta_title',
+            'meta_description',
+            'relatedTours',
+            'countrySafaris',
+            'countryCode',
+            'countryMeta',
+        ));
     }
 
     public function safari(Request $request): View
     {
-        $items = SafariExperience::query()->active()->orderBy('sort_order')->paginate(12);
+        $country = strtolower((string) $request->query('country', ''));
+        $countryFilter = in_array($country, Tour::HOMEPAGE_COUNTRIES, true) ? $country : null;
 
-        return view('pages.safari', array_merge($this->seo('safari'), compact('items')));
+        $items = $this->paginateSafarisForCountry($countryFilter, 12);
+
+        $countryMeta = $countryFilter ? Tour::countryHeadingMeta($countryFilter) : null;
+
+        return view('pages.safari', array_merge($this->seo('safari'), compact('items', 'countryFilter', 'countryMeta')));
+    }
+
+    protected function paginateSafarisForCountry(?string $country, int $perPage = 12): LengthAwarePaginator
+    {
+        $query = SafariExperience::query()->active()->orderBy('sort_order')->orderByDesc('id');
+
+        if ($country === null) {
+            return $query->paginate($perPage)->withQueryString();
+        }
+
+        $filtered = $query->get()
+            ->filter(fn (SafariExperience $safari) => SafariExperience::resolveHomepageCountry($safari) === $country)
+            ->values();
+
+        $page = max(1, (int) request()->query('page', 1));
+        $items = $filtered->slice(($page - 1) * $perPage, $perPage)->values();
+
+        return new Paginator(
+            $items,
+            $filtered->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
     }
 
     public function safariExperienceShow(SafariExperience $safariExperience): View
@@ -142,12 +188,34 @@ class PageController extends Controller
             abort(404);
         }
 
+        $safariExperience->load('galleryImages:id,safari_experience_id,image,sort_order');
+
         $pageTitle = $safariExperience->title.' — '.config('app.name');
         $meta_title = $safariExperience->title;
         $meta_description = Str::limit(strip_tags((string) ($safariExperience->description ?? '')), 160)
             ?: __('Discover :name — safari styles with Highlanders Nature Trails.', ['name' => $safariExperience->title]);
 
-        $relatedTours = RelatedToursForSafariExperience::get($safariExperience, 2);
+        $relatedTours = $safariExperience->tours()
+            ->active()
+            ->with(['itineraryDays' => fn ($query) => $query->orderBy('day_number')])
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->get()
+            ->sortBy(function (Tour $tour): array {
+                if (preg_match('/\bday\s*(\d+)\b/i', (string) $tour->title, $m) === 1) {
+                    return [0, (int) $m[1], $tour->title];
+                }
+
+                return [1, 9999, $tour->title];
+            })
+            ->values();
+
+        if ($relatedTours->isEmpty()) {
+            $relatedTours = RelatedToursForSafariExperience::get($safariExperience, 6)
+                ->load(['itineraryDays' => fn ($query) => $query->orderBy('day_number')]);
+        }
+
+        $relatedTours = RelatedToursForSafariExperience::displayToursForSafariPage($safariExperience, $relatedTours);
 
         return view('pages.safari-experience-show', compact('safariExperience', 'pageTitle', 'meta_title', 'meta_description', 'relatedTours'));
     }

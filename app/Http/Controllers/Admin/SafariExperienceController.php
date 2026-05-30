@@ -20,6 +20,7 @@ class SafariExperienceController extends Controller
     {
         $q = $request->string('q')->trim();
         $safariExperiences = SafariExperience::query()
+            ->with(['tours:id,title,slug'])
             ->when($q, fn ($query) => $query->where('title', 'like', '%'.$q.'%'))
             ->orderBy('sort_order')
             ->orderByDesc('id')
@@ -43,7 +44,9 @@ class SafariExperienceController extends Controller
 
     public function create(): View
     {
-        return view('admin.safari.create');
+        return view('admin.safari.create', [
+            'tours' => $this->tourOptions(),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -63,7 +66,12 @@ class SafariExperienceController extends Controller
 
     public function edit(SafariExperience $safariExperience): View
     {
-        return view('admin.safari.edit', compact('safariExperience'));
+        $safariExperience->load('tours:id');
+
+        return view('admin.safari.edit', [
+            'safariExperience' => $safariExperience,
+            'tours' => $this->tourOptions($safariExperience),
+        ]);
     }
 
     public function update(Request $request, SafariExperience $safariExperience): RedirectResponse
@@ -80,6 +88,7 @@ class SafariExperienceController extends Controller
             $data['image'] = $request->file('image')->store('safari', 'public');
         }
         $safariExperience->update($data);
+        $safariExperience->tours()->sync($request->input('tour_ids', []));
         ActivityLog::record('safari.updated', $safariExperience->title, $safariExperience);
         $this->forgetHomeCache();
 
@@ -115,6 +124,8 @@ class SafariExperienceController extends Controller
             'country' => ['nullable', 'string', Rule::in(Tour::HOMEPAGE_COUNTRIES)],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:65535'],
             'image' => ['nullable', 'image', 'max:5120'],
+            'tour_ids' => ['nullable', 'array'],
+            'tour_ids.*' => ['integer', 'exists:tours,id'],
         ]);
 
         if (empty($data['country'])) {
@@ -124,9 +135,28 @@ class SafariExperienceController extends Controller
         return $data;
     }
 
+    protected function tourOptions(?SafariExperience $safariExperience = null)
+    {
+        return Tour::query()
+            ->active()
+            ->where(function ($query) use ($safariExperience): void {
+                $query->whereDoesntHave('safariExperiences');
+
+                if ($safariExperience instanceof SafariExperience) {
+                    $query->orWhereHas('safariExperiences', function ($linked) use ($safariExperience): void {
+                        $linked->whereKey($safariExperience->getKey());
+                    });
+                }
+            })
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->get(['id', 'title', 'slug', 'duration_days']);
+    }
+
     protected function forgetHomeCache(): void
     {
-        foreach (['home_page_v3', 'home_page_v4', 'home_page_v5', 'home_page_v6', 'home_page_v7'] as $key) {
+        foreach (['home_page_v3', 'home_page_v4', 'home_page_v5', 'home_page_v6', 'home_page_v7', 'home_page_v8', 'home_page_v9', 'home_page_v10', 'home_page_v11', 'home_page_v12'] as $key) {
             Cache::forget($key);
         }
     }

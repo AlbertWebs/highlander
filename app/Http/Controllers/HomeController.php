@@ -17,7 +17,7 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        $data = Cache::remember('home_page_v7', 600, function () {
+        $data = Cache::remember('home_page_v12', 600, function () {
             $defaultMp4 = 'https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_30fps.mp4';
             $defaultVimeoPage = 'https://vimeo.com/1177988644';
             $heroVideoSource = SiteSetting::getValue('hero_video_source', 'vimeo');
@@ -87,9 +87,9 @@ class HomeController extends Controller
                 'cta_body' => SiteSetting::getValue('cta_body', 'Speak with our travel designers and build an itinerary tailored to you.'),
                 'cta_button_label' => SiteSetting::getValue('cta_button_label', ''),
                 'cta_button_url' => SiteSetting::getValue('cta_button_url', ''),
-                'why_choose_eyebrow' => SiteSetting::getValue('why_choose_eyebrow', ''),
-                'why_choose_title' => SiteSetting::getValue('why_choose_title', ''),
-                'why_choose_subtitle' => SiteSetting::getValue('why_choose_subtitle', ''),
+                'why_choose_eyebrow' => self::sanitizeWhyChooseText(SiteSetting::getValue('why_choose_eyebrow', __('The Highlanders difference'))),
+                'why_choose_title' => self::sanitizeWhyChooseText(SiteSetting::getValue('why_choose_title', __('Why travellers choose us'))),
+                'why_choose_subtitle' => self::sanitizeWhyChooseText(SiteSetting::getValue('why_choose_subtitle', __('We design private safaris and treks across Kenya, Tanzania, and Uganda around your dates, pace, and interests. One team from first enquiry to the last night in camp.'))),
                 'why_choose_items' => self::normalizeWhyChooseItems(SiteSetting::getValue('why_choose_items', null)),
                 'social_facebook' => SiteSetting::getValue('social_facebook', ''),
                 'social_instagram' => SiteSetting::getValue('social_instagram', ''),
@@ -186,12 +186,44 @@ class HomeController extends Controller
     /**
      * @return list<array{icon: string, title: string, body: string}>
      */
+    protected static function sanitizeWhyChooseText(string $text): string
+    {
+        $text = str_replace(['—', '–'], ', ', $text);
+        $text = preg_replace('/\s*,\s*,+/', ', ', $text) ?? $text;
+        $text = preg_replace('/\s{2,}/', ' ', $text) ?? $text;
+
+        return trim($text);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected static function whyChooseShortBodiesByTitle(): array
+    {
+        return [
+            'East Africa specialists' => __('Local guides and planners across Kenya, Tanzania, and Uganda.'),
+            'Bespoke pacing & design' => __('Day-by-day plans built around your dates, fitness, and budget.'),
+            'Safety you can feel' => __('Vetted vehicles, lodges, and honest briefings before you travel.'),
+            'Conservation-minded travel' => __('Partners who employ locally and respect fragile habitats.'),
+            'Transparent planning' => __('Clear pricing, drive times, and season advice upfront.'),
+            'Support before & after' => __('One contact from enquiry through travel and follow-up.'),
+        ];
+    }
+
+    /**
+     * @return list<array{icon: string, title: string, body: string}>
+     */
     protected static function normalizeWhyChooseItems(mixed $raw): array
     {
+        $shortBodies = self::whyChooseShortBodiesByTitle();
+
         $defaults = [
-            ['icon' => '', 'title' => __('Local expertise'), 'body' => __('Guides who grew up on this land.')],
-            ['icon' => '', 'title' => __('Safety first'), 'body' => __('Vetted partners and clear protocols.')],
-            ['icon' => '', 'title' => __('Tailored luxury'), 'body' => __('No cookie-cutter packages.')],
+            ['icon' => '', 'title' => __('East Africa specialists'), 'body' => $shortBodies['East Africa specialists']],
+            ['icon' => '', 'title' => __('Bespoke pacing & design'), 'body' => $shortBodies['Bespoke pacing & design']],
+            ['icon' => '', 'title' => __('Safety you can feel'), 'body' => $shortBodies['Safety you can feel']],
+            ['icon' => '', 'title' => __('Conservation-minded travel'), 'body' => $shortBodies['Conservation-minded travel']],
+            ['icon' => '', 'title' => __('Transparent planning'), 'body' => $shortBodies['Transparent planning']],
+            ['icon' => '', 'title' => __('Support before & after'), 'body' => $shortBodies['Support before & after']],
         ];
 
         if (! is_array($raw) || count($raw) === 0) {
@@ -203,7 +235,7 @@ class HomeController extends Controller
             if (! is_array($row)) {
                 continue;
             }
-            $title = trim((string) ($row['title'] ?? ''));
+            $title = self::sanitizeWhyChooseText(trim((string) ($row['title'] ?? '')));
             if ($title === '') {
                 continue;
             }
@@ -211,10 +243,14 @@ class HomeController extends Controller
             if (mb_strlen($icon) > 32) {
                 $icon = mb_substr($icon, 0, 32);
             }
+            $body = self::sanitizeWhyChooseText(trim((string) ($row['body'] ?? '')));
+            if (isset($shortBodies[$title])) {
+                $body = $shortBodies[$title];
+            }
             $out[] = [
                 'icon' => $icon,
                 'title' => $title,
-                'body' => trim((string) ($row['body'] ?? '')),
+                'body' => $body,
             ];
         }
 

@@ -8,8 +8,8 @@
 
 @section('content')
 @include('partials.page-hero', [
-    'title' => __('Safari'),
-    'subtitle' => __('Wildlife encounters in iconic reserves.'),
+    'title' => filled($countryMeta['title'] ?? null) ? $countryMeta['title'] : __('Safari'),
+    'subtitle' => filled($countryMeta['subtitle'] ?? null) ? $countryMeta['subtitle'] : __('Wildlife encounters in iconic reserves.'),
     'wide' => true,
 ])
 

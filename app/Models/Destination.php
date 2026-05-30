@@ -63,4 +63,22 @@ class Destination extends Model
 
         return $map[$key] ?? 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1200&q=80';
     }
+
+    /**
+     * Homepage country code (kenya / tanzania / uganda) when this destination maps to a country hub.
+     */
+    public function countryCodeForSafaris(): ?string
+    {
+        $slug = strtolower(str_replace('_', '-', trim((string) $this->slug)));
+
+        if (in_array($slug, Tour::HOMEPAGE_COUNTRIES, true)) {
+            return $slug;
+        }
+
+        return SafariExperience::inferCountryFromText(
+            (string) $this->name,
+            $slug,
+            strip_tags((string) ($this->description ?? ''))
+        );
+    }
 }

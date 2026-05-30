@@ -9,15 +9,27 @@ use Illuminate\Support\Collection;
 class RelatedToursForSafariExperience
 {
     /**
-     * Active tours whose title or description match keywords from the safari style title/slug,
-     * topped up with featured tours when fewer than $limit matches.
+     * Linked tours from admin pivot first; keyword matches and featured tours fill remaining slots.
      */
     public static function get(SafariExperience $safariExperience, int $limit = 2): Collection
     {
+        $linked = $safariExperience->tours()
+            ->active()
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->limit($limit)
+            ->get();
+
+        if ($linked->count() >= $limit) {
+            return $linked;
+        }
+
         $tokens = self::tokens($safariExperience);
 
         if ($tokens === []) {
-            return self::fallbackTours($limit);
+            return $linked->concat(
+                self::fallbackTours($limit, $linked->pluck('id')->all(), $limit - $linked->count())
+            )->values();
         }
 
         $matched = Tour::query()
@@ -28,25 +40,20 @@ class RelatedToursForSafariExperience
                     $q->orWhere('title', 'like', $pat)->orWhere('description', 'like', $pat);
                 }
             })
+            ->whereNotIn('id', $linked->pluck('id'))
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
-            ->limit($limit)
+            ->limit($limit - $linked->count())
             ->get();
 
-        if ($matched->count() >= $limit) {
-            return $matched;
+        $combined = $linked->concat($matched)->values();
+        if ($combined->count() >= $limit) {
+            return $combined->take($limit)->values();
         }
 
-        $needed = $limit - $matched->count();
-        $more = Tour::query()
-            ->active()
-            ->whereNotIn('id', $matched->pluck('id'))
-            ->orderByDesc('is_featured')
-            ->orderBy('sort_order')
-            ->limit($needed)
-            ->get();
-
-        return $matched->concat($more)->values();
+        return $combined->concat(
+            self::fallbackTours($limit, $combined->pluck('id')->all(), $limit - $combined->count())
+        )->values();
     }
 
     /**
@@ -79,13 +86,58 @@ class RelatedToursForSafariExperience
         return array_values(array_unique($out));
     }
 
-    private static function fallbackTours(int $limit): Collection
+    private static function fallbackTours(int $limit, array $excludeIds = [], ?int $take = null): Collection
     {
+        $need = $take ?? $limit;
+
         return Tour::query()
             ->active()
+            ->whereNotIn('id', $excludeIds)
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
-            ->limit($limit)
+            ->limit($need)
             ->get();
+    }
+
+    /**
+     * When several tours are linked, prefer the one with admin day-by-day rows and drop overview-only duplicates.
+     */
+    public static function displayToursForSafariPage(SafariExperience $safariExperience, Collection $tours): Collection
+    {
+        $tours = $tours->unique('id')->values();
+
+        if ($tours->isEmpty()) {
+            return $tours;
+        }
+
+        $withDayByDay = $tours->filter(
+            fn (Tour $tour) => $tour->itineraryDays->isNotEmpty()
+        )->values();
+
+        if ($withDayByDay->isNotEmpty()) {
+            return collect([self::pickPrimaryItineraryTour($safariExperience, $withDayByDay)]);
+        }
+
+        return $tours->take(1)->values();
+    }
+
+    private static function pickPrimaryItineraryTour(SafariExperience $safariExperience, Collection $tours): Tour
+    {
+        $safariSlug = strtolower((string) $safariExperience->slug);
+
+        return $tours->sortByDesc(function (Tour $tour) use ($safariSlug): int {
+            $score = $tour->itineraryDays->count() * 10;
+            if ($tour->is_featured) {
+                $score += 5;
+            }
+            $tourSlug = strtolower((string) $tour->slug);
+            if ($tourSlug === $safariSlug) {
+                $score += 100;
+            } elseif (str_contains($safariSlug, $tourSlug) || str_contains($tourSlug, $safariSlug)) {
+                $score += 40;
+            }
+
+            return $score;
+        })->first();
     }
 }

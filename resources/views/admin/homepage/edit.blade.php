@@ -233,7 +233,7 @@
         {{-- Why choose us --}}
         <section id="section-why-choose" class="{{ $section }} scroll-mt-6">
             <h2 class="{{ $sectionTitle }}">{{ __('Why choose us') }}</h2>
-            <p class="mt-1 max-w-3xl text-sm text-ink/65">{{ __('Headline, optional intro, and up to eight highlight cards (emoji + title + short text). Leave a card title empty to skip it.') }}</p>
+            <p class="mt-1 max-w-3xl text-sm text-ink/65">{{ __('Headline, a wordier intro paragraph, and up to eight highlight cards (optional emoji + title + description). Leave a card title empty to skip it.') }}</p>
             <div class="mt-6 space-y-4">
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
@@ -247,7 +247,7 @@
                     </div>
                     <div class="sm:col-span-2">
                         <label class="{{ $label }}">{{ __('Intro line (optional)') }}</label>
-                        <textarea name="why_choose_subtitle" rows="2" class="{{ $field }}" maxlength="500" placeholder="{{ __('Short sentence under the heading') }}">{{ old('why_choose_subtitle', $values['why_choose_subtitle'] ?? '') }}</textarea>
+                        <textarea name="why_choose_subtitle" rows="5" class="{{ $field }}" maxlength="2000" placeholder="{{ __('A fuller paragraph (or two) explaining why guests trust you—shown beside the cards on the homepage.') }}">{{ old('why_choose_subtitle', $values['why_choose_subtitle'] ?? '') }}</textarea>
                     </div>
                 </div>
                 <p class="text-xs font-semibold uppercase tracking-wide text-ink/50">{{ __('Cards') }}</p>
@@ -267,7 +267,7 @@
                                 </div>
                                 <div class="sm:col-span-12 sm:col-start-3 lg:col-span-10">
                                     <label class="{{ $label }}">{{ __('Description') }}</label>
-                                    <textarea name="why_choose_items[{{ $idx }}][body]" rows="2" class="{{ $field }}" maxlength="800">{{ old('why_choose_items.'.$idx.'.body', $item['body'] ?? '') }}</textarea>
+                                    <textarea name="why_choose_items[{{ $idx }}][body]" rows="4" class="{{ $field }}" maxlength="800" placeholder="{{ __('Two or three sentences work well for the homepage cards.') }}">{{ old('why_choose_items.'.$idx.'.body', $item['body'] ?? '') }}</textarea>
                                 </div>
                             </div>
                         </div>

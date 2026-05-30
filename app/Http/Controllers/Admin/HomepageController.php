@@ -112,7 +112,7 @@ class HomepageController extends Controller
             'cta_button_url' => ['nullable', 'string', 'max:2000'],
             'why_choose_eyebrow' => ['nullable', 'string', 'max:80'],
             'why_choose_title' => ['nullable', 'string', 'max:160'],
-            'why_choose_subtitle' => ['nullable', 'string', 'max:500'],
+            'why_choose_subtitle' => ['nullable', 'string', 'max:2000'],
             'why_choose_items' => ['nullable', 'array', 'max:8'],
             'why_choose_items.*.icon' => ['nullable', 'string', 'max:32'],
             'why_choose_items.*.title' => ['nullable', 'string', 'max:160'],
@@ -175,8 +175,9 @@ class HomepageController extends Controller
         }
 
         ActivityLog::record('homepage.updated', 'Homepage content');
-        Cache::forget('home_page_v3');
-        Cache::forget('home_page_v4');
+        foreach (['home_page_v3', 'home_page_v4', 'home_page_v5', 'home_page_v6', 'home_page_v7', 'home_page_v8', 'home_page_v9', 'home_page_v10', 'home_page_v11', 'home_page_v12'] as $key) {
+            Cache::forget($key);
+        }
 
         return back()->with('success', __('Homepage content saved.'));
     }

@@ -71,6 +71,13 @@
                             <p class="text-lg leading-relaxed text-ink/65">{{ __('We are preparing more detail for this destination. Tell us your dates and interests below—we will shape an itinerary around this region.') }}</p>
                         </div>
                     @endif
+
+                    @include('partials.destination-safaris-list', [
+                        'destination' => $destination,
+                        'countrySafaris' => $countrySafaris ?? collect(),
+                        'countryCode' => $countryCode ?? null,
+                        'countryMeta' => $countryMeta ?? null,
+                    ])
                 </div>
 
                 <aside class="mt-10 min-h-0 lg:col-span-4 lg:mt-0 lg:flex lg:flex-col" aria-label="{{ __('Destination details and related trips') }}">

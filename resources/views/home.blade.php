@@ -309,30 +309,41 @@
                                 </p>
                             @endif
                             <p class="mt-2 text-xs font-medium tabular-nums text-ink/45">
-                                {{ trans_choice(':count safari|:count safaris', $countrySafaris->count(), ['count' => $countrySafaris->count()]) }}
+                                {{ trans_choice(':count experience|:count experiences', $countrySafaris->count(), ['count' => $countrySafaris->count()]) }}
                             </p>
                         </div>
-                        @if($hasMoreSafaris)
-                            <button
-                                type="button"
-                                class="btn-outline inline-flex shrink-0 items-center gap-2 self-start px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] sm:ml-auto sm:self-end"
-                                @click="expanded = !expanded"
-                                :aria-expanded="expanded"
+                        <div class="flex shrink-0 flex-wrap items-center gap-2 self-start sm:ml-auto sm:self-end">
+                            <a
+                                href="{{ route('safari', ['country' => $country]) }}"
+                                class="btn-primary inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em]"
                             >
-                                <span x-text="expanded ? @js($countryMeta['show_less']) : @js($countryMeta['show_more'])"></span>
-                                <svg
-                                    class="h-4 w-4 shrink-0 transition-transform duration-300"
-                                    :class="expanded && 'rotate-180'"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    viewBox="0 0 24 24"
-                                    aria-hidden="true"
-                                >
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                                {{ $countryMeta['view_all'] }}
+                                <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
                                 </svg>
-                            </button>
-                        @endif
+                            </a>
+                            @if($hasMoreSafaris)
+                                <button
+                                    type="button"
+                                    class="btn-outline inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em]"
+                                    @click="expanded = !expanded"
+                                    :aria-expanded="expanded"
+                                >
+                                    <span x-text="expanded ? @js($countryMeta['show_less']) : @js($countryMeta['show_more'])"></span>
+                                    <svg
+                                        class="h-4 w-4 shrink-0 transition-transform duration-300"
+                                        :class="expanded && 'rotate-180'"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                            @endif
+                        </div>
                     </div>
                     <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-7 lg:grid-cols-4 lg:gap-6 xl:gap-8">
                         @foreach($countrySafaris as $safari)
@@ -355,37 +366,49 @@
                 </div>
             @endforeach
         @else
-            <p class="mt-12 max-w-prose text-center text-base leading-relaxed text-ink/65 lg:text-left">{{ __('Add safari experiences with a country (Kenya, Tanzania, or Uganda) in Admin → Safari.') }}</p>
+            <p class="mt-12 max-w-prose text-center text-base leading-relaxed text-ink/65 lg:text-left">{{ __('Add active safari experiences in Admin → Safari and set a country (or use titles that mention Kenya, Tanzania, or Uganda).') }}</p>
         @endif
     </div>
 </section>
 
-<section class="relative overflow-hidden bg-gradient-to-b from-white via-surface/50 to-tint-green/40 section-divider" aria-labelledby="why-choose-heading">
+<section class="home-why-choose relative overflow-hidden bg-gradient-to-b from-white via-surface/60 to-tint-green/50 section-divider" aria-labelledby="why-choose-heading">
     <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" aria-hidden="true"></div>
-    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_85%_55%_at_50%_0%,rgba(76,175,80,0.09),transparent_58%)]" aria-hidden="true"></div>
-    <div class="pointer-events-none absolute -left-24 top-1/4 h-80 w-80 rounded-full bg-primary/[0.06] blur-3xl" aria-hidden="true"></div>
-    <div class="pointer-events-none absolute -right-20 bottom-0 h-72 w-72 translate-y-1/4 rounded-full bg-accent/[0.12] blur-3xl" aria-hidden="true"></div>
-    <div class="pointer-events-none absolute left-1/2 top-[32%] h-px w-full max-w-[min(100%,56rem)] -translate-x-1/2 bg-gradient-to-r from-transparent via-secondary/30 to-transparent opacity-50" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_15%_20%,rgba(76,175,80,0.11),transparent_50%),radial-gradient(ellipse_70%_50%_at_85%_80%,rgba(139,195,74,0.08),transparent_55%)]" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute -left-24 top-1/4 h-80 w-80 rounded-full bg-primary/[0.07] blur-3xl" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute -right-20 bottom-0 h-72 w-72 translate-y-1/4 rounded-full bg-accent/[0.14] blur-3xl" aria-hidden="true"></div>
 
     <div class="relative site-gutter-x w-full section-y">
-        <header class="mx-auto max-w-3xl text-center" data-aos="fade-up" data-aos-duration="780">
-            <div class="flex items-center justify-center gap-4 sm:gap-5">
-                <span class="h-px w-10 bg-gradient-to-r from-transparent to-primary/45 sm:w-14" aria-hidden="true"></span>
-                <p class="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-primary">{{ filled(trim((string) ($why_choose_eyebrow ?? ''))) ? $why_choose_eyebrow : __('Why us') }}</p>
-                <span class="h-px w-10 bg-gradient-to-l from-transparent to-primary/45 sm:w-14" aria-hidden="true"></span>
-            </div>
-            <h2 id="why-choose-heading" class="mt-5 font-serif text-[1.875rem] font-semibold leading-[1.12] tracking-tight text-ink sm:text-[2.35rem] lg:text-[2.65rem]">
-                {{ filled(trim((string) ($why_choose_title ?? ''))) ? $why_choose_title : __('Why Choose Us') }}
-            </h2>
-            @if(filled(trim((string) ($why_choose_subtitle ?? ''))))
-                <p class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ink/70 sm:text-lg">{{ $why_choose_subtitle }}</p>
-            @endif
-        </header>
+        <div class="lg:grid lg:grid-cols-12 lg:items-start lg:gap-12 xl:gap-16">
+            <header class="mx-auto max-w-3xl text-center lg:col-span-5 lg:mx-0 lg:max-w-none lg:text-left" data-aos="fade-up" data-aos-duration="780">
+                <p class="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-white/80 px-4 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-primary shadow-sm backdrop-blur-sm">
+                    <span class="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_10px_rgba(139,195,74,0.9)]" aria-hidden="true"></span>
+                    {{ filled(trim((string) ($why_choose_eyebrow ?? ''))) ? $why_choose_eyebrow : __('Why us') }}
+                </p>
+                <h2 id="why-choose-heading" class="mt-5 font-serif text-[1.875rem] font-semibold leading-[1.12] tracking-tight text-ink sm:text-[2.25rem] lg:text-[2.5rem]">
+                    <span class="bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent">{{ filled(trim((string) ($why_choose_title ?? ''))) ? $why_choose_title : __('Why Choose Us') }}</span>
+                </h2>
+                @if(filled(trim((string) ($why_choose_subtitle ?? ''))))
+                    <div class="mt-6 space-y-4 text-left text-base leading-[1.8] text-ink/75 sm:text-[1.0625rem]">
+                        @foreach(preg_split('/\n\s*\n/', trim((string) $why_choose_subtitle), -1, PREG_SPLIT_NO_EMPTY) ?: [trim((string) $why_choose_subtitle)] as $paragraph)
+                            <p>{{ trim($paragraph) }}</p>
+                        @endforeach
+                    </div>
+                @endif
+                <div class="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+                    <a href="{{ route('plan-my-safari') }}" class="btn-primary inline-flex min-h-[2.75rem] items-center justify-center gap-2 bg-gradient-to-r from-primary via-primary to-accent px-6 py-3 text-sm font-semibold hover:brightness-110">
+                        {{ __('Plan My Safari') }}
+                    </a>
+                    <a href="{{ route('about') }}" class="btn-outline inline-flex min-h-[2.75rem] items-center justify-center px-6 py-3 text-sm font-semibold">
+                        {{ __('Our story') }}
+                    </a>
+                </div>
+            </header>
 
-        <div class="mx-auto mt-14 grid w-full max-w-none gap-6 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3 lg:gap-7 xl:gap-8">
-            @foreach($why_choose_items as $box)
-                @include('partials.home-why-choose-item', ['box' => $box, 'index' => $loop->index])
-            @endforeach
+            <div class="mx-auto mt-12 grid w-full max-w-none gap-5 sm:grid-cols-2 sm:gap-6 lg:col-span-7 lg:mt-0 lg:gap-6 xl:gap-7">
+                @foreach($why_choose_items as $box)
+                    @include('partials.home-why-choose-item', ['box' => $box, 'index' => $loop->index])
+                @endforeach
+            </div>
         </div>
     </div>
 </section>

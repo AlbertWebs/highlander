@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Support\Vimeo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -109,7 +110,7 @@ class Tour extends Model
     }
 
     /**
-     * @return array{eyebrow: string, title: string, subtitle: string, show_more: string, show_less: string}
+     * @return array{eyebrow: string, title: string, subtitle: string, show_more: string, show_less: string, view_all: string}
      */
     public static function countryHeadingMeta(string $country): array
     {
@@ -120,6 +121,7 @@ class Tour extends Model
                 'subtitle' => __('Savanna wildlife, Mount Kenya treks, and curated journeys across the Rift Valley.'),
                 'show_more' => __('Show more from Kenya'),
                 'show_less' => __('Show fewer'),
+                'view_all' => __('View all Kenyan safaris'),
             ],
             self::COUNTRY_TANZANIA => [
                 'eyebrow' => __('Tanzania'),
@@ -127,6 +129,7 @@ class Tour extends Model
                 'subtitle' => __('Serengeti plains, Ngorongoro, Kilimanjaro ascents, and Indian Ocean extensions.'),
                 'show_more' => __('Show more from Tanzania'),
                 'show_less' => __('Show fewer'),
+                'view_all' => __('View all Tanzania safaris'),
             ],
             self::COUNTRY_UGANDA => [
                 'eyebrow' => __('Uganda'),
@@ -134,6 +137,7 @@ class Tour extends Model
                 'subtitle' => __('Gorilla forests, Nile adventures, and classic savanna in the Pearl of Africa.'),
                 'show_more' => __('Show more from Uganda'),
                 'show_less' => __('Show fewer'),
+                'view_all' => __('View all Uganda safaris'),
             ],
             default => [
                 'eyebrow' => ucfirst($country),
@@ -141,6 +145,7 @@ class Tour extends Model
                 'subtitle' => '',
                 'show_more' => __('Show more'),
                 'show_less' => __('Show fewer'),
+                'view_all' => __('View all safaris'),
             ],
         };
     }
@@ -189,6 +194,11 @@ class Tour extends Model
         return $this->isMountainSafariForHomepage()
             ? __('Mountain safari')
             : __('Wildlife safari');
+    }
+
+    public function safariExperiences(): BelongsToMany
+    {
+        return $this->belongsToMany(SafariExperience::class)->withTimestamps();
     }
 
     public function bookings(): HasMany

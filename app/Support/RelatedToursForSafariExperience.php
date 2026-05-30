@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\SafariExperience;
 use App\Models\Tour;
+use App\Models\TourItineraryDay;
 use Illuminate\Support\Collection;
 
 class RelatedToursForSafariExperience
@@ -118,7 +119,68 @@ class RelatedToursForSafariExperience
             return collect([self::pickPrimaryItineraryTour($safariExperience, $withDayByDay)]);
         }
 
+        $dayFragments = self::dayFragmentTours($tours);
+        if ($dayFragments->count() >= 2) {
+            return collect([self::mergeDayFragmentTours($safariExperience, $dayFragments)]);
+        }
+
         return $tours->take(1)->values();
+    }
+
+    /**
+     * Linked tours whose titles are "Day N: …" with no admin itinerary rows (common import pattern).
+     */
+    public static function dayFragmentTours(Collection $tours): Collection
+    {
+        return $tours
+            ->filter(fn (Tour $tour) => self::dayNumberFromTourTitle($tour->title) !== null)
+            ->values();
+    }
+
+    public static function dayNumberFromTourTitle(?string $title): ?int
+    {
+        if (! filled($title)) {
+            return null;
+        }
+
+        if (preg_match('/^day\s*(\d+)\b/i', trim($title), $matches) !== 1) {
+            return null;
+        }
+
+        return (int) $matches[1];
+    }
+
+    public static function titleWithoutDayPrefix(?string $title): string
+    {
+        $value = trim((string) $title);
+
+        return trim(preg_replace('/^day\s*\d+\s*[:\.\-—]\s*/iu', '', $value) ?? $value);
+    }
+
+    private static function mergeDayFragmentTours(SafariExperience $safariExperience, Collection $fragments): Tour
+    {
+        $sorted = $fragments
+            ->sortBy(fn (Tour $tour) => self::dayNumberFromTourTitle($tour->title) ?? 999)
+            ->values();
+
+        $days = $sorted->map(function (Tour $tour): TourItineraryDay {
+            return new TourItineraryDay([
+                'day_number' => self::dayNumberFromTourTitle($tour->title) ?? 0,
+                'title' => self::titleWithoutDayPrefix($tour->title),
+                'body' => $tour->description,
+                'image' => $tour->image,
+            ]);
+        });
+
+        $display = $sorted->first();
+        $display->setRelation('itineraryDays', $days);
+        $display->title = $safariExperience->title;
+        $maxDay = $days->max('day_number');
+        if ($maxDay > 0) {
+            $display->duration_days = (int) $maxDay;
+        }
+
+        return $display;
     }
 
     private static function pickPrimaryItineraryTour(SafariExperience $safariExperience, Collection $tours): Tour

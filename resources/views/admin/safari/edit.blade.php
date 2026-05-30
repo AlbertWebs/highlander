@@ -117,9 +117,27 @@
         </div>
 
         <aside class="min-w-0 space-y-4 xl:sticky xl:top-20">
+            @php
+                $editCountry = strtolower((string) ($safariExperience->country ?? ''));
+                $editCountryLabel = filled($editCountry)
+                    ? \App\Models\Tour::countryLabel($editCountry)
+                    : null;
+            @endphp
+            <div class="rounded-2xl border border-primary/30 bg-primary/[0.06] p-5 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-primary">{{ __('Homepage') }}</p>
+                @if($editCountryLabel && $safariExperience->is_active)
+                    <p class="mt-2 text-sm font-medium text-ink">{{ __('Listed under') }} <span class="text-primary">{{ $editCountryLabel }}</span></p>
+                    <p class="mt-1 text-xs text-ink/60">{{ $safariExperience->homepageSafariTypeLabel() }} · {{ __('sort') }} {{ $safariExperience->sort_order ?? 0 }}</p>
+                @elseif($editCountryLabel)
+                    <p class="mt-2 text-sm text-ink/75">{{ __('Country set to :country, but hidden until “Visible on public site” is on.', ['country' => $editCountryLabel]) }}</p>
+                @else
+                    <p class="mt-2 text-sm text-ink/75">{{ __('No country set — this safari will not appear in homepage Featured Experiences.') }}</p>
+                @endif
+            </div>
             <div class="rounded-2xl border border-secondary/50 bg-gradient-to-br from-surface to-white p-5 shadow-sm">
                 <p class="text-xs font-semibold uppercase tracking-[0.14em] text-primary">{{ __('Tips') }}</p>
                 <ul class="mt-3 list-inside list-disc space-y-2 text-sm leading-relaxed text-ink/70">
+                    <li>{{ __('Set Country in the homepage section so this card appears on the home page.') }}</li>
                     <li>{{ __('Use sort order so the most important styles appear first.') }}</li>
                     <li>{{ __('Turn off visibility to hide a card without deleting it.') }}</li>
                     <li>{{ __('After saving, the public page updates immediately.') }}</li>

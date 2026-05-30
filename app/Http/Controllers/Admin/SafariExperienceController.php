@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\SafariExperience;
+use App\Models\Tour;
 use App\Support\SlugHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -54,7 +56,7 @@ class SafariExperienceController extends Controller
         }
         $m = SafariExperience::query()->create($data);
         ActivityLog::record('safari.created', $m->title, $m);
-        Cache::forget('home_page_v3');
+        $this->forgetHomeCache();
 
         return redirect()->route('admin.safari.index')->with('success', __('Safari experience created.'));
     }
@@ -79,7 +81,7 @@ class SafariExperienceController extends Controller
         }
         $safariExperience->update($data);
         ActivityLog::record('safari.updated', $safariExperience->title, $safariExperience);
-        Cache::forget('home_page_v3');
+        $this->forgetHomeCache();
 
         return redirect()->route('admin.safari.index')->with('success', __('Safari experience updated.'));
     }
@@ -91,7 +93,7 @@ class SafariExperienceController extends Controller
         }
         ActivityLog::record('safari.deleted', $safariExperience->title, $safariExperience);
         $safariExperience->delete();
-        Cache::forget('home_page_v3');
+        $this->forgetHomeCache();
 
         return redirect()->route('admin.safari.index')->with('success', __('Safari experience deleted.'));
     }
@@ -99,19 +101,33 @@ class SafariExperienceController extends Controller
     public function toggle(SafariExperience $safariExperience): RedirectResponse
     {
         $safariExperience->update(['is_active' => ! $safariExperience->is_active]);
-        Cache::forget('home_page_v3');
+        $this->forgetHomeCache();
 
         return back()->with('success', __('Status updated.'));
     }
 
     protected function validated(Request $request): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'duration' => ['nullable', 'string', 'max:255'],
+            'country' => ['nullable', 'string', Rule::in(Tour::HOMEPAGE_COUNTRIES)],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:65535'],
             'image' => ['nullable', 'image', 'max:5120'],
         ]);
+
+        if (empty($data['country'])) {
+            $data['country'] = null;
+        }
+
+        return $data;
+    }
+
+    protected function forgetHomeCache(): void
+    {
+        foreach (['home_page_v3', 'home_page_v4', 'home_page_v5', 'home_page_v6', 'home_page_v7'] as $key) {
+            Cache::forget($key);
+        }
     }
 }

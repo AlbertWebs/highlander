@@ -72,9 +72,49 @@
         </div>
     </div>
 
+    @php
+        $countryValue = old('country', $safariExperience->country ?? '');
+        if ($countryValue !== '') {
+            $countryValue = strtolower((string) $countryValue);
+        }
+        $homepageCountries = \App\Models\Tour::HOMEPAGE_COUNTRIES;
+        $showsOnHomepage = ($safariExperience->is_active ?? true)
+            && $countryValue !== ''
+            && in_array($countryValue, $homepageCountries, true);
+    @endphp
+    <div class="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.06] via-white to-accent/[0.05] p-6 shadow-soft sm:p-8">
+        <h3 class="text-base font-semibold text-ink">{{ __('Homepage — Featured Experiences') }}</h3>
+        <p class="mt-1 text-sm text-ink/55">{{ __('Choose which country block on the homepage lists this safari. Leave empty to hide it from the homepage section.') }}</p>
+
+        <div class="mt-6">
+            <label for="safari-country" class="text-sm font-medium text-ink">{{ __('Country') }}</label>
+            <select
+                id="safari-country"
+                name="country"
+                class="form-input-interactive mt-1.5 w-full max-w-md rounded-xl border border-secondary/60 bg-white px-4 py-3 text-sm shadow-sm"
+            >
+                <option value="">{{ __('— Not on homepage —') }}</option>
+                <option value="kenya" @selected($countryValue === 'kenya')>{{ __('Kenya') }} — {{ __('Kenyan Safaris') }}</option>
+                <option value="tanzania" @selected($countryValue === 'tanzania')>{{ __('Tanzania') }}</option>
+                <option value="uganda" @selected($countryValue === 'uganda')>{{ __('Uganda') }}</option>
+            </select>
+            @error('country')
+                <p class="mt-1.5 text-sm text-red-700">{{ $message }}</p>
+            @enderror
+            <p class="mt-2 text-xs text-ink/50">
+                @if($showsOnHomepage)
+                    <span class="font-medium text-primary">{{ __('This safari is eligible for the homepage') }}</span>
+                    — {{ __('ordering:') }} {{ $safariExperience->exists ? $safariExperience->homepageSafariTypeLabel() : __('save to detect') }}, {{ __('then sort order.') }}
+                @else
+                    {{ __('Select Kenya, Tanzania, or Uganda and keep “Visible on public site” on to show this safari on the homepage.') }}
+                @endif
+            </p>
+        </div>
+    </div>
+
     <div class="rounded-2xl border border-secondary/50 bg-white p-6 shadow-soft sm:p-8">
         <h3 class="text-base font-semibold text-ink">{{ __('Order & visibility') }}</h3>
-        <p class="mt-1 text-sm text-ink/55">{{ __('Lower sort numbers appear first on the Safari page.') }}</p>
+        <p class="mt-1 text-sm text-ink/55">{{ __('Lower sort numbers appear first on the Safari page and within each homepage country group.') }}</p>
 
         <div class="mt-6 grid gap-6 sm:grid-cols-2 sm:items-end">
             <div>

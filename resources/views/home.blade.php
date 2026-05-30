@@ -279,14 +279,14 @@
         </header>
 
         @php
-            $hasFeaturedByCountry = ! empty($featured_tours_by_country);
+            $hasFeaturedByCountry = ! empty($featured_safaris_by_country);
         @endphp
         @if($hasFeaturedByCountry)
-            @foreach($featured_tours_by_country as $country => $countryTours)
+            @foreach($featured_safaris_by_country as $country => $countrySafaris)
                 @php
                     $countryMeta = \App\Models\Tour::countryHeadingMeta($country);
-                    $featuredInitial = \App\Models\Tour::HOMEPAGE_FEATURED_INITIAL;
-                    $hasMoreTours = $countryTours->count() > $featuredInitial;
+                    $featuredInitial = \App\Models\SafariExperience::HOMEPAGE_FEATURED_INITIAL;
+                    $hasMoreSafaris = $countrySafaris->count() > $featuredInitial;
                 @endphp
                 <div
                     @class(['mt-12' => $loop->first, 'mt-14 sm:mt-16' => ! $loop->first])
@@ -309,10 +309,10 @@
                                 </p>
                             @endif
                             <p class="mt-2 text-xs font-medium tabular-nums text-ink/45">
-                                {{ trans_choice(':count experience|:count experiences', $countryTours->count(), ['count' => $countryTours->count()]) }}
+                                {{ trans_choice(':count safari|:count safaris', $countrySafaris->count(), ['count' => $countrySafaris->count()]) }}
                             </p>
                         </div>
-                        @if($hasMoreTours)
+                        @if($hasMoreSafaris)
                             <button
                                 type="button"
                                 class="btn-outline inline-flex shrink-0 items-center gap-2 self-start px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] sm:ml-auto sm:self-end"
@@ -335,7 +335,7 @@
                         @endif
                     </div>
                     <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-7 lg:grid-cols-4 lg:gap-6 xl:gap-8">
-                        @foreach($countryTours as $tour)
+                        @foreach($countrySafaris as $safari)
                             <div
                                 @if($loop->index >= $featuredInitial)
                                     x-show="expanded"
@@ -345,10 +345,9 @@
                                     x-transition:enter-end="opacity-100 translate-y-0"
                                 @endif
                             >
-                                @include('partials.featured-tour-card', [
-                                    'tour' => $tour,
+                                @include('partials.featured-safari-card', [
+                                    'safari' => $safari,
                                     'cardIndex' => $loop->index,
-                                    'showPrice' => false,
                                 ])
                             </div>
                         @endforeach
@@ -356,7 +355,7 @@
                 </div>
             @endforeach
         @else
-            <p class="mt-12 max-w-prose text-center text-base leading-relaxed text-ink/65 lg:text-left">{{ __('Add featured tours with a country (Kenya, Tanzania, or Uganda) from the admin panel.') }}</p>
+            <p class="mt-12 max-w-prose text-center text-base leading-relaxed text-ink/65 lg:text-left">{{ __('Add safari experiences with a country (Kenya, Tanzania, or Uganda) in Admin → Safari.') }}</p>
         @endif
     </div>
 </section>

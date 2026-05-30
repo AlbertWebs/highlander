@@ -7,6 +7,7 @@ use App\Models\Destination;
 use App\Models\SeoMeta;
 use App\Models\SiteSetting;
 use App\Models\Testimonial;
+use App\Models\SafariExperience;
 use App\Models\Tour;
 use App\Support\Vimeo;
 use Illuminate\Support\Facades\Cache;
@@ -16,7 +17,7 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        $data = Cache::remember('home_page_v6', 600, function () {
+        $data = Cache::remember('home_page_v7', 600, function () {
             $defaultMp4 = 'https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_30fps.mp4';
             $defaultVimeoPage = 'https://vimeo.com/1177988644';
             $heroVideoSource = SiteSetting::getValue('hero_video_source', 'vimeo');
@@ -95,7 +96,7 @@ class HomeController extends Controller
                 'social_youtube' => SiteSetting::getValue('social_youtube', ''),
                 'social_twitter' => SiteSetting::getValue('social_twitter', ''),
                 'social_tiktok' => SiteSetting::getValue('social_tiktok', ''),
-                'featured_tours_by_country' => Tour::featuredForHomepageByCountry(),
+                'featured_safaris_by_country' => SafariExperience::featuredForHomepageByCountry(),
                 'destinations' => Destination::query()->active()->orderByDesc('sort_order')->take(4)->get(),
                 'testimonials' => Testimonial::query()->active()->orderByDesc('is_featured')->orderBy('sort_order')->take(6)->get(),
                 'articles' => Article::query()->published()->orderByDesc('published_at')->take(3)->get(),

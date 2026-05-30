@@ -127,6 +127,7 @@ class DatabaseSeeder extends Seeder
                 'title' => 'Big Five Classic',
                 'description' => 'Morning and evening game drives in prime wildlife corridors.',
                 'duration' => '5 days',
+                'country' => 'kenya',
                 'is_active' => true,
                 'sort_order' => 1,
             ]

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use App\Models\Mountain;
 use App\Models\SafariExperience;
 use App\Models\SafariExperienceImage;
 use App\Models\Tour;
@@ -47,6 +48,7 @@ class SafariExperienceController extends Controller
     {
         return view('admin.safari.create', [
             'tours' => $this->tourOptions(),
+            'mountains' => $this->mountainOptions(),
         ]);
     }
 
@@ -77,6 +79,7 @@ class SafariExperienceController extends Controller
         return view('admin.safari.edit', [
             'safariExperience' => $safariExperience,
             'tours' => $this->tourOptions($safariExperience),
+            'mountains' => $this->mountainOptions($safariExperience),
         ]);
     }
 
@@ -134,6 +137,7 @@ class SafariExperienceController extends Controller
             'description' => ['nullable', 'string'],
             'duration' => ['nullable', 'string', 'max:255'],
             'country' => ['nullable', 'string', Rule::in(Tour::HOMEPAGE_COUNTRIES)],
+            'mountain_id' => ['nullable', 'integer', 'exists:mountains,id'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:65535'],
             'image' => ['nullable', 'image', 'max:5120'],
             'tour_ids' => ['nullable', 'array'],
@@ -148,7 +152,28 @@ class SafariExperienceController extends Controller
             $data['country'] = null;
         }
 
+        if (empty($data['mountain_id'])) {
+            $data['mountain_id'] = null;
+        }
+
         return $data;
+    }
+
+    protected function mountainOptions(?SafariExperience $safariExperience = null)
+    {
+        $mountains = Mountain::query()
+            ->active()
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        if ($safariExperience?->mountain_id) {
+            $linked = Mountain::query()->find($safariExperience->mountain_id, ['id', 'name']);
+            if ($linked instanceof Mountain && ! $mountains->contains('id', $linked->id)) {
+                $mountains = $mountains->prepend($linked)->values();
+            }
+        }
+
+        return $mountains;
     }
 
     protected function tourOptions(?SafariExperience $safariExperience = null)

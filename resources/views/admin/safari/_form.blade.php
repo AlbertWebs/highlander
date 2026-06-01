@@ -75,6 +75,24 @@
                     <p class="mt-1.5 text-sm text-red-700">{{ $message }}</p>
                 @enderror
             </div>
+
+            <div>
+                <label for="safari-mountain" class="text-sm font-medium text-ink">{{ __('Linked mountain') }}</label>
+                <select
+                    id="safari-mountain"
+                    name="mountain_id"
+                    class="form-input-interactive mt-1.5 w-full rounded-xl border border-secondary/60 bg-white px-4 py-3 text-sm shadow-sm"
+                >
+                    <option value="">{{ __('None') }}</option>
+                    @foreach(($mountains ?? collect()) as $m)
+                        <option value="{{ $m->id }}" @selected((string) old('mountain_id', $safariExperience->mountain_id ?? '') === (string) $m->id)>{{ $m->name }}</option>
+                    @endforeach
+                </select>
+                <p class="mt-1.5 text-xs text-ink/50">{{ __('Associate this safari style with a mountain page (e.g. Mount Kenya treks).') }}</p>
+                @error('mountain_id')
+                    <p class="mt-1.5 text-sm text-red-700">{{ $message }}</p>
+                @enderror
+            </div>
         </div>
     </div>
 

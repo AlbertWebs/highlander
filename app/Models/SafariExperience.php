@@ -136,6 +136,37 @@ class SafariExperience extends Model
     }
 
     /**
+     * Active safari experiences from Admin → Safari for the homepage “Most Popular Tours” block.
+     * Mountain styles first, then newest by date added.
+     *
+     * @return \Illuminate\Support\Collection<int, self>
+     */
+    public static function popularForHomepage(int $limit = 8): \Illuminate\Support\Collection
+    {
+        return self::query()
+            ->active()
+            ->with(['mountain:id,name'])
+            ->get()
+            ->sortBy([
+                fn (self $safari) => $safari->isMountainSafariForHomepage() ? 0 : 1,
+                fn (self $safari) => -($safari->created_at?->getTimestamp() ?? 0),
+                fn (self $safari) => -$safari->id,
+            ])
+            ->take($limit)
+            ->values();
+    }
+
+    public function homepageCountryTag(): ?string
+    {
+        $country = self::resolveHomepageCountry($this);
+        if ($country === null) {
+            return null;
+        }
+
+        return Tour::countryHeadingMeta($country)['eyebrow'];
+    }
+
+    /**
      * Active safari experiences from Admin → Safari, grouped by country.
      *
      * @return array<string, \Illuminate\Support\Collection<int, self>>

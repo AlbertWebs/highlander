@@ -224,7 +224,7 @@ class TourController extends Controller
 
     protected function forgetHomeCache(): void
     {
-        foreach (['home_page_v3', 'home_page_v4', 'home_page_v5', 'home_page_v6', 'home_page_v7', 'home_page_v8', 'home_page_v9', 'home_page_v10', 'home_page_v11', 'home_page_v12', 'home_page_v13', 'home_page_v14'] as $key) {
+        foreach (['home_page_v3', 'home_page_v4', 'home_page_v5', 'home_page_v6', 'home_page_v7', 'home_page_v8', 'home_page_v9', 'home_page_v10', 'home_page_v11', 'home_page_v12', 'home_page_v13', 'home_page_v14', 'home_page_v15'] as $key) {
             Cache::forget($key);
         }
     }

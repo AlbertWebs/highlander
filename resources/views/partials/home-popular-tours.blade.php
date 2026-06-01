@@ -1,11 +1,11 @@
 @php
-    $popularTours = $popular_tours ?? collect();
+    $popularSafaris = $popular_safaris ?? collect();
     $sectionTitle = filled(trim((string) ($popular_tours_title ?? '')))
         ? trim((string) $popular_tours_title)
         : __('Most Popular Tours');
     $sectionSubtitle = trim((string) ($popular_tours_subtitle ?? ''));
 @endphp
-@if($popularTours->isNotEmpty())
+@if($popularSafaris->isNotEmpty())
 <section
     class="home-popular-tours relative overflow-hidden bg-white section-divider section-y"
     aria-labelledby="popular-tours-heading"
@@ -28,8 +28,8 @@
         </header>
 
         <div class="mt-10 grid grid-cols-1 gap-6 sm:mt-12 sm:grid-cols-2 sm:gap-7 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8">
-            @foreach($popularTours as $tour)
-                @include('partials.popular-tour-card-home', ['tour' => $tour, 'cardIndex' => $loop->index])
+            @foreach($popularSafaris as $safari)
+                @include('partials.popular-safari-card-home', ['safari' => $safari, 'cardIndex' => $loop->index])
             @endforeach
         </div>
 

@@ -17,7 +17,7 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        $data = Cache::remember('home_page_v14', 600, function () {
+        $data = Cache::remember('home_page_v15', 600, function () {
             $defaultMp4 = 'https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_30fps.mp4';
             $defaultVimeoPage = 'https://vimeo.com/1177988644';
             $heroVideoSource = SiteSetting::getValue('hero_video_source', 'vimeo');
@@ -101,7 +101,7 @@ class HomeController extends Controller
                     'popular_tours_subtitle',
                     __('From the rugged ridges of Mount Kenya to the snow-capped summit of Mount Kilimanjaro, explore East Africa’s ultimate mountaineering routes and wildlife circuits.')
                 ),
-                'popular_tours' => Tour::popularForHomepage(8),
+                'popular_safaris' => SafariExperience::popularForHomepage(8),
                 'featured_safaris_by_country' => SafariExperience::featuredForHomepageByCountry(),
                 'destinations' => Destination::query()->active()->orderByDesc('sort_order')->take(4)->get(),
                 'testimonials' => Testimonial::query()->active()->orderByDesc('is_featured')->orderBy('sort_order')->take(6)->get(),

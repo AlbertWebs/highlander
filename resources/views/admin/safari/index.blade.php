@@ -66,7 +66,7 @@
                     {{ __('Add safari experience') }}
                 </a>
                 <a href="{{ route('admin.tours.create') }}" class="inline-flex items-center justify-center rounded-xl border border-secondary/60 bg-white px-4 py-2.5 text-sm font-semibold text-primary shadow-sm hover:bg-surface">
-                    {{ __('Create itinerary') }}
+                    {{ __('Add tour') }}
                 </a>
             </div>
         </div>
@@ -118,18 +118,42 @@
                             </button>
                         </form>
                     </div>
-                    <div class="flex flex-wrap gap-2 border-t border-secondary/30 bg-surface/30 px-3 py-2">
-                        <a href="{{ route('admin.safari.edit', $s) }}" class="text-xs font-semibold text-primary hover:underline">{{ __('Edit') }}</a>
-                        <span class="text-ink/25" aria-hidden="true">|</span>
+                    <div class="border-t border-secondary/30 bg-surface/30 px-2.5 py-2.5">
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <a
+                                href="{{ route('admin.safari.edit', $s) }}"
+                                class="inline-flex min-h-[2.25rem] items-center justify-center rounded-lg border border-secondary/60 bg-white px-1.5 text-center text-[0.6875rem] font-semibold leading-tight text-primary shadow-sm transition hover:border-primary/35 hover:bg-primary/5"
+                            >{{ __('Edit') }}</a>
+                            <a
+                                href="{{ route('admin.tours.create', ['safari' => $s->id, 'return_to' => 'safari']) }}"
+                                class="inline-flex min-h-[2.25rem] items-center justify-center rounded-lg border border-accent/50 bg-accent px-1.5 text-center text-[0.6875rem] font-semibold leading-tight text-ink shadow-sm transition hover:bg-accent/90"
+                                title="{{ __('Create an itinerary linked to :title', ['title' => $s->title]) }}"
+                            >{{ __('Add tour') }}</a>
+                            <form
+                                action="{{ route('admin.safari.destroy', $s) }}"
+                                method="post"
+                                class="min-w-0"
+                                onsubmit="return confirm(@json(__('Delete this safari experience?')));"
+                            >
+                                @csrf
+                                @method('DELETE')
+                                <button
+                                    type="submit"
+                                    class="inline-flex min-h-[2.25rem] w-full items-center justify-center rounded-lg border border-red-200/80 bg-white px-1.5 text-center text-[0.6875rem] font-semibold leading-tight text-red-600 shadow-sm transition hover:border-red-300 hover:bg-red-50"
+                                >{{ __('Delete') }}</button>
+                            </form>
+                        </div>
                         @if($s->is_active)
-                            <a href="{{ route('safari.show', $s) }}" target="_blank" rel="noopener noreferrer" class="text-xs font-medium text-ink/70 hover:text-primary hover:underline">{{ __('View') }}</a>
-                            <span class="text-ink/25" aria-hidden="true">|</span>
+                            <a
+                                href="{{ route('safari.show', $s) }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="mt-2 flex items-center justify-center gap-1 text-[0.6875rem] font-medium text-ink/60 transition hover:text-primary"
+                            >
+                                {{ __('View on site') }}
+                                <svg class="h-3 w-3 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                            </a>
                         @endif
-                        <form action="{{ route('admin.safari.destroy', $s) }}" method="post" class="inline" onsubmit="return confirm(@json(__('Delete?')));">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-xs font-medium text-red-600 hover:underline">{{ __('Delete') }}</button>
-                        </form>
                     </div>
                 </article>
             @empty

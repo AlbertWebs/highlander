@@ -81,7 +81,9 @@
         @php
             $selectedSafariStyles = collect(old(
                 'safari_experience_ids',
-                (isset($tour) && $tour->exists) ? $tour->safariExperiences->pluck('id')->all() : []
+                (isset($tour) && $tour->exists)
+                    ? $tour->safariExperiences->pluck('id')->all()
+                    : ($preselectedSafariExperienceIds ?? [])
             ))->map(fn ($id) => (int) $id)->all();
         @endphp
         <div class="mt-4 max-h-72 space-y-2 overflow-y-auto rounded-xl border border-secondary/45 bg-surface/40 p-3">

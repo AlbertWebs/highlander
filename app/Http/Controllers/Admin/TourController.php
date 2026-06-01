@@ -50,9 +50,18 @@ class TourController extends Controller
         return view('admin.tours.index', compact('tours', 'q', 'perPage', 'safariStyles', 'unassignedOnly'));
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('admin.tours.create', $this->hubFormData());
+        $preselectedSafariExperienceIds = [];
+        $safariId = $request->integer('safari');
+        if ($safariId > 0 && SafariExperience::query()->whereKey($safariId)->exists()) {
+            $preselectedSafariExperienceIds = [$safariId];
+        }
+
+        return view('admin.tours.create', array_merge($this->hubFormData(), [
+            'preselectedSafariExperienceIds' => $preselectedSafariExperienceIds,
+            'returnToSafari' => $request->string('return_to')->toString() === 'safari',
+        ]));
     }
 
     public function store(Request $request): RedirectResponse
@@ -72,6 +81,10 @@ class TourController extends Controller
         $tour->safariExperiences()->sync($request->input('safari_experience_ids', []));
         ActivityLog::record('tour.created', $tour->title, $tour);
         $this->forgetHomeCache();
+
+        if ($request->string('return_to')->toString() === 'safari') {
+            return redirect()->route('admin.safari.index')->with('success', __('Tour created and linked to this safari style.'));
+        }
 
         return redirect()->route('admin.tours.index')->with('success', __('Tour created.'));
     }

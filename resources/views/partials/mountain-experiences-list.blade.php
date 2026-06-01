@@ -7,7 +7,11 @@
     <div class="flex flex-wrap items-end justify-between gap-4 border-b border-secondary/25 pb-6">
         <div>
             <h2 id="mountain-experiences-heading" class="font-serif text-2xl font-semibold tracking-tight text-primary sm:text-[1.75rem]">
-                {{ __('Safaris & experiences') }}: {{ $mountain->name }}
+                @if($mountain->slug === 'mount-kenya')
+                    {{ __('Mount Kenya Safaris') }}
+                @else
+                    {{ __(':name Safaris', ['name' => $mountain->name]) }}
+                @endif
             </h2>
             <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink/65">
                 @if($mountain->slug === 'mount-kenya')

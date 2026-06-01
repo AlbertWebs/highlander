@@ -48,8 +48,33 @@ class Tour extends Model
         '5-days-timau-route',
         '7-days-mount-kenya-peaks-circuit',
         '7-days-naromoru-route-technical-climbing-expedition',
+    ];
+
+    /** @var list<string> */
+    public const MOUNT_KENYA_CULTURAL_HUB_SLUGS = [
+        'tcv-cultural-and-farm-experience',
+        'thingira-cultural-festival',
+    ];
+
+    /** @var list<string> */
+    public const MOUNT_KILIMANJARO_MOUNTAIN_HUB_SLUGS = [
         'kilimanjaro-lemosho-route',
     ];
+
+    /** @return list<string> */
+    public static function mountKenyaDestinationHubSlugs(): array
+    {
+        return array_values(array_unique(array_merge(
+            self::MOUNT_KENYA_TREK_SLUGS,
+            self::MOUNT_KENYA_CULTURAL_HUB_SLUGS,
+        )));
+    }
+
+    /** @return list<string> */
+    public static function mountKilimanjaroMountainHubSlugs(): array
+    {
+        return self::MOUNT_KILIMANJARO_MOUNTAIN_HUB_SLUGS;
+    }
 
     protected $fillable = [
         'title', 'slug', 'description', 'image', 'featured_media_type', 'featured_video_url',

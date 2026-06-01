@@ -87,6 +87,11 @@
                 </aside>
             </div>
 
+            @include('partials.mountain-experiences-list', [
+                'mountain' => $mountain,
+                'mountainTours' => $mountainTours ?? collect(),
+            ])
+
             <div id="plan-this-mountain" class="mt-14 scroll-mt-28 sm:mt-16">
                 <div class="rounded-card border border-secondary/40 bg-gradient-to-br from-white via-surface/80 to-tint-green/25 px-6 py-9 shadow-card sm:px-10 sm:py-11">
                     <p class="text-center text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-primary">{{ __('Next step') }}</p>

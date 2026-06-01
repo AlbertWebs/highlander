@@ -18,15 +18,12 @@
 
     $navSafariChildren = collect([['label' => __('All safari experiences'), 'url' => route('safari')]])
         ->merge(
-            \App\Models\SafariExperience::query()->active()->orderBy('sort_order')->limit(8)->get()->map(fn ($s) => [
+            \App\Models\SafariExperience::query()->active()->orderBy('sort_order')->limit(6)->get()->map(fn ($s) => [
                 'label' => $s->title,
                 'url' => route('safari.show', $s),
             ])
-        );
-    foreach (\App\Models\Tour::query()->active()->featured()->orderBy('sort_order')->limit(6)->get() as $tour) {
-        $navSafariChildren->push(['label' => $tour->title, 'url' => route('experiences.show', $tour)]);
-    }
-    $navSafariChildren->push(['label' => __('Plan your safari'), 'url' => route('plan-my-safari')]);
+        )
+        ->push(['label' => __('Plan your safari'), 'url' => route('plan-my-safari')]);
 
     $nav = [
         ['type' => 'link', 'label' => __('Home'), 'route' => 'home'],

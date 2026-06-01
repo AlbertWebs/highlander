@@ -21,10 +21,7 @@ return new class extends Migration
 
         DB::table('about_page_settings')->where('id', $settingId)->update([
             'hero_title' => $brand,
-            'hero_subtitle' => <<<'HTML'
-<p>We are passionate about mountains, adventure, and the wild beauty of East Africa. Whether you are summiting the peaks of Mount Kenya or Kilimanjaro, trekking off-the-beaten-path trails, or embarking on a safari across the region’s game reserves and national parks, we deliver exceptional, personalized experiences every step of the way.</p>
-<p><strong>Backed by expert guides and a deep love for the outdoors, we ensure your journey is not just a trip, but a transformational adventure.</strong> From rugged mountain ascents to wildlife encounters, we have you covered.</p>
-HTML,
+            'hero_subtitle' => null,
             'intro_heading' => 'Your adventure starts here',
             'intro_paragraph_1' => <<<HTML
 <p>At {$brand}, we believe the best journeys weave together wild landscapes, careful planning, and genuine human connection. We design each itinerary around your pace, your goals, and the seasons, so you can focus on the horizon, the track in the dust, and the stories you will carry home.</p>

@@ -10,7 +10,7 @@
 @php
     $overlay = $variant === 'light'
         ? "linear-gradient(to top, rgba(245,247,246,.95), rgba(245,247,246,.75)), url('{$image}')"
-        : "linear-gradient(to top, rgba(10,12,12,.9), rgba(10,12,12,.42)), url('{$image}')";
+        : "linear-gradient(to top, rgba(10,12,12,.72), rgba(10,12,12,.32)), url('{$image}')";
 
     $sectionClass = $immersive
         ? 'relative flex min-h-[min(52vh,520px)] sm:min-h-[min(58vh,600px)] items-end overflow-hidden pt-28 pb-16 sm:pb-20'
@@ -25,7 +25,7 @@
 <section class="{{ $sectionClass }}">
     <div class="absolute inset-0 bg-cover bg-center" style="background-image: {{ $overlay }};"></div>
     @if($immersive && $variant === 'dark')
-        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-black/30" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/52 via-black/10 to-black/22" aria-hidden="true"></div>
     @endif
     <div class="site-gutter-x relative z-10 w-full">
         <div @class([

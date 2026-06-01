@@ -103,9 +103,17 @@ class PageController extends Controller
         $meta_title = $mountain->name;
         $meta_description = Str::limit(strip_tags((string) ($mountain->description ?? '')), 160) ?: __('Discover :name — trekking and alpine expeditions with Highlanders Nature Trails.', ['name' => $mountain->name]);
 
-        $relatedTours = RelatedToursForMountain::get($mountain, 2);
+        $mountainTours = RelatedToursForMountain::allForMountain($mountain);
+        $relatedTours = $mountainTours->take(8)->values();
 
-        return view('pages.mountain-show', compact('mountain', 'pageTitle', 'meta_title', 'meta_description', 'relatedTours'));
+        return view('pages.mountain-show', compact(
+            'mountain',
+            'pageTitle',
+            'meta_title',
+            'meta_description',
+            'relatedTours',
+            'mountainTours',
+        ));
     }
 
     public function exploreAfrica(Request $request): View

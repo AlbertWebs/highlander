@@ -258,32 +258,46 @@ class Tour extends Model
         return $query->where('is_featured', true);
     }
 
+    public function scopeMountainSafari($query)
+    {
+        return $query->where(function ($inner): void {
+            $inner->where('nav_mountain_safari', true)
+                ->orWhereNotNull('mountain_id')
+                ->orWhere('nav_bucket', self::NAV_MOUNTAIN_SAFARI);
+        });
+    }
+
     /**
-     * Tours for the homepage “Most popular” grid (featured first, then by sort order).
+     * Tours for the homepage “Most popular” grid: mountain safaris first, newest first.
      *
      * @return \Illuminate\Database\Eloquent\Collection<int, self>
      */
     public static function popularForHomepage(int $limit = 8): \Illuminate\Database\Eloquent\Collection
     {
-        $base = static::query()
+        $with = ['mountain:id,name', 'destination:id,name'];
+        $newest = fn ($query) => $query->orderByDesc('created_at')->orderByDesc('id');
+
+        $mountains = static::query()
             ->active()
-            ->with(['mountain:id,name', 'destination:id,name'])
-            ->orderByDesc('is_featured')
-            ->orderBy('sort_order')
-            ->orderBy('title');
-
-        $featured = (clone $base)->featured()->take($limit)->get();
-        if ($featured->count() >= $limit) {
-            return $featured->take($limit)->values();
-        }
-
-        $exclude = $featured->pluck('id');
-        $more = (clone $base)
-            ->when($exclude->isNotEmpty(), fn ($query) => $query->whereNotIn('id', $exclude))
-            ->take($limit - $featured->count())
+            ->mountainSafari()
+            ->with($with)
+            ->tap($newest)
+            ->take($limit)
             ->get();
 
-        return $featured->concat($more)->values();
+        if ($mountains->count() >= $limit) {
+            return $mountains->values();
+        }
+
+        $others = static::query()
+            ->active()
+            ->with($with)
+            ->when($mountains->isNotEmpty(), fn ($query) => $query->whereNotIn('id', $mountains->pluck('id')))
+            ->tap($newest)
+            ->take($limit - $mountains->count())
+            ->get();
+
+        return $mountains->concat($others)->values();
     }
 
     public function homepageCountryTag(): ?string

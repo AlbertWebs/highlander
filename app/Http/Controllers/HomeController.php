@@ -17,7 +17,7 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        $data = Cache::remember('home_page_v13', 600, function () {
+        $data = Cache::remember('home_page_v14', 600, function () {
             $defaultMp4 = 'https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_30fps.mp4';
             $defaultVimeoPage = 'https://vimeo.com/1177988644';
             $heroVideoSource = SiteSetting::getValue('hero_video_source', 'vimeo');

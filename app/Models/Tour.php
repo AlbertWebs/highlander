@@ -267,8 +267,28 @@ class Tour extends Model
         });
     }
 
+    /** Itineraries linked to a safari style in Admin → Safari. */
+    public function scopeLinkedFromSafariAdmin($query)
+    {
+        return $query->whereHas('safariExperiences', function ($safari): void {
+            $safari->active();
+        });
+    }
+
+    /** Mountain treks: tour flags or linked to a safari style with a mountain. */
+    public function scopeMountainSafariForPopular($query)
+    {
+        return $query->where(function ($inner): void {
+            $inner->mountainSafari()
+                ->orWhereHas('safariExperiences', function ($safari): void {
+                    $safari->active()->whereNotNull('mountain_id');
+                });
+        });
+    }
+
     /**
-     * Tours for the homepage “Most popular” grid: mountain safaris first, newest first.
+     * Tours for the homepage “Most popular” grid: only itineraries linked in Admin → Safari,
+     * mountain safaris first, then newest by date added.
      *
      * @return \Illuminate\Database\Eloquent\Collection<int, self>
      */
@@ -279,7 +299,8 @@ class Tour extends Model
 
         $mountains = static::query()
             ->active()
-            ->mountainSafari()
+            ->linkedFromSafariAdmin()
+            ->mountainSafariForPopular()
             ->with($with)
             ->tap($newest)
             ->take($limit)
@@ -291,6 +312,7 @@ class Tour extends Model
 
         $others = static::query()
             ->active()
+            ->linkedFromSafariAdmin()
             ->with($with)
             ->when($mountains->isNotEmpty(), fn ($query) => $query->whereNotIn('id', $mountains->pluck('id')))
             ->tap($newest)

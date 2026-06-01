@@ -6,6 +6,12 @@
     $previewUrl = ($isEdit && $safariExperience->image)
         ? \Illuminate\Support\Facades\Storage::disk('public')->url($safariExperience->image)
         : '';
+    $existingGalleryImages = $isEdit
+        ? $safariExperience->galleryImages->map(fn ($img) => [
+            'id' => $img->id,
+            'url' => $img->imageUrl(),
+        ])->all()
+        : [];
 @endphp
 
 <div class="space-y-8">
@@ -225,6 +231,49 @@
         </div>
         @error('image')
             <p class="mt-1.5 text-sm text-red-700">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div class="rounded-2xl border border-secondary/50 bg-white p-6 shadow-soft sm:p-8">
+        <h3 class="text-base font-semibold text-ink">{{ __('Gallery') }}</h3>
+        <p class="mt-1 text-sm text-ink/55">{{ __('Add multiple safari photos. These appear on the safari style page gallery.') }}</p>
+
+        @if(! empty($existingGalleryImages))
+            <div class="mt-4">
+                <p class="text-xs font-semibold uppercase tracking-wide text-ink/55">{{ __('Current gallery images') }}</p>
+                <div class="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach($existingGalleryImages as $image)
+                        <label class="overflow-hidden rounded-xl border border-secondary/40 bg-surface/40">
+                            <img src="{{ $image['url'] }}" alt="" class="h-28 w-full object-cover">
+                            <span class="flex items-center gap-2 px-3 py-2 text-xs text-ink/70">
+                                <input type="checkbox" name="remove_gallery_image_ids[]" value="{{ $image['id'] }}" class="rounded border-secondary text-primary focus:ring-primary/30">
+                                {{ __('Remove') }}
+                            </span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        <div x-data>
+            <input type="file" x-ref="galleryInput" name="gallery_images[]" accept="image/jpeg,image/png,image/gif,image/webp" multiple class="hidden">
+            <button type="button" @click.prevent="$refs.galleryInput.click()" class="mt-4 flex w-full cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-8 text-center transition hover:border-primary/35 hover:bg-primary/[0.04]">
+                <svg class="h-10 w-10 text-ink/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 16V4m0 0-4 4m4-4 4 4M4 16.5V18a2 2 0 002 2h12a2 2 0 002-2v-1.5" />
+                </svg>
+                <span class="mt-3 text-sm font-medium text-ink/80">{{ __('Drop images here or click to upload') }}</span>
+                <span class="mt-1 text-xs text-ink/55">{{ __('You can select multiple files at once.') }}</span>
+            </button>
+        </div>
+
+        @error('gallery_images')
+            <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
+        @enderror
+        @error('gallery_images.*')
+            <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
+        @enderror
+        @error('remove_gallery_image_ids.*')
+            <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
         @enderror
     </div>
 </div>

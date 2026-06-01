@@ -17,7 +17,7 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        $data = Cache::remember('home_page_v12', 600, function () {
+        $data = Cache::remember('home_page_v13', 600, function () {
             $defaultMp4 = 'https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_30fps.mp4';
             $defaultVimeoPage = 'https://vimeo.com/1177988644';
             $heroVideoSource = SiteSetting::getValue('hero_video_source', 'vimeo');
@@ -96,6 +96,12 @@ class HomeController extends Controller
                 'social_youtube' => SiteSetting::getValue('social_youtube', ''),
                 'social_twitter' => SiteSetting::getValue('social_twitter', ''),
                 'social_tiktok' => SiteSetting::getValue('social_tiktok', ''),
+                'popular_tours_title' => SiteSetting::getValue('popular_tours_title', __('Most Popular Tours')),
+                'popular_tours_subtitle' => SiteSetting::getValue(
+                    'popular_tours_subtitle',
+                    __('Embark on an unforgettable safari adventure exploring the majestic peaks of Mount Kenya and Mount Kilimanjaro, while encountering iconic wildlife across East Africa.')
+                ),
+                'popular_tours' => Tour::popularForHomepage(8),
                 'featured_safaris_by_country' => SafariExperience::featuredForHomepageByCountry(),
                 'destinations' => Destination::query()->active()->orderByDesc('sort_order')->take(4)->get(),
                 'testimonials' => Testimonial::query()->active()->orderByDesc('is_featured')->orderBy('sort_order')->take(6)->get(),

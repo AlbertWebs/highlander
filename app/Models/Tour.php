@@ -258,6 +258,69 @@ class Tour extends Model
         return $query->where('is_featured', true);
     }
 
+    /**
+     * Tours for the homepage “Most popular” grid (featured first, then by sort order).
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, self>
+     */
+    public static function popularForHomepage(int $limit = 8): \Illuminate\Database\Eloquent\Collection
+    {
+        $base = static::query()
+            ->active()
+            ->with(['mountain:id,name', 'destination:id,name'])
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->orderBy('title');
+
+        $featured = (clone $base)->featured()->take($limit)->get();
+        if ($featured->count() >= $limit) {
+            return $featured->take($limit)->values();
+        }
+
+        $exclude = $featured->pluck('id');
+        $more = (clone $base)
+            ->when($exclude->isNotEmpty(), fn ($query) => $query->whereNotIn('id', $exclude))
+            ->take($limit - $featured->count())
+            ->get();
+
+        return $featured->concat($more)->values();
+    }
+
+    public function homepageCountryTag(): ?string
+    {
+        $country = strtolower(trim((string) ($this->country ?? '')));
+        if ($country !== '' && in_array($country, self::HOMEPAGE_COUNTRIES, true)) {
+            return self::countryHeadingMeta($country)['eyebrow'];
+        }
+
+        return null;
+    }
+
+    public function homepageCategoryTag(): string
+    {
+        if ($this->mountain_id || $this->nav_mountain_safari) {
+            return __('Trekking');
+        }
+
+        if ($this->nav_explore_africa) {
+            return __('Destinations');
+        }
+
+        return __('Wildlife Safaris');
+    }
+
+    public function homepageDurationLabel(): ?string
+    {
+        $days = (int) ($this->duration_days ?? 0);
+        if ($days < 1) {
+            return null;
+        }
+
+        $nights = max(0, $days - 1);
+
+        return strtoupper(sprintf('%d %s - %d %s', $days, __('DAYS'), $nights, __('NIGHTS')));
+    }
+
     public function imageUrl(): ?string
     {
         $image = trim((string) ($this->image ?? ''));

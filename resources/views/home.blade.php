@@ -152,6 +152,8 @@
     @include('partials.hero-social')
 </section>
 
+@include('partials.home-popular-tours')
+
 <section class="home-welcome-pr section-y bg-white section-divider">
     @php
         $welcomeLines = array_values(array_filter(array_map('trim', explode('|', (string) ($welcome_title ?? ''))), fn ($l) => $l !== ''));
@@ -260,24 +262,11 @@
 {{-- Featured Experiences: light green tint + four columns from lg --}}
 <section
     class="home-featured-experiences relative overflow-hidden bg-tint-green section-divider"
-    aria-labelledby="featured-experiences-heading"
+    aria-label="{{ __('Safari experiences by country') }}"
 >
     <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(76,175,80,0.12),transparent_55%)]" aria-hidden="true"></div>
     <div class="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-primary/20 blur-3xl" aria-hidden="true"></div>
     <div class="relative site-gutter-x section-y">
-        <header class="mx-auto max-w-3xl text-center lg:mx-0 lg:max-w-2xl lg:text-left" data-aos="fade-up" data-aos-duration="800">
-            <p class="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-white/70 px-4 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-primary shadow-sm backdrop-blur-sm">
-                <span class="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_10px_rgba(139,195,74,0.9)]" aria-hidden="true"></span>
-                {{ __('Experiences') }}
-            </p>
-            <h2 id="featured-experiences-heading" class="mt-4 mb-8 bg-gradient-to-r from-primary via-accent to-ink bg-clip-text font-serif text-[1.875rem] font-semibold leading-[1.15] tracking-tight text-transparent sm:text-[2.125rem] lg:text-[2.5rem]">
-                {{ __('Featured Experiences') }}
-            </h2>
-            <p class="mx-auto mt-5 max-w-xl text-base leading-relaxed text-ink/80 sm:text-lg lg:mx-0">
-                {{ __('Hand-picked adventures for discerning travellers.') }}
-            </p>
-        </header>
-
         @php
             $hasFeaturedByCountry = ! empty($featured_safaris_by_country);
         @endphp
@@ -289,7 +278,7 @@
                     $hasMoreSafaris = $countrySafaris->count() > $featuredInitial;
                 @endphp
                 <div
-                    @class(['mt-12' => $loop->first, 'mt-14 sm:mt-16' => ! $loop->first])
+                    @class(['mt-0' => $loop->first, 'mt-14 sm:mt-16' => ! $loop->first])
                     data-aos="fade-up"
                     data-aos-duration="800"
                     x-data="{ expanded: false }"

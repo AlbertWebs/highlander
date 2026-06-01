@@ -99,7 +99,7 @@ class HomeController extends Controller
                 'popular_tours_title' => SiteSetting::getValue('popular_tours_title', __('Most Popular Tours')),
                 'popular_tours_subtitle' => SiteSetting::getValue(
                     'popular_tours_subtitle',
-                    __('Embark on an unforgettable safari adventure exploring the majestic peaks of Mount Kenya and Mount Kilimanjaro, while encountering iconic wildlife across East Africa.')
+                    __('From the rugged ridges of Mount Kenya to the snow-capped summit of Mount Kilimanjaro, explore East Africa’s ultimate mountaineering routes and wildlife circuits.')
                 ),
                 'popular_tours' => Tour::popularForHomepage(8),
                 'featured_safaris_by_country' => SafariExperience::featuredForHomepageByCountry(),

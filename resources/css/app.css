@@ -259,16 +259,44 @@
     }
 
     /**
+     * Header logo: wide wordmarks are width-capped, so height utilities alone do not scale them.
+     * Fixed layout box + transform keeps the sticky bar height unchanged.
+     */
+    .site-header-brand-logo-wrap {
+        display: inline-flex;
+        flex-shrink: 0;
+        align-items: center;
+        height: 2.25rem;
+        overflow: visible;
+    }
+
+    .site-header-brand-logo {
+        height: 100%;
+        width: auto;
+        max-width: min(15rem, 42vw);
+        object-fit: contain;
+        object-position: left center;
+        transform: scale(1.35);
+        transform-origin: left center;
+    }
+
+    @media (min-width: 1024px) {
+        .site-header-brand-logo-wrap {
+            height: 2.5rem;
+        }
+
+        .site-header-brand-logo {
+            max-width: min(16.5rem, 42vw);
+            transform: scale(1.32);
+        }
+    }
+
+    /**
      * Public header after scroll: utility bar collapsed; sticky bar uses bg-surface (.site-header-stuck).
      */
     .site-header-stuck .site-header-brand,
-    .site-header-stuck .site-header-brand .font-serif,
-    .site-header-stuck .site-header-brand .site-header-brand-tagline {
+    .site-header-stuck .site-header-brand .font-serif {
         color: rgb(23 23 23) !important;
-    }
-
-    .site-header-stuck .site-header-brand .site-header-brand-rule {
-        background-color: rgb(64 64 64 / 0.35);
     }
 
     .site-header-stuck .site-primary-nav .site-nav-link,

@@ -109,34 +109,18 @@
                 class="site-header-brand group relative z-20 flex min-w-0 shrink-0 items-center gap-3 text-white transition duration-300 hover:opacity-95 md:gap-4"
             >
                 @if($headerLogoUrlHero || $headerLogoUrlStuck)
-                    <img
-                        src="{{ $headerLogoUrlHero }}"
-                        width="200"
-                        height="40"
-                        alt="{{ $appName }}"
-                        class="h-9 w-auto max-w-[min(200px,38vw)] object-contain object-left transition-opacity duration-300 lg:h-10"
-                        x-bind:src="scrolled ? @js($headerLogoUrlStuck) : @js($headerLogoUrlHero)"
-                    />
-                    <span
-                        class="site-header-brand-rule hidden h-9 w-px shrink-0 md:block lg:h-10"
-                        :class="scrolled ? 'bg-neutral-400/55' : 'bg-white/35'"
-                        aria-hidden="true"
-                    ></span>
-                    <span class="hidden flex-col justify-center leading-none md:flex">
-                        <span class="site-header-brand-tagline text-[0.625rem] font-semibold uppercase tracking-[0.2em] text-white/95">{{ __('Safaris') }}</span>
-                        <span class="site-header-brand-tagline mt-1 text-[0.625rem] font-semibold uppercase tracking-[0.2em] text-white/95">{{ __('& expeditions') }}</span>
+                    <span class="site-header-brand-logo-wrap">
+                        <img
+                            src="{{ $headerLogoUrlHero }}"
+                            width="264"
+                            height="53"
+                            alt="{{ $appName }}"
+                            class="site-header-brand-logo transition-opacity duration-300"
+                            x-bind:src="scrolled ? @js($headerLogoUrlStuck) : @js($headerLogoUrlHero)"
+                        />
                     </span>
                 @else
                     <span class="font-serif text-xl font-semibold tracking-tight text-white drop-shadow-md sm:text-2xl lg:text-[1.65rem]">{{ $appName }}</span>
-                    <span
-                        class="site-header-brand-rule hidden h-9 w-px shrink-0 sm:block lg:h-10"
-                        :class="scrolled ? 'bg-neutral-400/55' : 'bg-white/35'"
-                        aria-hidden="true"
-                    ></span>
-                    <span class="hidden flex-col justify-center leading-none sm:flex">
-                        <span class="site-header-brand-tagline text-[0.625rem] font-semibold uppercase tracking-[0.2em] text-white/95">{{ __('Safaris') }}</span>
-                        <span class="site-header-brand-tagline mt-1 text-[0.625rem] font-semibold uppercase tracking-[0.2em] text-white/95">{{ __('& expeditions') }}</span>
-                    </span>
                 @endif
             </a>
 

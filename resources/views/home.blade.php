@@ -86,9 +86,9 @@
     </div>
 
     {{-- Leave the centre visually open; darken edges like a stage --}}
-    <div class="absolute inset-0 z-[6] bg-gradient-to-r from-black/75 via-black/35 to-black/55"></div>
-    <div class="absolute inset-0 z-[6] bg-gradient-to-b from-black/45 via-transparent to-black/80"></div>
-    <div class="absolute inset-0 z-[6] bg-[radial-gradient(ellipse_85%_65%_at_50%_38%,transparent_0%,rgba(0,0,0,0.35)_55%,rgba(0,0,0,0.72)_100%)]"></div>
+    <div class="absolute inset-0 z-[6] bg-gradient-to-r from-black/62 via-black/28 to-black/48"></div>
+    <div class="absolute inset-0 z-[6] bg-gradient-to-b from-black/35 via-transparent to-black/68"></div>
+    <div class="absolute inset-0 z-[6] bg-[radial-gradient(ellipse_85%_65%_at_50%_38%,transparent_0%,rgba(0,0,0,0.26)_55%,rgba(0,0,0,0.6)_100%)]"></div>
 
     <div class="relative z-10 flex min-h-[100svh] flex-col pt-[7.25rem] sm:pt-[8.5rem]">
         <div class="site-gutter-x flex flex-1 flex-col justify-center pb-10">
@@ -118,7 +118,7 @@
             </div>
         </div>
 
-        <div class="site-gutter-x border-t border-white/15 bg-black/25 py-6 backdrop-blur-md" data-aos="fade-up" data-aos-duration="850" data-aos-delay="240">
+        <div class="site-gutter-x border-t border-white/15 bg-black/20 py-6 backdrop-blur-md" data-aos="fade-up" data-aos-duration="850" data-aos-delay="240">
             @if(filled($hero_subheadline))
                 <div class="grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(0,min(36rem,55vw))_minmax(0,1fr)] md:items-end md:gap-6">
                     <div class="flex flex-wrap items-center gap-x-8 gap-y-2 border-b border-white/15 pb-4 text-sm font-medium text-white/95 md:border-0 md:pb-0 md:justify-self-start">

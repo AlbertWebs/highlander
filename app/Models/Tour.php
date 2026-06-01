@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Support\Vimeo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
@@ -194,6 +195,16 @@ class Tour extends Model
         return $this->isMountainSafariForHomepage()
             ? __('Mountain safari')
             : __('Wildlife safari');
+    }
+
+    public function mountain(): BelongsTo
+    {
+        return $this->belongsTo(Mountain::class);
+    }
+
+    public function destination(): BelongsTo
+    {
+        return $this->belongsTo(Destination::class);
     }
 
     public function safariExperiences(): BelongsToMany

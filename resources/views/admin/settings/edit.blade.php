@@ -53,16 +53,16 @@
                     </header>
                     <div class="space-y-8 px-6 py-8 sm:px-8">
                         <div class="grid gap-8 sm:grid-cols-2">
-                            <div x-data="fileImagePreview(@js($previewLogoLight))" class="flex flex-col">
+                            <div x-data="fileImagePreview(@js($previewLogoLight ?: null))" class="flex flex-col">
                                 <label class="text-sm font-medium text-ink">{{ __('Logo — light backgrounds') }}</label>
                                 <p class="mt-0.5 text-xs text-ink/50">{{ __('Admin sidebar, sign-in, etc.') }}</p>
-                                <label class="mt-3 flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-6 text-center transition hover:border-primary/35 hover:bg-primary/[0.04]">
-                                    <input type="file" name="logo" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" class="sr-only" @change="pick($event)">
+                                <input type="file" name="logo" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" class="hidden" x-ref="fileInput" @change="pick($event)">
+                                <button type="button" class="mt-3 flex w-full cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-6 text-center transition hover:border-primary/35 hover:bg-primary/[0.04]" @click="openPicker()">
                                     <svg class="h-8 w-8 text-ink/35" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4-4 4m4-4v12"/></svg>
                                     <span class="mt-2 text-xs font-medium text-ink/75">{{ __('Choose image') }}</span>
                                     <span class="mt-1 text-[11px] text-ink/45">PNG, SVG, WebP · max 4MB</span>
-                                </label>
-                                <div x-show="preview" x-transition class="mt-4 rounded-xl border border-secondary/45 bg-white p-3 shadow-sm">
+                                </button>
+                                <div x-ref="previewPanel" x-show="hasPreview" x-cloak class="mt-4 rounded-xl border border-secondary/45 bg-white p-3 shadow-sm">
                                     <p class="text-[11px] font-semibold uppercase tracking-wide text-ink/45">{{ __('Preview') }}</p>
                                     <img :src="preview" alt="" class="mt-2 h-14 max-w-[220px] object-contain object-left">
                                 </div>
@@ -71,16 +71,16 @@
                                     {{ __('Remove saved file') }}
                                 </label>
                             </div>
-                            <div x-data="fileImagePreview(@js($previewLogoDark))" class="flex flex-col">
+                            <div x-data="fileImagePreview(@js($previewLogoDark ?: null))" class="flex flex-col">
                                 <label class="text-sm font-medium text-ink">{{ __('Logo — dark backgrounds') }}</label>
                                 <p class="mt-0.5 text-xs text-ink/50">{{ __('Public header & footer') }}</p>
-                                <label class="mt-3 flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-slate-400/40 bg-slate-800/90 px-4 py-6 text-center transition hover:border-primary/45 hover:bg-slate-800">
-                                    <input type="file" name="logo_dark" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" class="sr-only" @change="pick($event)">
+                                <input type="file" name="logo_dark" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" class="hidden" x-ref="fileInput" @change="pick($event)">
+                                <button type="button" class="mt-3 flex w-full cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-slate-400/40 bg-slate-800/90 px-4 py-6 text-center transition hover:border-primary/45 hover:bg-slate-800" @click="openPicker()">
                                     <svg class="h-8 w-8 text-white/35" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4-4 4m4-4v12"/></svg>
                                     <span class="mt-2 text-xs font-medium text-white/80">{{ __('Choose image') }}</span>
                                     <span class="mt-1 text-[11px] text-white/45">PNG, SVG, WebP</span>
-                                </label>
-                                <div x-show="preview" x-transition class="mt-4 rounded-xl border border-slate-600 bg-slate-900 p-3">
+                                </button>
+                                <div x-ref="previewPanel" x-show="hasPreview" x-cloak class="mt-4 rounded-xl border border-slate-600 bg-slate-900 p-3">
                                     <p class="text-[11px] font-semibold uppercase tracking-wide text-white/45">{{ __('Preview') }}</p>
                                     <img :src="preview" alt="" class="mt-2 h-14 max-w-[220px] object-contain object-left">
                                 </div>
@@ -92,14 +92,14 @@
                         </div>
 
                         <div class="grid gap-8 lg:grid-cols-2">
-                            <div x-data="fileImagePreview(@js($previewFavicon))">
+                            <div x-data="fileImagePreview(@js($previewFavicon ?: null))">
                                 <label class="text-sm font-medium text-ink">{{ __('Favicon') }}</label>
                                 <p class="mt-0.5 text-xs text-ink/50">{{ __('Browser tab icon') }}</p>
-                                <label class="mt-3 flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-5 text-center transition hover:border-primary/35 hover:bg-primary/[0.04]">
-                                    <input type="file" name="favicon" accept=".ico,.png,.svg,image/x-icon,image/png,image/svg+xml" class="sr-only" @change="pick($event)">
+                                <input type="file" name="favicon" accept=".ico,.png,.svg,image/x-icon,image/png,image/svg+xml" class="hidden" x-ref="fileInput" @change="pick($event)">
+                                <button type="button" class="mt-3 flex w-full cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-5 text-center transition hover:border-primary/35 hover:bg-primary/[0.04]" @click="openPicker()">
                                     <span class="text-xs font-medium text-ink/75">{{ __('Choose .ico or PNG') }}</span>
-                                </label>
-                                <div x-show="preview" x-transition class="mt-4 inline-flex flex-col rounded-xl border border-secondary/45 bg-white p-3 shadow-sm">
+                                </button>
+                                <div x-ref="previewPanel" x-show="hasPreview" x-cloak class="mt-4 inline-flex flex-col rounded-xl border border-secondary/45 bg-white p-3 shadow-sm">
                                     <p class="text-[11px] font-semibold uppercase tracking-wide text-ink/45">{{ __('Preview') }}</p>
                                     <img :src="preview" alt="" class="mt-2 h-14 w-14 rounded-lg border border-secondary/30 object-contain bg-surface p-1">
                                 </div>
@@ -108,15 +108,15 @@
                                     {{ __('Remove saved file') }}
                                 </label>
                             </div>
-                            <div x-data="fileImagePreview(@js($previewMenuBg))">
+                            <div x-data="fileImagePreview(@js($previewMenuBg ?: null))">
                                 <label class="text-sm font-medium text-ink">{{ __('Menu background') }}</label>
                                 <p class="mt-0.5 text-xs text-ink/50">{{ __('Top utility bar only') }}</p>
-                                <label class="mt-3 flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-5 text-center transition hover:border-primary/35 hover:bg-primary/[0.04]">
-                                    <input type="file" name="menu_background" accept="image/jpeg,image/png,image/gif,image/webp" class="sr-only" @change="pick($event)">
+                                <input type="file" name="menu_background" accept="image/jpeg,image/png,image/gif,image/webp" class="hidden" x-ref="fileInput" @change="pick($event)">
+                                <button type="button" class="mt-3 flex w-full cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-secondary/55 bg-secondary/10 px-4 py-5 text-center transition hover:border-primary/35 hover:bg-primary/[0.04]" @click="openPicker()">
                                     <span class="text-xs font-medium text-ink/75">{{ __('Wide photo / texture') }}</span>
                                     <span class="mt-1 text-[11px] text-ink/45">JPEG, PNG, WebP</span>
-                                </label>
-                                <div x-show="preview" x-transition class="mt-4 rounded-xl border border-secondary/45 bg-secondary/15 p-3">
+                                </button>
+                                <div x-ref="previewPanel" x-show="hasPreview" x-cloak class="mt-4 rounded-xl border border-secondary/45 bg-secondary/15 p-3">
                                     <p class="text-[11px] font-semibold uppercase tracking-wide text-ink/45">{{ __('Preview') }}</p>
                                     <img :src="preview" alt="" class="mt-2 h-24 w-full max-w-sm rounded-lg border border-secondary/40 object-cover">
                                 </div>

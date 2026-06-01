@@ -4,13 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use App\Models\Destination;
+use App\Models\Mountain;
+use App\Models\SafariExperience;
 use App\Models\Tour;
 use App\Support\SlugHelper;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class TourController extends Controller
@@ -18,19 +22,37 @@ class TourController extends Controller
     public function index(Request $request): View
     {
         $q = $request->string('q')->trim();
+        $unassignedOnly = $request->boolean('unassigned');
+        $perPage = (int) $request->input('per_page', 30);
+        $perPage = in_array($perPage, [10, 15, 25, 30, 50, 100], true) ? $perPage : 30;
+
         $tours = Tour::query()
+            ->with(['mountain', 'destination', 'safariExperiences:id,title'])
             ->withCount('itineraryDays')
-            ->when($q, fn ($query) => $query->where('title', 'like', '%'.$q.'%'))
-            ->orderByDesc('id')
-            ->paginate(15)
+            ->when($unassignedOnly, fn ($query) => $query->whereDoesntHave('safariExperiences'))
+            ->when($q, function ($query) use ($q): void {
+                $like = '%'.$q.'%';
+                $query->where(function ($inner) use ($like): void {
+                    $inner->where('title', 'like', $like)
+                        ->orWhere('slug', 'like', $like);
+                });
+            })
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->paginate($perPage)
             ->withQueryString();
 
-        return view('admin.tours.index', compact('tours', 'q'));
+        $safariStyles = SafariExperience::query()
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->get(['id', 'title']);
+
+        return view('admin.tours.index', compact('tours', 'q', 'perPage', 'safariStyles', 'unassignedOnly'));
     }
 
     public function create(): View
     {
-        return view('admin.tours.create');
+        return view('admin.tours.create', $this->hubFormData());
     }
 
     public function store(Request $request): RedirectResponse
@@ -47,6 +69,7 @@ class TourController extends Controller
             $data['image'] = $request->file('image')->store('tours', 'public');
         }
         $tour = Tour::query()->create($data);
+        $tour->safariExperiences()->sync($request->input('safari_experience_ids', []));
         ActivityLog::record('tour.created', $tour->title, $tour);
         $this->forgetHomeCache();
 
@@ -62,7 +85,9 @@ class TourController extends Controller
 
     public function edit(Tour $tour): View
     {
-        return view('admin.tours.edit', compact('tour'));
+        $tour->load('safariExperiences:id');
+
+        return view('admin.tours.edit', array_merge($this->hubFormData($tour), compact('tour')));
     }
 
     public function update(Request $request, Tour $tour): RedirectResponse
@@ -84,6 +109,7 @@ class TourController extends Controller
             $data['image'] = $request->file('image')->store('tours', 'public');
         }
         $tour->update($data);
+        $tour->safariExperiences()->sync($request->input('safari_experience_ids', []));
         ActivityLog::record('tour.updated', $tour->title, $tour);
         $this->forgetHomeCache();
 
@@ -110,6 +136,22 @@ class TourController extends Controller
         return back()->with('success', __('Status updated.'));
     }
 
+    /**
+     * Quick update of main-nav menu flags from the tours index table.
+     */
+    public function updateMenus(Request $request, Tour $tour): RedirectResponse
+    {
+        $tour->update([
+            'nav_safari' => $request->boolean('nav_safari'),
+            'nav_mountain_safari' => $request->boolean('nav_mountain_safari'),
+            'nav_explore_africa' => $request->boolean('nav_explore_africa'),
+        ]);
+        ActivityLog::record('tour.updated', $tour->title.' (menus)', $tour);
+        $this->forgetHomeCache();
+
+        return back()->with('success', __('Menus updated for :title.', ['title' => $tour->title]));
+    }
+
     protected function validated(Request $request): array
     {
         $data = $request->validate([
@@ -124,6 +166,10 @@ class TourController extends Controller
             'featured_media_type' => ['nullable', 'in:image,video'],
             'featured_video_url' => ['nullable', 'string', 'max:2048', 'required_if:featured_media_type,video'],
             'image' => ['nullable', 'image', 'max:5120'],
+            'mountain_id' => ['nullable', 'integer', 'exists:mountains,id'],
+            'destination_id' => ['nullable', 'integer', 'exists:destinations,id'],
+            'safari_experience_ids' => ['nullable', 'array'],
+            'safari_experience_ids.*' => ['integer', 'exists:safari_experiences,id'],
         ]);
 
         if ($request->boolean('is_featured') && empty($data['country'])) {
@@ -137,6 +183,30 @@ class TourController extends Controller
         }
 
         return $data;
+    }
+
+    /**
+     * @return array{mountains: Collection<int, Mountain>, destinations: Collection<int, Destination>, safariExperiences: Collection<int, SafariExperience>}
+     */
+    protected function hubFormData(?Tour $tour = null): array
+    {
+        $mountains = Mountain::forMainMenu();
+
+        if ($tour !== null && $tour->mountain_id) {
+            $linked = Mountain::query()->find($tour->mountain_id);
+            if ($linked instanceof Mountain && ! $mountains->contains('id', $linked->id)) {
+                $mountains = $mountains->prepend($linked)->values();
+            }
+        }
+
+        return [
+            'mountains' => $mountains,
+            'destinations' => Destination::query()->orderBy('sort_order')->orderBy('name')->get(['id', 'name', 'slug']),
+            'safariExperiences' => SafariExperience::query()
+                ->orderBy('sort_order')
+                ->orderBy('title')
+                ->get(['id', 'title', 'slug', 'duration']),
+        ];
     }
 
     protected function forgetHomeCache(): void

@@ -343,9 +343,27 @@ document.addEventListener('alpine:init', () => {
     }));
 
     Alpine.data('fileImagePreview', (serverUrl) => ({
-        server: serverUrl ?? null,
-        preview: serverUrl ?? null,
+        server: serverUrl || null,
+        preview: serverUrl || null,
         blob: null,
+        _scrollEl: null,
+        _scrollTop: 0,
+        get hasPreview() {
+            return Boolean(this.preview);
+        },
+        rememberScroll() {
+            this._scrollEl = this.$el.closest('.admin-main-scroll');
+            this._scrollTop = this._scrollEl?.scrollTop ?? window.scrollY;
+        },
+        restoreScroll() {
+            if (this._scrollEl) {
+                this._scrollEl.scrollTop = this._scrollTop;
+            }
+        },
+        openPicker() {
+            this.rememberScroll();
+            this.$refs.fileInput?.click();
+        },
         pick(event) {
             if (this.blob) {
                 URL.revokeObjectURL(this.blob);
@@ -354,11 +372,21 @@ document.addEventListener('alpine:init', () => {
             const file = event.target.files?.[0];
             if (!file) {
                 this.preview = this.server;
+                this.restoreScroll();
 
                 return;
             }
             this.blob = URL.createObjectURL(file);
             this.preview = this.blob;
+            this.$nextTick(() => {
+                this.restoreScroll();
+                this.$refs.previewPanel?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+        },
+        destroy() {
+            if (this.blob) {
+                URL.revokeObjectURL(this.blob);
+            }
         },
     }));
 
@@ -642,12 +670,14 @@ window.Alpine = Alpine;
 Alpine.start();
 
 document.addEventListener('DOMContentLoaded', () => {
-    initScrollAnimations();
+    if (!document.querySelector('.admin-main-scroll')) {
+        initScrollAnimations();
+    }
 
     window.addEventListener(
         'resize',
         () => {
-            if (!prefersReducedMotion()) {
+            if (!document.querySelector('.admin-main-scroll') && !prefersReducedMotion()) {
                 AOS.refresh();
             }
         },

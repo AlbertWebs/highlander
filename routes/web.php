@@ -69,6 +69,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::resource('bookings', AdminBookingController::class)->except(['create', 'store']);
     Route::resource('tours', AdminTourController::class);
+    Route::patch('tours/{tour}/menus', [AdminTourController::class, 'updateMenus'])->name('tours.updateMenus');
     Route::patch('tours/{tour}/toggle', [AdminTourController::class, 'toggle'])->name('tours.toggle');
     Route::get('tours/{tour}/itinerary', [TourItineraryController::class, 'edit'])->name('tours.itinerary.edit');
     Route::put('tours/{tour}/itinerary', [TourItineraryController::class, 'update'])->name('tours.itinerary.update');

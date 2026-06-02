@@ -30,6 +30,19 @@ class Mountain extends Model
         return $this->hasMany(Tour::class);
     }
 
+    public function safariExperiences(): HasMany
+    {
+        return $this->hasMany(SafariExperience::class);
+    }
+
+    /**
+     * @return Collection<int, SafariExperience>
+     */
+    public function activeSafariExperiences(): Collection
+    {
+        return SafariExperience::activeForMountain($this);
+    }
+
     /**
      * Mountains linked from the main header "Mountains" dropdown (peak hubs only).
      *

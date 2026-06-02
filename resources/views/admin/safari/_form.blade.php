@@ -88,7 +88,7 @@
                         <option value="{{ $m->id }}" @selected((string) old('mountain_id', $safariExperience->mountain_id ?? '') === (string) $m->id)>{{ $m->name }}</option>
                     @endforeach
                 </select>
-                <p class="mt-1.5 text-xs text-ink/50">{{ __('Associate this safari style with a mountain page (e.g. Mount Kenya treks).') }}</p>
+                <p class="mt-1.5 text-xs text-ink/50">{{ __('Shows this safari on that mountain’s public page (e.g. Mount Kilimanjaro → /mountains/mount-kilimanjaro).') }}</p>
                 @error('mountain_id')
                     <p class="mt-1.5 text-sm text-red-700">{{ $message }}</p>
                 @enderror

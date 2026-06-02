@@ -105,6 +105,7 @@ class PageController extends Controller
 
         $mountainTours = RelatedToursForMountain::allForMountain($mountain);
         $relatedTours = $mountainTours->take(8)->values();
+        $mountainSafaris = SafariExperience::activeForMountain($mountain);
 
         return view('pages.mountain-show', compact(
             'mountain',
@@ -113,6 +114,7 @@ class PageController extends Controller
             'meta_description',
             'relatedTours',
             'mountainTours',
+            'mountainSafaris',
         ));
     }
 

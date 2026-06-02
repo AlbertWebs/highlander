@@ -214,6 +214,21 @@ class SafariExperience extends Model
             ->values();
     }
 
+    /**
+     * Active safari styles explicitly linked to a mountain in Admin → Safari.
+     *
+     * @return \Illuminate\Support\Collection<int, self>
+     */
+    public static function activeForMountain(Mountain $mountain): \Illuminate\Support\Collection
+    {
+        return self::query()
+            ->active()
+            ->where('mountain_id', $mountain->id)
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->get();
+    }
+
     public static function paginateActiveForCountry(?string $country, int $perPage = 12): LengthAwarePaginator
     {
         $query = self::query()->active()->orderBy('sort_order')->orderByDesc('id');

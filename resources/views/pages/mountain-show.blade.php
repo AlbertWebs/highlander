@@ -87,6 +87,11 @@
                 </aside>
             </div>
 
+            @include('partials.mountain-safaris-list', [
+                'mountain' => $mountain,
+                'mountainSafaris' => $mountainSafaris ?? collect(),
+            ])
+
             @include('partials.mountain-experiences-list', [
                 'mountain' => $mountain,
                 'mountainTours' => $mountainTours ?? collect(),

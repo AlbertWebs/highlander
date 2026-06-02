@@ -58,7 +58,7 @@
             </ol>
         </nav>
 
-        <div class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-7 xl:grid-cols-2 xl:gap-8">
+        <div class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-7 lg:grid-cols-3 lg:gap-8">
             @foreach($mountainSafaris as $safari)
                 @include('partials.featured-safari-card', [
                     'safari' => $safari,

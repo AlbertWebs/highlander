@@ -62,8 +62,12 @@
     };
 @endphp
 <aside
-    :class="sidebarOpen ? 'w-[17rem]' : 'w-[4.25rem]'"
-    class="fixed inset-y-0 left-0 z-40 flex min-h-screen flex-col border-r border-white/[0.06] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-200 shadow-[4px_0_24px_rgba(0,0,0,0.12)] transition-[width] duration-300 ease-out lg:static lg:h-full lg:max-h-[100dvh] lg:min-h-0 lg:shrink-0 lg:self-stretch"
+    id="admin-sidebar"
+    :class="[
+        sidebarOpen ? 'w-[17rem]' : 'w-[4.25rem]',
+        mobileNav ? 'max-lg:translate-x-0' : 'max-lg:-translate-x-full',
+    ]"
+    class="fixed inset-y-0 left-0 z-40 flex w-[17rem] min-h-screen max-h-[100dvh] -translate-x-full flex-col border-r border-white/[0.06] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-200 shadow-[4px_0_24px_rgba(0,0,0,0.12)] transition-[transform,width] duration-300 ease-out max-lg:w-[17rem] lg:static lg:h-full lg:max-h-[100dvh] lg:min-h-0 lg:translate-x-0 lg:shrink-0 lg:self-stretch"
 >
     {{-- subtle brand edge --}}
     <div class="pointer-events-none absolute inset-y-0 left-0 w-px bg-gradient-to-b from-primary/50 via-accent/40 to-primary/30" aria-hidden="true"></div>
@@ -74,6 +78,7 @@
             class="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl px-2 py-1.5 text-white transition hover:bg-white/[0.04]"
             :class="!sidebarOpen && 'justify-center'"
             x-bind:title="sidebarOpen ? '' : {{ json_encode(__('Dashboard')) }}"
+            @click="closeMobileNav()"
         >
             @if($adminLogoUrl)
                 <img src="{{ $adminLogoUrl }}" alt="" class="h-8 w-auto max-w-[7.5rem] shrink-0 object-contain object-left" width="120" height="32">
@@ -84,7 +89,17 @@
         </a>
         <button
             type="button"
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-slate-300 transition hover:border-primary/35 hover:bg-primary/10 hover:text-white"
+            class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-slate-300 transition hover:border-primary/35 hover:bg-primary/10 hover:text-white lg:hidden"
+            @click="closeMobileNav()"
+            aria-label="{{ __('Close menu') }}"
+        >
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <button
+            type="button"
+            class="hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-slate-300 transition hover:border-primary/35 hover:bg-primary/10 hover:text-white lg:inline-flex"
             @click="sidebarOpen = !sidebarOpen"
             :aria-expanded="sidebarOpen"
             aria-label="{{ __('Toggle sidebar') }}"
@@ -113,6 +128,7 @@
                     <a
                         href="{{ route($link['r']) }}"
                         title="{{ $link['l'] }}"
+                        @click="closeMobileNav()"
                         @class([
                             'group relative flex items-center gap-3 rounded-xl py-2.5 pl-2.5 pr-3 text-[0.8125rem] font-medium transition duration-200',
                             'bg-gradient-to-r from-primary/25 via-primary/10 to-transparent text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]' => $active,
